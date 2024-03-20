@@ -3,7 +3,7 @@ This is a private fork of public Axe core repo:
 https://github.com/dequelabs/axe-core
 
 
-## How to make changes in axe-core interally
+## How to make changes in axe-core internally
 Create a feature branch, add the changes and raise a PR to the `main` branch.
 
 NOTE: `axe-core` public repo already has a master branch, to keep the things clean while merging we avoid make changes on top of it. 
