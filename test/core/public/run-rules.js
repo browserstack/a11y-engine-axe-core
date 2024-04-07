@@ -1,15 +1,10 @@
-describe('runRules', function() {
+describe('runRules', function () {
   'use strict';
   var ver = axe.version.substring(0, axe.version.lastIndexOf('.'));
 
-  // These tests can sometimes be flaky in IE, allow for up to 3 retries
-  if (axe.testUtils.isIE11) {
-    this.retries(3);
-  }
-
   function iframeReady(src, context, id, cb) {
     var i = document.createElement('iframe');
-    i.addEventListener('load', function() {
+    i.addEventListener('load', function () {
       cb();
     });
     i.src = src;
@@ -48,24 +43,21 @@ describe('runRules', function() {
   }
 
   var fixture = document.getElementById('fixture');
-  var memoizedFns;
 
   var isNotCalled;
-  beforeEach(function() {
-    memoizedFns = axe._memoizedFns.slice();
-    isNotCalled = function(err) {
+  beforeEach(function () {
+    isNotCalled = function (err) {
       throw err || new Error('Reject should not be called');
     };
   });
 
-  afterEach(function() {
+  afterEach(function () {
     fixture.innerHTML = '';
     axe._audit = null;
-    axe._tree = undefined;
-    axe._memoizedFns = memoizedFns;
+    axe.teardown();
   });
 
-  it('should work', function(done) {
+  it('should work', function (done) {
     axe._load({
       rules: [
         {
@@ -77,7 +69,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -88,23 +80,23 @@ describe('runRules', function() {
     var frame = document.createElement('iframe');
     frame.src = '../mock/frames/frame-frame.html';
 
-    frame.addEventListener('load', function() {
-      setTimeout(function() {
+    frame.addEventListener('load', function () {
+      setTimeout(function () {
         axe._runRules(
           document,
           {},
-          function(r) {
+          function (r) {
             assert.lengthOf(r[0].passes, 3);
             done();
           },
-          isNotCalled
+          err => done(err)
         );
       }, 500);
     });
     fixture.appendChild(frame);
   });
 
-  it('should properly order iframes', function(done) {
+  it('should properly order iframes', function (done) {
     axe._load({
       rules: [
         {
@@ -116,7 +108,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'iframe',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -125,13 +117,13 @@ describe('runRules', function() {
     });
 
     var frame = document.createElement('iframe');
-    frame.addEventListener('load', function() {
-      setTimeout(function() {
+    frame.addEventListener('load', function () {
+      setTimeout(function () {
         axe._runRules(
           document,
           {},
-          function(r) {
-            var nodes = r[0].passes.map(function(detail) {
+          function (r) {
+            var nodes = r[0].passes.map(function (detail) {
               return detail.node.selector;
             });
             try {
@@ -155,7 +147,7 @@ describe('runRules', function() {
     fixture.appendChild(frame);
   });
 
-  it('should properly calculate context and return results from matching frames', function(done) {
+  it('should properly calculate context and return results from matching frames', function (done) {
     axe._load({
       rules: [
         {
@@ -172,17 +164,17 @@ describe('runRules', function() {
       checks: [
         {
           id: 'has-target',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         },
         {
           id: 'first-div',
-          evaluate: function(node) {
+          evaluate: function (node) {
             this.relatedNodes([node]);
             return false;
           },
-          after: function(results) {
+          after: function (results) {
             if (results.length) {
               results[0].result = true;
             }
@@ -197,14 +189,14 @@ describe('runRules', function() {
       '../mock/frames/context.html',
       fixture,
       'context-test',
-      function() {
+      function () {
         var div = document.createElement('div');
         fixture.appendChild(div);
 
         axe._runRules(
           '#fixture',
           {},
-          function(results) {
+          function (results) {
             try {
               assert.deepEqual(JSON.parse(JSON.stringify(results)), [
                 {
@@ -233,7 +225,8 @@ describe('runRules', function() {
                           "/div[@id='target']"
                         ],
                         source: '<div id="target"></div>',
-                        nodeIndexes: [12, 14]
+                        nodeIndexes: [12, 14],
+                        fromFrame: true
                       },
                       any: [
                         {
@@ -276,7 +269,8 @@ describe('runRules', function() {
                         ],
                         source:
                           '<div id="foo">\n      <div id="bar"></div>\n    </div>',
-                        nodeIndexes: [12, 9]
+                        nodeIndexes: [12, 9],
+                        fromFrame: true
                       },
                       any: [
                         {
@@ -295,7 +289,8 @@ describe('runRules', function() {
                               ],
                               source:
                                 '<div id="foo">\n      <div id="bar"></div>\n    </div>',
-                              nodeIndexes: [12, 9]
+                              nodeIndexes: [12, 9],
+                              fromFrame: true
                             }
                           ]
                         }
@@ -319,7 +314,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should reject if the context is invalid', function(done) {
+  it('should reject if the context is invalid', function (done) {
     axe._load({
       rules: [
         {
@@ -335,14 +330,14 @@ describe('runRules', function() {
       '../mock/frames/context.html',
       fixture,
       'context-test',
-      function() {
+      function () {
         axe._runRules(
           '#not-happening',
           {},
-          function() {
+          function () {
             assert.fail('This selector should not exist.');
           },
-          function(error) {
+          function (error) {
             assert.isOk(error);
             assert.equal(
               error.message,
@@ -356,7 +351,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should accept a jQuery-like object', function(done) {
+  it('should accept a jQuery-like object', function (done) {
     axe._load({
       rules: [
         {
@@ -368,7 +363,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'bob',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -384,7 +379,7 @@ describe('runRules', function() {
       length: 2
     };
 
-    axe.run($test, function(err, results) {
+    axe.run($test, function (err, results) {
       assert.isNull(err);
       assert.lengthOf(results.violations, 1);
       assert.lengthOf(results.violations[0].nodes, 4);
@@ -396,7 +391,7 @@ describe('runRules', function() {
     });
   });
 
-  it('should accept a NodeList', function(done) {
+  it('should accept a NodeList', function (done) {
     axe._load({
       rules: [
         {
@@ -408,7 +403,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'fred',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -419,7 +414,7 @@ describe('runRules', function() {
       '<div class="foo" id="t1"><span></span></div><div class="foo" id="t2"><em></em></div>';
 
     var test = fixture.querySelectorAll('.foo');
-    axe.run(test, function(err, results) {
+    axe.run(test, function (err, results) {
       assert.isNull(err);
       assert.lengthOf(results.violations, 1);
       assert.lengthOf(results.violations[0].nodes, 4);
@@ -431,7 +426,7 @@ describe('runRules', function() {
     });
   });
 
-  it('should pull metadata from configuration', function(done) {
+  it('should pull metadata from configuration', function (done) {
     axe._load({
       rules: [
         {
@@ -448,17 +443,17 @@ describe('runRules', function() {
       checks: [
         {
           id: 'has-target',
-          evaluate: function() {
+          evaluate: function () {
             return false;
           }
         },
         {
           id: 'first-div',
-          evaluate: function(node) {
+          evaluate: function (node) {
             this.relatedNodes([node]);
             return false;
           },
-          after: function(results) {
+          after: function (results) {
             if (results.length) {
               results[0].result = true;
             }
@@ -482,12 +477,12 @@ describe('runRules', function() {
             thingy: true,
             impact: 'serious',
             messages: {
-              fail: function(checkResult) {
+              fail: function (checkResult) {
                 return checkResult.id === 'first-div'
                   ? 'failing is not good'
                   : 'y u wrong rule?';
               },
-              pass: function(checkResult) {
+              pass: function (checkResult) {
                 return checkResult.id === 'first-div'
                   ? 'passing is good'
                   : 'y u wrong rule?';
@@ -498,12 +493,12 @@ describe('runRules', function() {
             otherThingy: true,
             impact: 'moderate',
             messages: {
-              fail: function(checkResult) {
+              fail: function (checkResult) {
                 return checkResult.id === 'has-target'
                   ? 'failing is not good'
                   : 'y u wrong rule?';
               },
-              pass: function(checkResult) {
+              pass: function (checkResult) {
                 return checkResult.id === 'has-target'
                   ? 'passing is good'
                   : 'y u wrong rule?';
@@ -517,7 +512,7 @@ describe('runRules', function() {
     axe._runRules(
       '#fixture',
       {},
-      function(results) {
+      function (results) {
         try {
           assert.deepEqual(JSON.parse(JSON.stringify(results)), [
             {
@@ -543,7 +538,8 @@ describe('runRules', function() {
                     ],
                     xpath: ["/div[@id='target']"],
                     source: '<div id="target">Target!</div>',
-                    nodeIndexes: [12]
+                    nodeIndexes: [12],
+                    fromFrame: false
                   },
                   impact: 'moderate',
                   any: [
@@ -587,7 +583,8 @@ describe('runRules', function() {
                       'html > body > div:nth-child(1) > div:nth-child(1)'
                     ],
                     source: '<div id="target">Target!</div>',
-                    nodeIndexes: [12]
+                    nodeIndexes: [12],
+                    fromFrame: false
                   },
                   any: [
                     {
@@ -604,7 +601,8 @@ describe('runRules', function() {
                           ],
                           xpath: ["/div[@id='target']"],
                           source: '<div id="target">Target!</div>',
-                          nodeIndexes: [12]
+                          nodeIndexes: [12],
+                          fromFrame: false
                         }
                       ]
                     }
@@ -626,7 +624,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should call the reject argument if an error occurs', function(done) {
+  it('should call the reject argument if an error occurs', function (done) {
     axe._load({
       rules: [
         {
@@ -637,16 +635,16 @@ describe('runRules', function() {
       messages: {}
     });
 
-    createFrames(function() {
-      setTimeout(function() {
+    createFrames(function () {
+      setTimeout(function () {
         axe._runRules(
           document,
           {},
-          function() {
+          function () {
             assert.ok(false, 'You shall not pass!');
             done();
           },
-          function(err) {
+          function (err) {
             assert.instanceOf(err, Error);
             done();
           }
@@ -655,7 +653,7 @@ describe('runRules', function() {
     });
   });
 
-  it('should resolve to cantTell when a rule fails', function(done) {
+  it('should resolve to cantTell when a rule fails', function (done) {
     axe._load({
       rules: [
         {
@@ -672,13 +670,13 @@ describe('runRules', function() {
       checks: [
         {
           id: 'undeffed',
-          evaluate: function() {
+          evaluate: function () {
             return undefined;
           }
         },
         {
           id: 'thrower',
-          evaluate: function() {
+          evaluate: function () {
             throw new Error('Check failed to complete');
           }
         }
@@ -687,7 +685,7 @@ describe('runRules', function() {
 
     fixture.innerHTML = '<div></div>';
 
-    axe.run('#fixture', function(err, results) {
+    axe.run('#fixture', function (err, results) {
       assert.isNull(err);
       assert.lengthOf(results.incomplete, 2);
       assert.equal(results.incomplete[0].id, 'incomplete-1');
@@ -701,7 +699,7 @@ describe('runRules', function() {
     });
   });
 
-  it('should resolve to cantTell if an error occurs inside frame rules', function(done) {
+  it('should resolve to cantTell if an error occurs inside frame rules', function (done) {
     axe._load({
       rules: [
         {
@@ -718,13 +716,13 @@ describe('runRules', function() {
       checks: [
         {
           id: 'undeffed',
-          evaluate: function() {
+          evaluate: function () {
             return false;
           }
         },
         {
           id: 'thrower',
-          evaluate: function() {
+          evaluate: function () {
             return false;
           }
         }
@@ -735,8 +733,8 @@ describe('runRules', function() {
       '../mock/frames/rule-error.html',
       fixture,
       'context-test',
-      function() {
-        axe.run('#fixture', function(err, results) {
+      function () {
+        axe.run('#fixture', function (err, results) {
           assert.isNull(err);
           assert.lengthOf(results.incomplete, 2);
           assert.equal(results.incomplete[0].id, 'incomplete-1');
@@ -752,7 +750,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should cascade `no elements found` errors in frames to reject run_rules', function(done) {
+  it('should cascade `no elements found` errors in frames to reject run_rules', function (done) {
     axe._load({
       rules: [
         {
@@ -765,7 +763,7 @@ describe('runRules', function() {
     fixture.innerHTML = '<div id="outer"></div>';
     var outer = document.getElementById('outer');
 
-    iframeReady('../mock/frames/context.html', outer, 'target', function() {
+    iframeReady('../mock/frames/context.html', outer, 'target', function () {
       axe._runRules(
         [['#target', '#elementNotFound']],
         {},
@@ -784,7 +782,7 @@ describe('runRules', function() {
     });
   });
 
-  it('should not call reject when the resolve throws', function(done) {
+  it('should not call reject when the resolve throws', function (done) {
     var rejectCalled = false;
     axe._load({
       rules: [
@@ -797,7 +795,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -806,7 +804,7 @@ describe('runRules', function() {
     });
 
     function resolve() {
-      setTimeout(function() {
+      setTimeout(function () {
         assert.isFalse(rejectCalled);
         axe.log = log;
         done();
@@ -818,14 +816,14 @@ describe('runRules', function() {
     }
 
     var log = axe.log;
-    axe.log = function(e) {
+    axe.log = function (e) {
       assert.equal(e.message, 'err');
       axe.log = log;
     };
     axe._runRules(document, {}, resolve, reject);
   });
 
-  it('should ignore iframes if `iframes` === false', function(done) {
+  it('should ignore iframes if `iframes` === false', function (done) {
     axe._load({
       rules: [
         {
@@ -837,7 +835,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -848,12 +846,12 @@ describe('runRules', function() {
     var frame = document.createElement('iframe');
     frame.src = '../mock/frames/frame-frame.html';
 
-    frame.addEventListener('load', function() {
-      setTimeout(function() {
+    frame.addEventListener('load', function () {
+      setTimeout(function () {
         axe._runRules(
           document,
-          { iframes: false },
-          function(r) {
+          { iframes: false, elementRef: true },
+          function (r) {
             assert.lengthOf(r[0].passes, 1);
             assert.equal(
               r[0].passes[0].node.element.ownerDocument,
@@ -869,7 +867,7 @@ describe('runRules', function() {
     fixture.appendChild(frame);
   });
 
-  it('should not fail if `include` / `exclude` is overwritten', function(done) {
+  it('should not fail if `include` / `exclude` is overwritten', function (done) {
     function invalid() {
       throw new Error('nope!');
     }
@@ -887,7 +885,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -898,7 +896,7 @@ describe('runRules', function() {
     axe._runRules(
       [document],
       {},
-      function(r) {
+      function (r) {
         assert.lengthOf(r[0].passes, 1);
 
         delete Array.prototype.include;
@@ -909,7 +907,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should return a cleanup method', function(done) {
+  it('should return a cleanup method', function (done) {
     axe._load({
       rules: [
         {
@@ -921,7 +919,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -945,7 +943,7 @@ describe('runRules', function() {
     );
   });
 
-  it('should clear up axe._tree / axe._selectorData after an error', function(done) {
+  it('should clear up axe._tree / axe._selectorData after an error', function (done) {
     axe._load({
       rules: [
         {
@@ -956,9 +954,9 @@ describe('runRules', function() {
       messages: {}
     });
 
-    createFrames(function() {
-      setTimeout(function() {
-        axe._runRules(document, {}, isNotCalled, function() {
+    createFrames(function () {
+      setTimeout(function () {
+        axe._runRules(document, {}, isNotCalled, function () {
           assert.isUndefined(axe._tree);
           assert.isUndefined(axe._selectorData);
           done();
@@ -968,7 +966,7 @@ describe('runRules', function() {
   });
 
   // todo: see issue - https://github.com/dequelabs/axe-core/issues/2168
-  it.skip('should clear the memoized cache for each function', function(done) {
+  it.skip('should clear the memoized cache for each function', function (done) {
     axe._load({
       rules: [
         {
@@ -980,7 +978,7 @@ describe('runRules', function() {
       checks: [
         {
           id: 'html',
-          evaluate: function() {
+          evaluate: function () {
             return true;
           }
         }
@@ -995,7 +993,7 @@ describe('runRules', function() {
         var called = false;
         axe._memoizedFns = [
           {
-            clear: function() {
+            clear: function () {
               called = true;
             }
           }

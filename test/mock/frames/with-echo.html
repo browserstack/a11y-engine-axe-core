@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Echo frame without axe-core</title>
@@ -10,7 +10,7 @@
     <script>
       window.addEventListener(
         'message',
-        function(event) {
+        function (event) {
           window.top.postMessage(event.data, '*');
         },
         false
