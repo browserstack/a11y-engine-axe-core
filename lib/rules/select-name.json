@@ -1,13 +1,17 @@
 {
   "id": "select-name",
+  "impact": "critical",
   "selector": "select",
   "tags": [
     "cat.forms",
     "wcag2a",
     "wcag412",
-    "wcag131",
     "section508",
     "section508.22.n",
+    "TTv5",
+    "TT5.c",
+    "EN-301-549",
+    "EN-9.4.1.2",
     "ACT"
   ],
   "actIds": ["e086e5"],
@@ -24,5 +28,5 @@
     "non-empty-title",
     "presentational-role"
   ],
-  "none": ["help-same-as-label", "hidden-explicit-label"]
+  "none": ["hidden-explicit-label"]
 }

@@ -29,9 +29,7 @@ if (ignoreCommits) {
 }
 
 // don't run on master or develop branch
-const currentBranch = execSync('git branch --show-current')
-  .toString()
-  .trim();
+const currentBranch = execSync('git branch --show-current').toString().trim();
 if (['develop', 'master'].includes(currentBranch)) {
   console.error(
     `Please run the script on a release branch and not the ${currentBranch} branch`
@@ -47,7 +45,11 @@ let targetVersion = releaseType === 'patch' ? version : `${major}.${minor}.0`;
 
 // get all commits from a branch
 function getCommits(branch) {
-  const stdout = execSync(`git log ${branch || ''} --abbrev-commit`).toString();
+  // all commits are too large for execSync buffer size so we'll just get since the last 3 years
+  const date = new Date(new Date().setFullYear(new Date().getFullYear() - 3));
+  const stdout = execSync(
+    `git log ${branch || ''} --abbrev-commit --since=${date.getFullYear()}`
+  ).toString();
   const allCommits = stdout
     .split(/commit (?=[\w\d]{8}[\n\r])/)
     .filter(commit => !!commit);
@@ -60,20 +62,15 @@ function getCommits(branch) {
     const hash = commit.substring(0, 8);
     const msg = commit.substring(commit.indexOf('\n\n')).trim();
 
-    const {
-      type,
-      scope,
-      subject,
-      merge,
-      notes
-    } = conventionalCommitsParser.sync(msg, {
-      // parse merge commits
-      mergePattern: /^Merge pull request #(\d+) from (.*)$/,
-      mergeCorrespondence: ['id', 'source'],
+    const { type, scope, subject, merge, notes } =
+      conventionalCommitsParser.sync(msg, {
+        // parse merge commits
+        mergePattern: /^Merge pull request #(\d+) from (.*)$/,
+        mergeCorrespondence: ['id', 'source'],
 
-      // allow comma in scope
-      headerPattern: /^(\w*)(?:\(([\w\$\.\-\*, ]*)\))?\: (.*)$/
-    });
+        // allow comma in scope
+        headerPattern: /^(\w*)(?:\(([\w\$\.\-\*, ]*)\))?\: (.*)$/
+      });
 
     const isBreakingChange = notes.some(
       note => note.title === 'BREAKING CHANGE'

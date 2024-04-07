@@ -1,22 +1,23 @@
 /*global mocha */
-var failedTests = [];
-(function() {
+const failedTests = [];
+function flattenTitles(test) {
+  const titles = [];
+  while (test.parent.title) {
+    titles.push(test.parent.title);
+    test = test.parent;
+  }
+  return titles.reverse();
+}
+
+(function () {
   'use strict';
 
   var runner = mocha.run();
-  runner.on('end', function() {
+  runner.on('end', function () {
     window.mochaResults = runner.stats;
     window.mochaResults.reports = failedTests;
   });
   runner.on('fail', function logFailure(test, err) {
-    var flattenTitles = function(test) {
-      var titles = [];
-      while (test.parent.title) {
-        titles.push(test.parent.title);
-        test = test.parent;
-      }
-      return titles.reverse();
-    };
     failedTests.push({
       name: test.title,
       result: false,
