@@ -1,13 +1,20 @@
 {
   "id": "input-image-alt",
+  "impact": "critical",
   "selector": "input[type=\"image\"]",
   "matches": "no-explicit-name-required-matches",
   "tags": [
     "cat.text-alternatives",
     "wcag2a",
     "wcag111",
+    "wcag412",
     "section508",
     "section508.22.a",
+    "TTv5",
+    "TT7.a",
+    "EN-301-549",
+    "EN-9.1.1.1",
+    "EN-9.4.1.2",
     "ACT"
   ],
   "actIds": ["59796f"],

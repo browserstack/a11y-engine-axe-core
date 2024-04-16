@@ -1,10 +1,5 @@
-/* global axe, Promise */
-
-describe('axe.utils.preload integration test', function() {
-  'use strict';
-
-  var isIE11 = axe.testUtils.isIE11;
-  var styleSheets = {
+describe('axe.utils.preload integration test', () => {
+  const styleSheets = {
     crossOriginLinkHref: {
       id: 'crossOriginLinkHref',
       href: 'https://unpkg.com/gutenberg-css@0.4'
@@ -15,8 +10,7 @@ describe('axe.utils.preload integration test', function() {
     },
     crossOriginLinkHrefMediaPrint: {
       id: 'crossOriginLinkHrefMediaPrint',
-      href:
-        'https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css',
+      href: 'https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css',
       mediaPrint: true
     },
     styleTag: {
@@ -24,15 +18,15 @@ describe('axe.utils.preload integration test', function() {
       text: '.inline-css-test{font-size:inherit;}'
     }
   };
-  var stylesForPage;
+  let stylesForPage;
 
   function attachStylesheets(options, callback) {
     axe.testUtils
       .addStyleSheets(options.styles, document)
-      .then(function() {
+      .then(() => {
         callback();
       })
-      .catch(function(error) {
+      .catch(error => {
         callback(new Error('Could not load stylesheets for testing. ' + error));
       });
   }
@@ -43,11 +37,11 @@ describe('axe.utils.preload integration test', function() {
     }
     axe.testUtils
       .removeStyleSheets(stylesForPage)
-      .then(function() {
+      .then(() => {
         done();
         stylesForPage = undefined;
       })
-      .catch(function(err) {
+      .catch(err => {
         done(err);
         stylesForPage = undefined;
       });
@@ -64,22 +58,22 @@ describe('axe.utils.preload integration test', function() {
     });
   }
 
-  afterEach(function(done) {
+  afterEach(done => {
     axe._tree = undefined;
     detachStylesheets(done);
   });
 
-  it('returns preloaded assets defined via <style> tag', function(done) {
+  it('returns preloaded assets defined via <style> tag', done => {
     stylesForPage = [styleSheets.styleTag];
-    attachStylesheets({ styles: stylesForPage }, function(err) {
+    attachStylesheets({ styles: stylesForPage }, err => {
       if (err) {
         done(err);
       }
       getPreload()
-        .then(function(preloadedAssets) {
+        .then(preloadedAssets => {
           assert.property(preloadedAssets, 'cssom');
           assert.lengthOf(preloadedAssets.cssom, 1);
-          var sheetData = preloadedAssets.cssom[0].sheet;
+          const sheetData = preloadedAssets.cssom[0].sheet;
           axe.testUtils.assertStylesheet(
             sheetData,
             '.inline-css-test',
@@ -91,14 +85,14 @@ describe('axe.utils.preload integration test', function() {
     });
   });
 
-  it('returns NO preloaded CSSOM assets when requested stylesheets are of media=print', function(done) {
+  it('returns NO preloaded CSSOM assets when requested stylesheets are of media=print', done => {
     stylesForPage = [styleSheets.crossOriginLinkHrefMediaPrint];
-    attachStylesheets({ styles: stylesForPage }, function(err) {
+    attachStylesheets({ styles: stylesForPage }, err => {
       if (err) {
         done(err);
       }
       getPreload()
-        .then(function(preloadedAssets) {
+        .then(preloadedAssets => {
           assert.property(preloadedAssets, 'cssom');
           assert.lengthOf(preloadedAssets.cssom, 0);
           done();
@@ -107,120 +101,115 @@ describe('axe.utils.preload integration test', function() {
     });
   });
 
-  it.skip('returns NO preloaded CSSOM assets when requested stylesheet does not exist`', function(done) {
+  it.skip('returns NO preloaded CSSOM assets when requested stylesheet does not exist`', done => {
     stylesForPage = [styleSheets.crossOriginDoesNotExist];
-    attachStylesheets({ styles: stylesForPage }, function(err) {
+    attachStylesheets({ styles: stylesForPage }, err => {
       if (err) {
         done(err);
       }
       getPreload()
-        .then(function() {
+        .then(() => {
           done(new Error('Not expecting to complete the promise'));
         })
-        .catch(function(err) {
-          assert.isNotNull(err);
-          assert.isTrue(!err.message.includes('Preload assets timed out'));
+        .catch(e => {
+          assert.isNotNull(e);
+          assert.isTrue(!e.message.includes('Preload assets timed out'));
           done();
         })
         .catch(done);
     });
   });
 
-  it.skip('rejects preload function when timed out before fetching assets', function(done) {
+  it.skip('rejects preload function when timed out before fetching assets', done => {
     stylesForPage = [styleSheets.crossOriginLinkHref];
 
-    var origPreloadCssom = axe.utils.preloadCssom;
-    axe.utils.preloadCssom = function() {
-      return new Promise(function(res) {
-        setTimeout(function() {
+    const origPreloadCssom = axe.utils.preloadCssom;
+    axe.utils.preloadCssom = () => {
+      return new Promise(res => {
+        setTimeout(() => {
           res(true);
         }, 2000);
       });
     };
 
-    attachStylesheets({ styles: stylesForPage }, function(err) {
+    attachStylesheets({ styles: stylesForPage }, err => {
       if (err) {
         done(err);
       }
       getPreload(1)
-        .then(function() {
+        .then(() => {
           done(new Error('Not expecting to complete the promise'));
         })
-        .catch(function(err) {
-          assert.isNotNull(err);
-          assert.isTrue(err.message.includes('Preload assets timed out'));
+        .catch(e => {
+          assert.isNotNull(e);
+          assert.isTrue(e.message.includes('Preload assets timed out'));
           axe.utils.preloadCssom = origPreloadCssom;
           done();
         })
-        .catch(function (e) {
+        .catch(e => {
           axe.utils.preloadCssom = origPreloadCssom;
           done(e);
         });
     });
   });
 
-  describe('verify preloaded assets via axe.run against custom rules', function() {
+  describe('verify preloaded assets via axe.run against custom rules', () => {
     function customCheckEvalFn(node, options, virtualNode, context) {
       // populate the data here which is asserted in tests
       this.data(context);
       return true;
     }
 
-    beforeEach(function(done) {
-      // These tests currently break in IE11
-      if (isIE11) {
-        this.skip();
-      } else {
-        /**
-         * Load custom rule & check
-         * -> one check is preload dependent
-         * -> another check is not preload dependent
-         */
-        axe._load({
-          rules: [
-            {
-              // this rule is not preload dependent and can run immediately
-              id: 'run-now-rule',
-              selector: 'div#run-now-target',
-              any: ['check-context-exists']
-            },
-            {
-              // this rule requires preload and will run after preload assets are ready
-              id: 'run-later-rule',
-              selector: 'div#run-later-target',
-              any: ['check-context-has-assets'],
-              preload: {
-                assets: ['cssom']
-              }
+    beforeEach(done => {
+      /**
+       * Load custom rule & check
+       * -> one check is preload dependent
+       * -> another check is not preload dependent
+       */
+      axe._load({
+        rules: [
+          {
+            // this rule is not preload dependent and can run immediately
+            id: 'run-now-rule',
+            selector: 'div#run-now-target',
+            any: ['check-context-exists']
+          },
+          {
+            // this rule requires preload and will run after preload assets are ready
+            id: 'run-later-rule',
+            selector: 'div#run-later-target',
+            any: ['check-context-has-assets'],
+            preload: {
+              assets: ['cssom']
             }
-          ],
-          checks: [
-            {
-              id: 'check-context-exists',
-              evaluate: customCheckEvalFn
-            },
-            {
-              id: 'check-context-has-assets',
-              evaluate: customCheckEvalFn
-            }
-          ]
-        });
+          }
+        ],
+        checks: [
+          {
+            id: 'check-context-exists',
+            evaluate: customCheckEvalFn
+          },
+          {
+            id: 'check-context-has-assets',
+            evaluate: customCheckEvalFn
+          }
+        ]
+      });
 
-        // load stylesheets
-        stylesForPage = [
-          styleSheets.crossOriginLinkHref,
-          styleSheets.crossOriginLinkHrefMediaPrint,
-          styleSheets.styleTag
-        ];
-        attachStylesheets({ styles: stylesForPage }, done);
-      }
+      // load stylesheets
+      stylesForPage = [
+        styleSheets.crossOriginLinkHref,
+        styleSheets.crossOriginLinkHrefMediaPrint,
+        styleSheets.styleTag
+      ];
+      attachStylesheets({ styles: stylesForPage }, done);
     });
 
-    after(function(done) {
+    after(done => {
       detachStylesheets(done);
     });
 
-    it("returns preloaded assets to the check's evaluate fn for the rule which has `preload:true`", function(done) {
+    it("returns preloaded assets to the check's evaluate fn for the rule which has `preload:true`", done => {
       axe.run(
         {
           runOnly: {
@@ -229,28 +218,28 @@ describe('axe.utils.preload integration test', function() {
           },
           preload: true
         },
-        function(err, res) {
+        (err, res) => {
           assert.isNull(err);
           assert.isDefined(res);
           assert.property(res, 'passes');
           assert.lengthOf(res.passes, 1);
 
-          var checkData = res.passes[0].nodes[0].any[0].data;
+          const checkData = res.passes[0].nodes[0].any[0].data;
           assert.property(checkData, 'cssom');
 
-          var cssom = checkData.cssom;
+          const cssom = checkData.cssom;
 
           // ignores all media='print' styleSheets
           assert.lengthOf(cssom, 2);
 
           // there should be no external sheet returned
-          var crossOriginSheet = cssom.filter(function(s) {
+          const crossOriginSheet = cssom.filter(s => {
             return s.isCrossOrigin;
           });
           assert.lengthOf(crossOriginSheet, 1);
 
           // verify content of stylesheet
-          var inlineStylesheet = cssom.filter(function(s) {
+          const inlineStylesheet = cssom.filter(s => {
             return s.sheet.cssRules.length === 1 && !s.isCrossOrigin;
           })[0].sheet;
           axe.testUtils.assertStylesheet(
@@ -264,7 +253,7 @@ describe('axe.utils.preload integration test', function() {
       );
     });
 
-    it("returns NO preloaded assets to the check which does not require preload'", function(done) {
+    it("returns NO preloaded assets to the check which does not require preload'", done => {
       axe.run(
         {
           runOnly: {
@@ -273,13 +262,13 @@ describe('axe.utils.preload integration test', function() {
           },
           preload: true
         },
-        function(err, res) {
+        (err, res) => {
           assert.isNull(err);
           assert.isDefined(res);
           assert.property(res, 'passes');
           assert.lengthOf(res.passes, 1);
 
-          var checkData = res.passes[0].nodes[0].any[0];
+          const checkData = res.passes[0].nodes[0].any[0];
           assert.notProperty(checkData, 'cssom');
           done();
         }

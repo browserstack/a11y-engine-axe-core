@@ -1,0 +1,12 @@
+{
+  "id": "aria-busy",
+  "evaluate": "aria-busy-evaluate",
+  "deprecated": true,
+  "metadata": {
+    "impact": "serious",
+    "messages": {
+      "pass": "Element has an aria-busy attribute",
+      "fail": "Element uses aria-busy=\"true\" while showing a loader"
+    }
+  }
+}

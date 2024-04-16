@@ -8,6 +8,8 @@
       "grid",
       "list",
       "listbox",
+      "menu",
+      "menubar",
       "table",
       "tablist",
       "tree",
@@ -18,10 +20,14 @@
   "metadata": {
     "impact": "critical",
     "messages": {
-      "pass": "Required ARIA children are present",
+      "pass": {
+        "default": "Required ARIA children are present",
+        "aria-busy": "Element has an aria-busy attribute, so it is allowed to omit required children"
+      },
       "fail": {
         "singular": "Required ARIA child role not present: ${data.values}",
-        "plural": "Required ARIA children role not present: ${data.values}"
+        "plural": "Required ARIA children role not present: ${data.values}",
+        "unallowed": "Element has children which are not allowed: ${data.values}"
       },
       "incomplete": {
         "singular": "Expecting ARIA child role to be added: ${data.values}",

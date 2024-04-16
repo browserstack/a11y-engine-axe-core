@@ -17,7 +17,8 @@
       }
     },
     "pseudoSizeThreshold": 0.25,
-    "shadowOutlineEmMax": 0.2
+    "shadowOutlineEmMax": 0.2,
+    "textStrokeEmMin": 0.03
   },
   "metadata": {
     "impact": "serious",
@@ -37,6 +38,7 @@
         "bgGradient": "Element's background color could not be determined due to a background gradient",
         "imgNode": "Element's background color could not be determined because element contains an image node",
         "bgOverlap": "Element's background color could not be determined because it is overlapped by another element",
+        "complexTextShadows": "Element's contrast could not be determined because it uses complex text shadows",
         "fgAlpha": "Element's foreground color could not be determined because of alpha transparency",
         "elmPartiallyObscured": "Element's background color could not be determined because it's partially obscured by another element",
         "elmPartiallyObscuring": "Element's background color could not be determined because it partially overlaps other elements",

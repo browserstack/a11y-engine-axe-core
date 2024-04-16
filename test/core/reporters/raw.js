@@ -1,4 +1,4 @@
-describe('reporters - raw', function() {
+describe('reporters - raw', function () {
   'use strict';
 
   var fixture = document.getElementById('fixture');
@@ -11,7 +11,7 @@ describe('reporters - raw', function() {
 
   var runResults;
 
-  beforeEach(function() {
+  beforeEach(function () {
     runResults = [
       {
         id: 'gimmeLabel',
@@ -26,7 +26,8 @@ describe('reporters - raw', function() {
             any: [
               {
                 result: true,
-                data: 'minkey'
+                data: 'minkey',
+                relatedNodes: []
               }
             ],
             all: [],
@@ -50,7 +51,8 @@ describe('reporters - raw', function() {
               {
                 result: false,
                 data: 'pillock',
-                impact: 'cats'
+                impact: 'cats',
+                relatedNodes: []
               }
             ],
             any: [],
@@ -75,7 +77,8 @@ describe('reporters - raw', function() {
               {
                 data: 'foon',
                 impact: 'monkeys',
-                result: true
+                result: true,
+                relatedNodes: []
               }
             ],
             any: [],
@@ -93,10 +96,13 @@ describe('reporters - raw', function() {
         passes: [
           {
             result: 'passed',
+            any: [],
+            all: [],
             none: [
               {
                 data: 'clueso',
-                result: true
+                result: true,
+                relatedNodes: []
               }
             ],
             node: createDqElement()
@@ -111,12 +117,13 @@ describe('reporters - raw', function() {
     axe._cache.set('selectorData', {});
   });
 
-  after(function() {
+  afterEach(function () {
     fixture.innerHTML = '';
+    sinon.restore();
   });
 
-  it('should serialize DqElements', function(done) {
-    axe.getReporter('rawEnv')(runResults, {}, function(results) {
+  it('should serialize DqElements', function (done) {
+    axe.getReporter('rawEnv')(runResults, {}, function (results) {
       for (var i = 0; i < results.length; i++) {
         var result = results[i];
         for (var j = 0; j < result.passes.length; j++) {
@@ -128,14 +135,28 @@ describe('reporters - raw', function() {
     });
   });
 
-  it('does not throw on serialized nodes', function(done) {
+  it('does not throw on serialized nodes', function (done) {
     var rawReporter = axe.getReporter('rawEnv');
-    rawReporter(runResults, {}, function(serializedResults) {
-      assert.doesNotThrow(function() {
-        rawReporter(serializedResults, {}, function() {
+    rawReporter(runResults, {}, function (serializedResults) {
+      assert.doesNotThrow(function () {
+        rawReporter(serializedResults, {}, function () {
           done();
         });
       });
     });
+  });
+
+  it('uses nodeSerializer', done => {
+    var rawReporter = axe.getReporter('raw');
+    var spy = sinon.spy(axe.utils.nodeSerializer, 'mapRawNodeResults');
+    rawReporter(
+      runResults,
+      {},
+      function () {
+        assert.isTrue(spy.called);
+        done();
+      },
+      done
+    );
   });
 });

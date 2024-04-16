@@ -74,23 +74,28 @@ For a full listing of API offered by axe, clone the repository and run `npm run 
 
 Each rule in axe-core has a number of tags. These provide metadata about the rule. Each rule has one tag that indicates which WCAG version / level it belongs to, or if it doesn't it have the `best-practice` tag. If the rule is required by WCAG, there is a tag that references the success criterion number. For example, the `wcag111` tag means a rule is required for WCAG 2 success criterion 1.1.1.
 
-The `experimental`, `ACT` and `section508` tags are only added to some rules. Each rule with a `section508` tag also has a tag to indicate what requirement in old Section 508 the rule is required by. For example `section508.22.a`.
+The `experimental`, `ACT`, `TT`, and `section508` tags are only added to some rules. Each rule with a `section508` tag also has a tag to indicate what requirement in old Section 508 the rule is required by. For example `section508.22.a`.
 
-| Tag Name         | Accessibility Standard / Purpose                     |
-| ---------------- | ---------------------------------------------------- |
-| `wcag2a`         | WCAG 2.0 Level A                                     |
-| `wcag2aa`        | WCAG 2.0 Level AA                                    |
-| `wcag2aaa`       | WCAG 2.0 Level AAA                                   |
-| `wcag21a`        | WCAG 2.1 Level A                                     |
-| `wcag21aa`       | WCAG 2.1 Level AA                                    |
-| `wcag21aaa`      | WCAG 2.1 Level AAA                                   |
-| `best-practice`  | Common accessibility best practices                  |
-| `wcag***`        | WCAG success criterion e.g. wcag111 maps to SC 1.1.1 |
-| `ACT`            | W3C approved Accessibility Conformance Testing rules |
-| `section508`     | Old Section 508 rules                                |
-| `section508.*.*` | Requirement in old Section 508                       |
-| `experimental`   | Cutting-edge rules, disabled by default              |
-| `cat.*`          | Category mappings used by Deque (see below)          |
+| Tag Name          | Accessibility Standard / Purpose                                                                                              |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `wcag2a`          | WCAG 2.0 Level A                                                                                                              |
+| `wcag2aa`         | WCAG 2.0 Level AA                                                                                                             |
+| `wcag2aaa`        | WCAG 2.0 Level AAA                                                                                                            |
+| `wcag21a`         | WCAG 2.1 Level A                                                                                                              |
+| `wcag21aa`        | WCAG 2.1 Level AA                                                                                                             |
+| `wcag22aa`        | WCAG 2.2 Level AA                                                                                                             |
+| `best-practice`   | Common accessibility best practices                                                                                           |
+| `wcag2a-obsolete` | WCAG 2.0 Level A, no longer required for conformance                                                                          |
+| `wcag***`         | WCAG success criterion e.g. wcag111 maps to SC 1.1.1                                                                          |
+| `ACT`             | W3C approved Accessibility Conformance Testing rules                                                                          |
+| `section508`      | Old Section 508 rules                                                                                                         |
+| `section508.*.*`  | Requirement in old Section 508                                                                                                |
+| `TTv5`            | Trusted Tester v5 rules                                                                                                       |
+| `TT*.*`           | Test ID in Trusted Tester                                                                                                     |
+| `EN-301-549`      | Rule required under [EN 301 549](https://www.etsi.org/deliver/etsi_en/301500_301599/301549/03.02.01_60/en_301549v030201p.pdf) |
+| `EN-9.*`          | Section in EN 301 549 listing the requirement                                                                                 |
+| `experimental`    | Cutting-edge rules, disabled by default                                                                                       |
+| `cat.*`           | Category mappings used by Deque (see below)                                                                                   |
 
 All rules have a `cat.*` tag, which indicates what type of content it is part of. The following `cat.*` tags exist in axe-core:
 
@@ -153,7 +158,8 @@ In this example, we pass in the WCAG 2 A and AA tags into `axe.getRules` to retr
       "wcag412",
       "section508",
       "section508.22.a"
-    ]
+    ],
+    actIds: ['c487ae']
   },
   {
     description: "Ensures ARIA attributes are allowed for an element's role",
@@ -222,7 +228,7 @@ axe.configure({
     - The rules attribute is an Array of rule objects
     - each rule object can contain the following attributes
       - `id` - string(required). This uniquely identifies the rule. If the rule already exists, it will be overridden with any of the attributes supplied. The attributes below that are marked required, are only required for new rules.
-      - `impact` - string(optional). Override the impact defined by checks
+      - `impact` - string(required). Sets the impact of that rule's results
       - `reviewOnFail` - boolean(option, default `false`). Override the result of a rule to return "Needs Review" rather than "Violation" if the rule fails.
       - `selector` - string(optional, default `*`). A [CSS selector](./developer-guide.md#supported-css-selectors) used to identify the elements that are passed into the rule for evaluation.
       - `excludeHidden` - boolean(optional, default `true`). This indicates whether elements that are hidden from all users are to be passed into the rule for evaluation.
@@ -320,30 +326,28 @@ By default, `axe.run` will test the entire document. The context object is an op
    - Example: To limit analysis to the `<div id="content">` element: `document.getElementById("content")`
 1. A NodeList such as returned by `document.querySelectorAll`.
 1. A [CSS selector](./developer-guide.md#supported-css-selectors) that selects the portion(s) of the document that must be analyzed.
-1. An include-exclude object (see below)
+1. An object with `exclude` and/or `include` properties
+1. An object with a `fromFrames` property
+1. An object with a `fromShadowDom` property
 
-###### Include-Exclude Object
-
-The include exclude object is a JSON object with two attributes: include and exclude. Either include or exclude is required. If only `exclude` is specified; include will default to the entire `document`.
-
-- A node, or
-- An array of Nodes or an array of arrays of [CSS selectors](./developer-guide.md#supported-css-selectors)
-  - If the nested array contains a single string, that string is the CSS selector
-  - If the nested array contains multiple strings
-    - The last string is the final CSS selector
-    - All other's are the nested structure of iframes inside the document
-
-In most cases, the component arrays will contain only one CSS selector. Multiple CSS selectors are only required if you want to include or exclude regions of a page that are inside iframes (or iframes within iframes within iframes). In this case, the first n-1 selectors are selectors that select the iframe(s) and the nth selector, selects the region(s) within the iframe.
+Read [context.md](context.md) for details about the context object.
 
 ###### Context Parameter Examples
 
-1. Include the first item in the `$fixture` NodeList but exclude its first child
+1. Test the `#navBar` and all other `nav` elements and its content.
+
+```js
+axe.run([`#navBar`, `nav`], (err, results) => {
+  // ...
+});
+```
+
+2. Test everything except `.ad-banner` elements.
 
 ```js
 axe.run(
   {
-    include: $fixture[0],
-    exclude: $fixture[0].firstChild
+    exclude: '.ad-banner'
   },
   (err, results) => {
     // ...
@@ -351,13 +355,12 @@ axe.run(
 );
 ```
 
-2. Include the element with the ID of `fix` but exclude any `div`s within it
+3. Test the `form` element inside the `#payment` iframe.
 
 ```js
 axe.run(
   {
-    include: [['#fix']],
-    exclude: [['#fix div']]
+    fromFrames: ['iframe#payment', 'form']
   },
   (err, results) => {
     // ...
@@ -365,12 +368,14 @@ axe.run(
 );
 ```
 
-3. Include the whole document except any structures whose parent contains the class `exclude1` or `exclude2`
+4. Exclude all `.commentBody` elements in each `.commentsShadowHost` shadow DOM tree.
 
 ```js
 axe.run(
   {
-    exclude: [['.exclude1'], ['.exclude2']]
+    exclude: {
+      fromShadowDom: ['.commentsShadowHost', '.commentBody']
+    }
   },
   (err, results) => {
     // ...
@@ -378,48 +383,7 @@ axe.run(
 );
 ```
 
-4. Include the element with the ID of `fix`, within the iframe with id `frame`
-
-```js
-axe.run(
-  {
-    include: [['#frame', '#fix']]
-  },
-  (err, results) => {
-    // ...
-  }
-);
-```
-
-5. Include the element with the ID of `fix`, within the iframe with id `frame2`, within the iframe with id `frame1`
-
-```js
-axe.run(
-  {
-    include: [['#frame1', '#frame2', '#fix']]
-  },
-  (err, results) => {
-    // ...
-  }
-);
-```
-
-6. Include the following:
-
-- The element with the ID of `fix`, within the iframe with id `frame2`, within the iframe with id `frame1`
-- The element with id `header`
-- All links
-
-```js
-axe.run(
-  {
-    include: [['#header'], ['a'], ['#frame1', '#frame2', '#fix']]
-  },
-  (err, results) => {
-    // ...
-  }
-);
-```
+More details on how to use the context object are described in [context.md](context.md).
 
 ##### Options Parameter
 
@@ -657,6 +621,8 @@ The `assets` attribute expects an array of preload(able) constraints to be fetch
 
 The `timeout` attribute in the object configuration is `optional` and has a fallback default value (10000ms). The `timeout` is essential for any network dependent assets that are preloaded, where-in if a given request takes longer than the specified/ default value, the operation is aborted.
 
+Preloading is not applicable to all rules. Even if the `preload` option is enabled, preloading steps may be skipped if no enabled rules require preloading.
+
 ##### Callback Parameter
 
 The callback parameter is a function that will be called when the asynchronous `axe.run` function completes. The callback function is passed two parameters. The first parameter will be an error thrown inside of axe if axe.run could not complete. If axe completed correctly the first parameter will be null, and the second parameter will be the results object.
@@ -704,7 +670,7 @@ The results of axe are grouped according to their outcome into the following arr
 - `passes`: These results indicate what elements passed the rules
 - `violations`: These results indicate what elements failed the rules
 - `inapplicable`: These results indicate which rules did not run because no matching content was found on the page. For example, with no video, those rules won't run.
-- `incomplete`: These results were aborted and require further testing. This can happen either because of technical restrictions to what the rule can test, or because a javascript error occurred.
+- `incomplete`: Also known as "needs review," these results were aborted and require further testing. This can happen either because of technical restrictions to what the rule can test, or because a javascript error occurred.
 
 Each object returned in these arrays have the following properties:
 
@@ -734,7 +700,7 @@ Each object returned in these arrays have the following properties:
 In this example, we will pass the selector for the entire document, pass no options, which means all enabled rules will be run, and have a simple callback function that logs the entire results object to the console log:
 
 ```js
-axe.run(document, function(err, results) {
+axe.run(document, function (err, results) {
   if (err) throw err;
   console.log(results);
 });
@@ -798,7 +764,7 @@ axe.run(
       'p-as-heading': { enabled: true }
     }
   },
-  function(err, results) {
+  function (err, results) {
     if (err) throw err;
     console.log(results);
   }

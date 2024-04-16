@@ -2,7 +2,7 @@ module.exports = {
   root: true,
   extends: ['prettier'],
   parserOptions: {
-    ecmaVersion: 2021
+    ecmaVersion: 2023
   },
   env: {
     node: true,
@@ -52,6 +52,7 @@ module.exports = {
     'dot-notation': 2,
     'no-new-func': 0,
     'no-new-wrappers': 0,
+    'no-shadow': 2,
     'no-restricted-syntax': [
       'error',
       {
@@ -71,15 +72,13 @@ module.exports = {
   overrides: [
     {
       files: ['lib/**/*.js'],
-      excludedFiles: [
-        'lib/core/reporters/**/*.js',
-        'lib/**/*-after.js'
-      ],
+      excludedFiles: ['lib/core/reporters/**/*.js', 'lib/**/*-after.js'],
       parserOptions: {
         sourceType: 'module'
       },
       env: {
-        browser: true,
+        // do not access global window properties without going through window
+        browser: false,
         es6: true
       },
       globals: {
@@ -94,14 +93,13 @@ module.exports = {
     },
     {
       // after functions and reporters will not be run inside the same context as axe.run so should not access browser globals that require context specific information (window.location, window.getComputedStyles, etc.)
-      files: [
-        'lib/**/*-after.js',
-        'lib/core/reporters/**/*.js'
-      ],
+      files: ['lib/**/*-after.js', 'lib/core/reporters/**/*.js'],
       parserOptions: {
         sourceType: 'module'
       },
-      env: {},
+      env: {
+        browser: false
+      },
       globals: {},
       rules: {
         'func-names': [2, 'as-needed'],
@@ -110,18 +108,32 @@ module.exports = {
       }
     },
     {
+      // polyfills are mostly copy-pasted from sources so we don't control their styling
       files: [
-        'test/aria-practices/**/*.js'
+        'lib/core/imports/polyfills.js',
+        'lib/core/utils/pollyfill-elements-from-point.js'
       ],
+      env: {
+        browser: false
+      },
+      rules: {
+        'func-names': 0,
+        'no-bitwise': 0,
+        curly: 0,
+        eqeqeq: 0
+      }
+    },
+    {
+      files: ['test/act-rules/**/*.js', 'test/aria-practices/**/*.js'],
       env: {
         mocha: true
       }
     },
     {
       files: ['test/**/*.js'],
-      excludedFiles: 'test/aria-practices/**/*.js',
+      excludedFiles: ['test/act-rules/**/*.js', 'test/aria-practices/**/*.js'],
       parserOptions: {
-        ecmaVersion: 5
+        ecmaVersion: 2021
       },
       env: {
         browser: true,

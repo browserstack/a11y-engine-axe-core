@@ -1,10 +1,10 @@
-(function() {
+(function () {
   // this line is replaced with the test object in preprocessor.js
   var actRule = {}; /*tests*/
 
-  describe(actRule.title + ' (' + actRule.id + ')', function() {
+  describe(actRule.title + ' (' + actRule.id + ')', function () {
     var bodyContent;
-    before(function() {
+    before(function () {
       var title = document.querySelector('title');
       if (title) {
         document.head.removeChild(title);
@@ -13,16 +13,16 @@
       bodyContent = document.body.innerHTML;
     });
 
-    afterEach(function() {
+    afterEach(function () {
       document.body.innerHTML = bodyContent;
       document.head.innerHTML = '';
       var htmlAttrs = Array.from(document.documentElement.attributes);
-      htmlAttrs.forEach(function(attr) {
+      htmlAttrs.forEach(function (attr) {
         document.documentElement.removeAttribute(attr.name);
       });
     });
 
-    actRule.testcases.forEach(function(testcase) {
+    actRule.testcases.forEach(function (testcase) {
       runTestCase(testcase, {
         runOnly: actRule.axeRules
       });
@@ -31,11 +31,11 @@
 
   function runTestCase(testcase, axeOptions) {
     var test = shouldSkip(testcase) ? xit : it;
-    test(testcase.testcaseTitle, function(done) {
+    test(testcase.testcaseTitle, function (done) {
       exampleSetup(testcase.html);
       axe
         .run(axeOptions)
-        .then(function(result) {
+        .then(function (result) {
           assertResultsCorrect(testcase, result);
           done();
         })
@@ -49,7 +49,7 @@
     document.head.innerHTML = newDoc.head.innerHTML;
     document.body.innerHTML += newDoc.body.innerHTML;
     var htmlAttrs = Array.from(newDoc.documentElement.attributes);
-    htmlAttrs.forEach(function(attr) {
+    htmlAttrs.forEach(function (attr) {
       document.documentElement.setAttribute(attr.name, attr.value);
     });
   }

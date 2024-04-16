@@ -1,10 +1,8 @@
-describe('plugins', function() {
-  'use strict';
-
+describe('plugins', () => {
   function createFrames(callback) {
-    var frame,
-      num = 2,
-      loaded = 0;
+    let frame;
+    const num = 2;
+    let loaded = 0;
 
     function onLoad() {
       loaded++;
@@ -26,29 +24,29 @@ describe('plugins', function() {
     fixture.appendChild(frame);
   }
 
-  var fixture = document.getElementById('fixture');
+  const fixture = document.getElementById('fixture');
 
-  afterEach(function() {
+  afterEach(() => {
     fixture.innerHTML = '';
     axe._audit = null;
   });
 
-  beforeEach(function() {
+  beforeEach(() => {
     axe._load({
       rules: []
     });
   });
 
-  it('Should have registerPlugin function', function() {
+  it('Should have registerPlugin function', () => {
     assert.ok(axe.registerPlugin);
     assert.equal(typeof axe.registerPlugin, 'function');
   });
 
-  it('should have an empty set of plugins', function() {
+  it('should have an empty set of plugins', () => {
     assert.deepEqual({}, axe.plugins);
   });
 
-  it('should add a plugin to the plugins list and a command to the audit commands', function() {
+  it('should add a plugin to the plugins list and a command to the audit commands', () => {
     axe.registerPlugin({
       id: 'my-plugin',
       run: 'run',
@@ -63,12 +61,12 @@ describe('plugins', function() {
     assert.equal(axe.plugins['my-plugin']._run, 'run');
     assert.equal(axe._audit.commands['my-command'], 'callback');
   });
-  describe('Plugin class', function() {
-    it('should call the run function of the registered plugin, when run is called', function() {
-      var called = false;
+  describe('Plugin class', () => {
+    it('should call the run function of the registered plugin, when run is called', () => {
+      let called = false;
       axe.registerPlugin({
         id: 'my-plugin',
-        run: function(id, action, options) {
+        run: function (id, action, options) {
           called = {
             id: id,
             action: action,
@@ -89,19 +87,19 @@ describe('plugins', function() {
       );
     });
   });
-  describe('Plugin.protoype.run', function() {
-    afterEach(function() {
+  describe('Plugin.protoype.run', () => {
+    afterEach(() => {
       fixture.innerHTML = '';
       axe._audit = null;
       axe.plugins = {};
     });
-    beforeEach(function() {
+    beforeEach(() => {
       axe._load({
         rules: []
       });
       axe.registerPlugin({
         id: 'multi',
-        run: function(id, action, options, callback) {
+        run: function (id, action, options, callback) {
           this._registry[id][action].call(
             this._registry[id],
             options,
@@ -111,7 +109,7 @@ describe('plugins', function() {
         commands: [
           {
             id: 'run-multi',
-            callback: function(data, callback) {
+            callback: function (data, callback) {
               return axe.plugins.multi.run(
                 data.parameter,
                 data.action,
@@ -124,18 +122,18 @@ describe('plugins', function() {
       });
       axe.plugins.multi.add({
         id: 'hideall',
-        cleanup: function(done) {
+        cleanup: done => {
           done();
         },
-        run: function(options, callback) {
-          var frames;
-          var q = axe.utils.queue();
+        run: function (options, callback) {
+          let frames;
+          const q = axe.utils.queue();
 
           frames = axe.utils.toArray(
             document.querySelectorAll('iframe, frame')
           );
-          frames.forEach(function(frame) {
-            q.defer(function(resolve, reject) {
+          frames.forEach(function (frame) {
+            q.defer(function (resolve, reject) {
               axe.utils.sendCommandToFrame(
                 frame,
                 {
@@ -150,14 +148,14 @@ describe('plugins', function() {
             });
           });
 
-          q.defer(function(done) {
+          q.defer(done => {
             // implementation
             done('ola!');
           });
-          q.then(function(data) {
+          q.then(function (data) {
             // done with all the frames
-            var results = [];
-            data.forEach(function(datum) {
+            let results = [];
+            data.forEach(function (datum) {
               if (datum) {
                 results = results.concat(datum);
               }
@@ -167,29 +165,29 @@ describe('plugins', function() {
         }
       });
     });
-    it('should work without frames', function(done) {
-      axe.plugins.multi.run('hideall', 'run', {}, function(results) {
+    it('should work without frames', done => {
+      axe.plugins.multi.run('hideall', 'run', {}, function (results) {
         assert.deepEqual(results, ['ola!']);
         done();
       });
     });
-    it('should work with frames', function(done) {
-      createFrames(function() {
-        setTimeout(function() {
-          axe.plugins.multi.run('hideall', 'run', {}, function(results) {
+    it('should work with frames', done => {
+      createFrames(() => {
+        setTimeout(() => {
+          axe.plugins.multi.run('hideall', 'run', {}, function (results) {
             assert.deepEqual(results, ['ola!', 'ola!', 'ola!', 'ola!', 'ola!']);
             done();
           });
         }, 500);
       });
     });
-    it("should call the implementation's cleanup function", function(done) {
-      var called = false;
-      axe.plugins.multi.cleanup = function(done) {
+    it("should call the implementation's cleanup function", done => {
+      let called = false;
+      axe.plugins.multi.cleanup = doneFn => {
         called = true;
-        done();
+        doneFn();
       };
-      axe.plugins.multi.cleanup(function() {
+      axe.plugins.multi.cleanup(() => {
         assert.ok(called);
         done();
       });

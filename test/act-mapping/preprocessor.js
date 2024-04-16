@@ -12,7 +12,7 @@ createActPreprocessor.$inject = ['logger'];
 function createActPreprocessor(logger) {
   var log = logger.create('preprocessor.act');
 
-  return function(actRuleJson, file, done) {
+  return function (actRuleJson, file, done) {
     try {
       log.debug('Processing "%s".', file.originalPath);
       file.path = file.originalPath.replace(/\.json$/, '.js');
@@ -37,10 +37,10 @@ module.exports = {
 function applyTestCases(actRule) {
   actRule = Object.assign({}, actRule);
 
-  actRule.testcases = testcases.filter(function(testcase) {
+  actRule.testcases = testcases.filter(function (testcase) {
     return testcase.ruleId === actRule.id;
   });
-  actRule.testcases.forEach(function(testcase) {
+  actRule.testcases.forEach(function (testcase) {
     var testcasePath = path.resolve(actRepoDir, testcase.relativePath);
     testcase.html = fs.readFileSync(testcasePath, 'utf-8');
   });

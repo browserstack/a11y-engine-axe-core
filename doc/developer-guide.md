@@ -7,6 +7,7 @@ Axe 3.0 supports open Shadow DOM: see our virtual DOM APIs and test utilities fo
 1. [Getting Started](#getting-started)
    1. [Environment Pre-requisites](#environment-pre-requisites)
    1. [Building axe.js](#building-axejs)
+   1. [Watching for Changes](#watching-for-changes)
    1. [Running Tests](#running-tests)
    1. [API Reference](#api-reference)
    1. [Supported CSS Selectors](#supported-css-selectors)
@@ -30,25 +31,63 @@ Axe 3.0 supports open Shadow DOM: see our virtual DOM APIs and test utilities fo
 
 ### Environment Pre-requisites
 
-1. You must have NodeJS installed.
+1. You must have NodeJS version 12 or higher installed.
 1. Install npm development dependencies. In the root folder of your axe-core repository, run `npm install`
 
 ### Building axe.js
 
 To build axe.js, simply run `npm run build` in the root folder of the axe-core repository. axe.js and axe.min.js are placed into the root folder.
 
+## Watching for Changes
+
+You can watch for changes and automatically build axe and run relevant tests using `npm run develop`. Once run, any changes to files inside the [lib directory](../lib) will rebuild axe. After axe is built, it will try to run the relevant tests for the files changed. If you change a file inside the [test directory](../test) it will run the tests for the file changed.
+
+Changes to files in the [full integration test directory](../test/integration/full) will not run the tests. This is because these tests require the browser to navigate to the page directly, which is something Mocha / Karma does not support.
+
+**Note:** We are still working on knowing which tests are relevant to the changed file so this may not correctly run tests every time. In these cases you should run the tests manually. If you encounter a test that does not run when a relevant file is changed, please [open an issue](https://github.com/dequelabs/axe-core/issues).
+
 ### Running Tests
 
-To run all tests from the command line you can run `npm test`, which will run all unit and integration tests using headless chrome and Selenium Webdriver.
+To run all tests from the command line you can run `npm test`, which will run all unit and integration tests using headless Chrome. Having axe built and up-to-date is required in order to run tests. If you update files inside the [lib directory](../lib) you will need to rebuild axe before running tests.
 
-You can also load tests in any supported browser, which is helpful for debugging. Tests require a local server to run, you must first start a local server to serve files. You can use Grunt to start one by running `npm start`. Once your local server is running you can load the following pages in any browser to run tests:
+You can scope which set of tests to run through various npm scripts:
 
-1. [Core Tests](../test/core/)
-2. [Commons Tests](../test/commons/)
-3. [Check Tests](../test/checks/)
-4. [Rule Matches](../test/rule-matches/)
-5. [Integration Tests](../test/integration/rules/)
-6. There are additional tests located in [test/integration/full/](../test/integration/full/) for tests that need to be run against their own document.
+- `npm run test:unit:core` - Run only [core tests](../test/core/)
+- `npm run test:unit:commons` - Run only [commons tests](../test/commons/)
+- `npm run test:unit:checks` - Run only [check tests](../test/checks/)
+- `npm run test:unit:rule-matches` - Run only [rule matches](../test/rule-matches/)
+- `npm run test:unit:integration` - Run only [rule integration tests](../test/integration/rules/)
+- `npm run test:unit:virtual-rules` - Run only [virtual rule tests](../test/integration/virtual-rules)
+- `npm run test:unit:api` - Run only [api tests](../test/integration/api)
+
+There are also a set of tests that are not considered unit tests that you can run through various npm scripts:
+
+- `npm run test:act` - Run the [act tests](../test/act-mapping)
+- `npm run test:apg` - Run the [aria-practices tests](../test/aria-practices)
+- `npm run test:examples` - Run the [example tests](../doc/examples)
+- `npm run test:locales` - Run the [local tests](../test/test-locales.js)
+- `npm run test:node` - Run the [node tests](../test/node)
+- `npm run test:tsc` - Run the [typescript tests](../typeings/axe-core)
+
+Additionally, you can [watch for changes](#watching-for-changes) to files and automatically run the relevant tests.
+
+If you need to debug a test in a non-headless browser, you can run `npm run test:debug` which will run the Karma tests in non-headless Chrome. You can also navigate to the newly opened page using any supported browser.
+
+You can scope which set of tests to debug by passing the `testDirs` argument. Supported values are:
+
+- `core`
+- `commons`
+- `checks`
+- `rule-matches`
+- `integration`
+- `virtual-rules`
+- `api`
+
+Example:
+
+- `npm run test:debug -- testDirs=core`
+
+Lastly, you can run the [full integration tests](../test/integration/full) by starting a local server by running `npm start`. Once started, you can open any supported browser and navigate to any test in the full integration tests directory.
 
 ### API Reference
 
@@ -76,12 +115,12 @@ After execution, a Check will return `true`, `false`, or `undefined` depending o
 Rules are defined by JSON files in the [lib/rules directory](../lib/rules). The JSON object is used to seed the [Rule object](../lib/core/base/rule.js#L30). A valid Rule JSON consists of the following:
 
 - `id` - `String` A unique name of the Rule.
+- `impact` - `String` (one of `minor`, `moderate`, `serious`, or `critical`). Sets the impact of the results of this rule
 - `selector` - **optional** `String` which is a [CSS selector](#supported-css-selectors) that specifies the elements of the page on which the Rule runs. axe-core will look inside of the light DOM and _open_ [Shadow DOM](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Shadow_DOM) trees for elements matching the provided selector. If omitted, the rule will run against every node.
 - `excludeHidden` - **optional** `Boolean` Whether the rule should exclude hidden elements. Defaults to `true`.
 - `enabled` - **optional** `Boolean` Whether the rule is enabled by default. Defaults to `true`.
 - `pageLevel` - **optional** `Boolean` Whether the rule is page level. Page level rules will only run if given an entire `document` as context.
 - `matches` - **optional** `String` The ID of the filtering function that will exclude elements that match the `selector` property. See the [`metadata-function-map`](../lib/core/base/metadata-function-map.js) file for all defined IDs.
-- `impact` - **optional** `String` (one of `minor`, `moderate`, `serious`, or `critical`). Override the impact defined by checks.
 - `tags` - **optional** `Array` Strings of the accessibility guidelines of which the Rule applies.
 - `metadata` - `Object` Consisting of:
   - `description` - `String` Text string that describes what the rule does.
@@ -116,7 +155,7 @@ Similar to Rules, Checks are defined by JSON files in the [lib/checks directory]
 - `after` - **optional** `String` The ID of the function that gets called for checks that operate on a page-level basis, to process the results from the iframes.
 - `options` - **optional** `Object` Any information the Check needs that you might need to customize and/or is locale specific. Options can be overridden at runtime (with the options parameter) or config-time. For example, the [valid-lang](../lib/checks/language/valid-lang.json) Check defines what ISO 639-1 language codes it should accept as valid. Options do not need to follow any specific format or type; it is up to the author of a Check to determine the most appropriate format.
 - `metadata` - `Object` Consisting of:
-  - `impact` - `String` (one of `minor`, `moderate`, `serious`, or `critical`)
+  - `impact` - **Deprecated** `String` (one of `minor`, `moderate`, `serious`, or `critical`)
   - `messages` - `Object` These messages are displayed when the Check passes or fails
     - `pass` - `String` [doT.js](http://olado.github.io/doT/) template string displayed when the Check passes
     - `fail` - `String` [doT.js](http://olado.github.io/doT/) template string displayed when the Check fails
@@ -148,7 +187,7 @@ The after function must return an `Array` of CheckResults, due to this, it is a 
 
 ```js
 var uniqueIds = [];
-return results.filter(function(r) {
+return results.filter(function (r) {
   if (uniqueIds.indexOf(r.data) === -1) {
     uniqueIds.push(r.data);
     return true;
@@ -370,17 +409,17 @@ Create a check context for mocking and resetting data and relatedNodes in tests.
 #### Synopsis
 
 ```js
-describe('region', function() {
+describe('region', function () {
   var fixture = document.getElementById('fixture');
 
   var checkContext = new axe.testUtils.MockCheckContext();
 
-  afterEach(function() {
+  afterEach(function () {
     fixture.innerHTML = '';
     checkContext.reset();
   });
 
-  it('should return true when all content is inside the region', function() {
+  it('should return true when all content is inside the region', function () {
     assert.isTrue(checks.region.evaluate.apply(checkContext, checkArgs));
     assert.equal(checkContext._relatedNodes.length, 0);
   });
@@ -412,7 +451,7 @@ Provides an API for determining Shadow DOM v0 and v1 support in tests. For examp
 ```js
 (axe.testUtils.shadowSupport.v1 ? it : xit)(
   'should test Shadow tree content',
-  function() {
+  function () {
     // The rest of the shadow DOM test
   }
 );
@@ -437,7 +476,7 @@ it(
   'should return true if there is only one ' +
     type +
     ' element with the same name',
-  function() {
+  function () {
     axe.testUtils.fixtureSetup(
       '<input type="' +
         type +
@@ -468,7 +507,7 @@ Create check arguments.
 #### Synopsis
 
 ```js
-it('should return true when all content is inside the region', function() {
+it('should return true when all content is inside the region', function () {
   var checkArgs = checkSetup(
     '<div id="target"><div role="main"><a href="a.html#mainheader">Click Here</a><div><h1 id="mainheader" tabindex="0">Introduction</h1></div></div></div>'
   );
