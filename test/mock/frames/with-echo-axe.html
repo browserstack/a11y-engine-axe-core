@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     <title>Echo frame with axe-core</title>
@@ -17,7 +17,7 @@
         checks: [
           {
             id: 'fred',
-            evaluate: function() {
+            evaluate: function () {
               return true;
             }
           }
@@ -31,7 +31,7 @@
     <script>
       window.addEventListener(
         'message',
-        function(event) {
+        function (event) {
           window.top.postMessage(event.data, '*');
         },
         false
