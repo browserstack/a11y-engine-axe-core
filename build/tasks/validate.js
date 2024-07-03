@@ -313,7 +313,8 @@ const miscTags = [
   'review-item',
   'deprecated',
   'a11y-engine',
-  'a11y-engine-experimental'
+  'a11y-engine-experimental',
+  'advanced'
 ];
 
 const categories = [

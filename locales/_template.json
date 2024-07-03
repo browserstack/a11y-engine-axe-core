@@ -110,8 +110,8 @@
       "help": "<audio> elements must have a captions track"
     },
     "autocomplete-valid": {
-      "description": "Ensure the autocomplete attribute is correct and suitable for the form field",
-      "help": "autocomplete attribute must be used correctly"
+      "description": "Ensure that the necessary form fields use the autocomplete attribute with a valid input.",
+      "help": "Autocomplete attribute must have a valid value"
     },
     "avoid-inline-spacing": {
       "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
@@ -682,7 +682,7 @@
     },
     "autocomplete-valid": {
       "pass": "the autocomplete attribute is correctly formatted",
-      "fail": "the autocomplete attribute is incorrectly formatted"
+      "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\"."
     },
     "accesskeys": {
       "pass": "Accesskey attribute value is unique",
