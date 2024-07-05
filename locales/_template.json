@@ -110,8 +110,8 @@
       "help": "<audio> elements must have a captions track"
     },
     "autocomplete-valid": {
-      "description": "Ensure that the necessary form fields use the autocomplete attribute with a valid input.",
-      "help": "Autocomplete attribute must have a valid value"
+      "description": "Ensure the autocomplete attribute is correct and suitable for the form field",
+      "help": "autocomplete attribute must be used correctly"
     },
     "avoid-inline-spacing": {
       "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
@@ -538,7 +538,8 @@
         "noIdShadow": "ARIA attribute element ID does not exist on the page or is a descendant of a different shadow DOM tree: ${data.needsReview}",
         "ariaCurrent": "ARIA attribute value is invalid and will be treated as \"aria-current=true\": ${data.needsReview}",
         "idrefs": "Unable to determine if ARIA attribute element ID exists on the page: ${data.needsReview}",
-        "empty": "ARIA attribute value is ignored while empty: ${data.needsReview}"
+        "empty": "ARIA attribute value is ignored while empty: ${data.needsReview}",
+        "controlsWithinPopup": "Unable to determine if aria-controls referenced ID exists on the page while using aria-haspopup: ${data.needsReview}"
       }
     },
     "aria-valid-attr": {
@@ -682,7 +683,7 @@
     },
     "autocomplete-valid": {
       "pass": "the autocomplete attribute is correctly formatted",
-      "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\"."
+      "fail": "the autocomplete attribute is incorrectly formatted"
     },
     "accesskeys": {
       "pass": "Accesskey attribute value is unique",
@@ -872,7 +873,8 @@
       "fail": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of ${data.closestOffset}px instead of at least ${data.minOffset}px.",
       "incomplete": {
         "default": "Element with negative tabindex has insufficient space to its closest neighbors. Safe clickable space has a diameter of ${data.closestOffset}px instead of at least ${data.minOffset}px. Is this a target?",
-        "nonTabbableNeighbor": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of ${data.closestOffset}px instead of at least ${data.minOffset}px. Is the neighbor a target?"
+        "nonTabbableNeighbor": "Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of ${data.closestOffset}px instead of at least ${data.minOffset}px. Is the neighbor a target?",
+        "tooManyRects": "Could not get the target size because there are too many overlapping elements"
       }
     },
     "target-size": {
