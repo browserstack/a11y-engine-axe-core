@@ -17,14 +17,7 @@
     "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
     "help": "Links must be distinguishable without relying on color"
   },
+  "all": [],
   "any": ["link-in-text-block", "link-in-text-block-style"],
-  "all": [
-    {
-      "options": {
-        "a11yRule": false
-      },
-      "id": "link-in-text-block"
-    }
-  ],
   "none": []
 }

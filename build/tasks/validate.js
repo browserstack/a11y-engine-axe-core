@@ -14,7 +14,7 @@ function fileExists(v, o) {
   var exists;
   try {
     exists = fs.existsSync(file);
-  } catch (e) {
+  } catch {
     return false;
   }
   return exists;
@@ -307,15 +307,7 @@ function validateRule({ tags, metadata }) {
   return issues;
 }
 
-const miscTags = [
-  'ACT',
-  'experimental',
-  'review-item',
-  'deprecated',
-  'a11y-engine',
-  'a11y-engine-experimental',
-  'advanced'
-];
+const miscTags = ['ACT', 'experimental', 'review-item', 'deprecated'];
 
 const categories = [
   'aria',
