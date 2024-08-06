@@ -16,7 +16,8 @@ module.exports = function (grunt) {
        * hence cannot be required at the top of the file.
        */
       const done = this.async();
-      const { langs } = this.options();
+      const { langs, wrapper } = this.options();
+      if (wrapper) return true;
       const fileNameSuffix = langs && langs.length > 0 ? `${langs[0]}` : '';
       const axe = require(`../../axe${fileNameSuffix}`);
       const listType = this.data.listType.toLowerCase();

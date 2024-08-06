@@ -15,6 +15,7 @@ module.exports = function (grunt) {
   grunt.loadTasks('build/tasks');
 
   var langs;
+  var wrapper = !!grunt.option('wrapper');
   if (grunt.option('lang')) {
     langs = (grunt.option('lang') || '').split(/[,;]/g).map(function (lang) {
       lang = lang.trim();
@@ -85,11 +86,11 @@ module.exports = function (grunt) {
         files: langs.map(function (lang, i) {
           return {
             src: [
-              'lib/intro.stub',
+              wrapper ? 'lib/custom/intro.stub' : 'lib/intro.stub',
               '<%= concat.engine.coreFiles %>',
               // include rules / checks / commons
               '<%= configure.rules.files[' + i + '].dest.auto %>',
-              'lib/outro.stub'
+              wrapper ? 'lib/custom/outro.stub' : 'lib/outro.stub'
             ],
             dest: 'axe' + lang + '.js'
           };
@@ -127,7 +128,8 @@ module.exports = function (grunt) {
         entry: 'lib/commons/aria/index.js',
         destFile: 'doc/aria-supported.md',
         options: {
-          langs: langs
+          langs: langs,
+          wrapper: wrapper
         },
         listType: 'unsupported' // Possible values for listType: 'supported', 'unsupported', 'all'
       }

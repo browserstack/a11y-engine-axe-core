@@ -71,6 +71,7 @@
     "develop": "grunt dev --force",
     "api-docs": "jsdoc --configure .jsdoc.json",
     "build": "grunt",
+    "build:wrapper": "grunt --wrapper=true",
     "eslint": "eslint --color --format stylish '{lib,test,build,doc}/**/*.js' 'Gruntfile.js'",
     "test": "npm run test:tsc && run-s \"test:unit:* -- {@}\" --",
     "test:tsc": "tsc",
