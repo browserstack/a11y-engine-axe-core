@@ -23,6 +23,7 @@ module.exports = function (grunt) {
             entryPoints: [entry],
             outfile: path.join(dest, name),
             minify: false,
+            format: 'esm',
             bundle: true
           })
             .then(done)
