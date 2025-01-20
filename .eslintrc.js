@@ -10,7 +10,8 @@ module.exports = {
   },
   globals: {
     axe: true,
-    Promise: true
+    Promise: true,
+    a11yEngine: true
   },
   rules: {
     'no-bitwise': 2,
