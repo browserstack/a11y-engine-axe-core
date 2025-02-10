@@ -8,7 +8,7 @@
     "wcag253",
     "EN-301-549",
     "EN-9.2.5.3",
-    "experimental"
+    "a11y-engine-experimental"
   ],
   "actIds": ["2ee8b8"],
   "metadata": {
