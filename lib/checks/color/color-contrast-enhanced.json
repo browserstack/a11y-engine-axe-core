@@ -20,7 +20,8 @@
     },
     "pseudoSizeThreshold": 0.25,
     "shadowOutlineEmMax": 0.1,
-    "textStrokeEmMin": 0.03
+    "textStrokeEmMin": 0.03,
+    "ruleId": "color-contrast-enhanced"
   },
   "metadata": {
     "impact": "serious",
