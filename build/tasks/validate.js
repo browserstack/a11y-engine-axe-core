@@ -315,7 +315,8 @@ const miscTags = [
   'a11y-engine',
   'a11y-engine-experimental',
   'advanced',
-  'ai'
+  'ai',
+  'new'
 ];
 
 const categories = [
