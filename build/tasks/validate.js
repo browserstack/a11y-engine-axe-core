@@ -314,7 +314,9 @@ const miscTags = [
   'deprecated',
   'a11y-engine',
   'a11y-engine-experimental',
-  'advanced'
+  'advanced',
+  'ai',
+  'new'
 ];
 
 const categories = [
