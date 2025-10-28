@@ -331,6 +331,7 @@ const categories = [
   'sensory-and-visual-cues',
   'structure',
   'tables',
+  'labels',
   'text-alternatives',
   'time-and-media',
   'images'
