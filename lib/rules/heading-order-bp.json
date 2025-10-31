@@ -11,7 +11,7 @@
   ],
   "metadata": {
     "description": "Ensures the order of headings is semantically correct",
-    "help": "Heading levels should only increase by one"
+    "help": "Heading levels must only increase by one"
   },
   "all": [],
   "any": ["heading-order"],
