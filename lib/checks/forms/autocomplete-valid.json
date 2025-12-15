@@ -5,7 +5,8 @@
     "impact": "moderate",
     "messages": {
       "pass": "the autocomplete attribute is correctly formatted",
-      "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\"."
+      "fail": "the autocomplete attribute is incorrectly formatted",
+      "incomplete": "the autocomplete attribute has a non-standard value. Check whether any standard value could be used instead."
     }
   },
   "options": {
@@ -16,7 +17,10 @@
       "disabled",
       "enabled",
       "undefined",
-      "null"
-    ]
+      "null",
+      "xoff",
+      "xon"
+    ],
+    "ignoredValues": ["text", "pronouns", "gender", "message", "content"]
   }
 }

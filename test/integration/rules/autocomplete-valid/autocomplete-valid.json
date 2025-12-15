@@ -1,6 +1,7 @@
 {
   "description": "autocomplete-valid tests",
   "rule": "autocomplete-valid",
+<<<<<<< HEAD
   "violations": [
     ["#fail1"],
     ["#fail2"],
@@ -13,6 +14,15 @@
     ["#fail9"],
     ["#fail10"],
     ["#fail11"]
+=======
+  "violations": [["#fail1"], ["#fail2"], ["#fail3"], ["#fail4"], ["#fail5"]],
+  "incomplete": [
+    ["#incomplete1"],
+    ["#incomplete2"],
+    ["#incomplete3"],
+    ["#incomplete4"],
+    ["#incomplete5"]
+>>>>>>> e997880ebbfefc634caf535727afe2d5efd212f3
   ],
   "passes": [
     ["#pass1"],
@@ -104,6 +114,8 @@
     ["#pass91"],
     ["#pass92"],
     ["#pass93"],
-    ["#pass94"]
+    ["#pass94"],
+    ["#pass95"],
+    ["#pass96"]
   ]
 }

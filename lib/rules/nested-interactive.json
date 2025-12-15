@@ -9,11 +9,13 @@
     "TTv5",
     "TT6.a",
     "EN-301-549",
-    "EN-9.4.1.2"
+    "EN-9.4.1.2",
+    "RGAAv4",
+    "RGAA-7.1.1"
   ],
   "actIds": ["307n5z"],
   "metadata": {
-    "description": "Ensures interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
+    "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
     "help": "Interactive controls must not be nested"
   },
   "all": [],

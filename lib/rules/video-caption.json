@@ -11,11 +11,13 @@
     "TTv5",
     "TT17.a",
     "EN-301-549",
-    "EN-9.1.2.2"
+    "EN-9.1.2.2",
+    "RGAAv4",
+    "RGAA-4.3.1"
   ],
   "actIds": ["eac66b"],
   "metadata": {
-    "description": "Ensures <video> elements have captions",
+    "description": "Ensure <video> elements have captions",
     "help": "<video> elements must have captions"
   },
   "all": [],
