@@ -18,22 +18,14 @@ describe('autocomplete-valid', function () {
   //   assert.isTrue(evaluate.apply(checkContext, params));
   // });
 
-  // it('returns false if autocomplete is not valid', function () {
-  //   var params = checkSetup('<input autocomplete="foo" id="target" />');
-  //   assert.isFalse(evaluate.apply(checkContext, params));
-  // });
 
-  // it('uses options to change what is valid autocomplete', function () {
-  //   var options = { stateTerms: ['foo'] };
-  //   var params = checkSetup(
-  //     '<input autocomplete="foo" id="target" />',
-  //     options
-  //   );
-  //   assert.isTrue(evaluate.apply(checkContext, params));
-  // });
+  it('returns undefined (incomplete) if autocomplete is ignored', function () {
+    var params = checkSetup('<input autocomplete="text" id="target" />');
+    assert.isUndefined(evaluate.apply(checkContext, params));
+  });
 
-  it("evaluate() passes a document if form element has autocomplete set off and child elements don't have autocomplete", function () {
-    console.log('Our functions are running fine');
+  it('uses options to change what is valid autocomplete', function () {
+    var options = { stateTerms: ['foo'] };
     var params = checkSetup(
       '<html> <form autocomplete="off" onsubmit="javascript(0)"> <input type="text" id="target"/> <button>Save</button> </form> </html>'
     );
