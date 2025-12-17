@@ -46,15 +46,9 @@ describe('autocomplete-matches', function () {
     });
   });
 
-<<<<<<< HEAD
-  it('returns true for elements with an empty autocomplete', function () {
-    var vNode = queryFixture('<input id="target" autocomplete="  ">');
-    assert.isTrue(rule.matches(null, vNode));
-=======
   it('returns false for elements with an empty autocomplete', function () {
     const vNode = queryFixture('<input id="target" autocomplete="  ">');
     assert.isFalse(rule.matches(null, vNode));
->>>>>>> e997880ebbfefc634caf535727afe2d5efd212f3
   });
 
   it('returns false for intput[type=hidden]', function () {

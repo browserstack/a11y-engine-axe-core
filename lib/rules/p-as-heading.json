@@ -9,11 +9,11 @@
     "wcag131",
     "EN-301-549",
     "EN-9.1.3.1",
+    "experimental",
     "a11y-engine",
     "a11y-engine-experimental",
     "RGAAv4",
-    "RGAA-9.1.3",
-    "experimental"
+    "RGAA-9.1.3"
   ],
   "metadata": {
     "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
