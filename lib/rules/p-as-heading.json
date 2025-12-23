@@ -10,8 +10,8 @@
     "EN-301-549",
     "EN-9.1.3.1",
     "a11y-engine",
-    "a11y-engine-experimental",
-    "medium-accuracy"
+    "medium-accuracy",
+    "a11y-engine-experimental"
   ],
   "metadata": {
     "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
