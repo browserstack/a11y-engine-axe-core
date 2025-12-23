@@ -3,13 +3,7 @@
   "impact": "moderate",
   "selector": "h1, h2, h3, h4, h5, h6, [role=heading]",
   "matches": "heading-matches",
-  "tags": [
-    "cat.structure",
-    "wcag2aaa",
-    "wcag2410",
-    "a11y-engine",
-    "a11y-engine-experimental"
-  ],
+  "tags": ["cat.structure", "wcag2aaa", "wcag2410", "a11y-engine"],
   "metadata": {
     "description": "Ensure the order of headings is semantically correct",
     "help": "Heading levels must only increase by one"
