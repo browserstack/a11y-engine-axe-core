@@ -13,11 +13,13 @@
     "TT2.a",
     "EN-301-549",
     "EN-9.1.4.2",
-    "ACT"
+    "ACT",
+    "RGAAv4",
+    "RGAA-4.10.1"
   ],
   "actIds": ["80f0bf"],
   "metadata": {
-    "description": "Ensures <video> or <audio> elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
+    "description": "Ensure <video> or <audio> elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
     "help": "<video> or <audio> elements must not play automatically"
   },
   "preload": true,

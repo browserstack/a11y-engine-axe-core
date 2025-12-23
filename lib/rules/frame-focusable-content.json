@@ -10,11 +10,13 @@
     "TTv5",
     "TT4.a",
     "EN-301-549",
-    "EN-9.2.1.1"
+    "EN-9.2.1.1",
+    "RGAAv4",
+    "RGAA-7.3.2"
   ],
   "actIds": ["akn7bn"],
   "metadata": {
-    "description": "Ensures <frame> and <iframe> elements with focusable content do not have tabindex=-1",
+    "description": "Ensure <frame> and <iframe> elements with focusable content do not have tabindex=-1",
     "help": "Frames with focusable content must not have tabindex=-1"
   },
   "all": [],
