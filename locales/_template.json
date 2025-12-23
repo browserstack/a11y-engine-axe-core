@@ -197,9 +197,13 @@
       "description": "Ensure <iframe> and <frame> elements have an accessible name",
       "help": "Frames must have an accessible name"
     },
-    "heading-order": {
+    "heading-order-bp": {
       "description": "Ensure the order of headings is semantically correct",
       "help": "Heading levels should only increase by one"
+    },
+    "heading-order": {
+      "description": "Ensure the order of headings is semantically correct",
+      "help": "Heading levels must only increase by one"
     },
     "hidden-content": {
       "description": "Inform users about hidden content.",
@@ -687,12 +691,7 @@
     },
     "autocomplete-valid": {
       "pass": "the autocomplete attribute is correctly formatted",
-<<<<<<< HEAD
       "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\"."
-=======
-      "fail": "the autocomplete attribute is incorrectly formatted",
-      "incomplete": "the autocomplete attribute has a non-standard value. Check whether any standard value could be used instead."
->>>>>>> e997880ebbfefc634caf535727afe2d5efd212f3
     },
     "accesskeys": {
       "pass": "Accesskey attribute value is unique",
@@ -795,7 +794,8 @@
     },
     "label-content-name-mismatch": {
       "pass": "Element contains visible text as part of it's accessible name",
-      "fail": "Text inside the element is not included in the accessible name"
+      "fail": "Ensure that the visible label of the element and the accessible name (provided by `aria-label`, etc.) match exactly. Ensure that the visible label of the element is part of the accessible name of the element. It is advisable that the visible label comes in the beginning of the accessible name",
+      "incomplete": "Check if the visible text is part of the accessible name (provided by `aria-label`, etc.) for the element. Check the accessibility tree to get the accessible name of the element."
     },
     "multiple-label": {
       "pass": "Form field does not have multiple label elements",
@@ -910,7 +910,7 @@
     },
     "heading-order": {
       "pass": "Heading order valid",
-      "fail": "Heading order invalid",
+      "fail": "Fix the order of headings. Headings should be in descending order of size without skipping levels. For example, <h2> should be followed by <h3>, not <h4> or <h5>.",
       "incomplete": "Unable to determine previous heading"
     },
     "identical-links-same-purpose": {
