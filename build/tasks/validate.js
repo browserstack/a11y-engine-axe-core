@@ -313,12 +313,12 @@ const miscTags = [
   'review-item',
   'deprecated',
   'a11y-engine',
-  'medium-accuracy',
-  'high-accuracy',
   'a11y-engine-experimental',
   'advanced',
   'ai',
-  'new'
+  'new',
+  'medium-accuracy',
+  'high-accuracy'
 ];
 
 const categories = [
