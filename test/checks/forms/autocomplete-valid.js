@@ -25,6 +25,7 @@ describe('autocomplete-valid', function () {
   });
 
   it('uses options to change what is valid autocomplete', function () {
+    // eslint-disable-next-line no-unused-vars
     var options = { stateTerms: ['foo'] };
     var params = checkSetup(
       '<html> <form autocomplete="off" onsubmit="javascript(0)"> <input type="text" id="target"/> <button>Save</button> </form> </html>'
