@@ -12,11 +12,13 @@
     "TTv5",
     "TT12.d",
     "EN-301-549",
-    "EN-9.4.1.2"
+    "EN-9.4.1.2",
+    "RGAAv4",
+    "RGAA-2.1.1"
   ],
   "actIds": ["cae760"],
   "metadata": {
-    "description": "Ensures <iframe> and <frame> elements have an accessible name",
+    "description": "Ensure <iframe> and <frame> elements have an accessible name",
     "help": "Frames must have an accessible name"
   },
   "all": [],

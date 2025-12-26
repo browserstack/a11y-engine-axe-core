@@ -103,6 +103,10 @@
         <button id="fail1"></button>
         <span id="pass1"></span>
         <button id="pass2"></button>
+        <details>
+          <summary>Hello world</summary>
+          <p>Some text</p>
+        </details>
         <div aria-labelledby="fail1 pass1 pass2"></div>
         <audio
           id="incomplete1"
@@ -111,6 +115,9 @@
         ></audio>
       </main>
       <footer></footer>
+
+      <script src="/test/testutils.js"></script>
+      <script src="isolated-env.js"></script>
 
       <iframe
         id="isolated-frame"
@@ -126,8 +133,6 @@
       <p>Paragraph with a <a href="#">link</a>.</p>
     </div>
     <div id="mocha"></div>
-    <script src="/test/testutils.js"></script>
-    <script src="isolated-env.js"></script>
     <script src="/test/integration/adapter.js"></script>
   </body>
 </html>

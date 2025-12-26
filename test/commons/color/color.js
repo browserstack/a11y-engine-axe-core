@@ -166,9 +166,27 @@ describe('color.Color', () => {
         assert.equal(c.alpha, 1);
       });
 
+      it('supports negative rad on hue', () => {
+        const c = new Color();
+        c.parseColorFnString('hsl(-3.49rad, 40%, 50%)');
+        assert.equal(c.red, 77);
+        assert.equal(c.green, 179);
+        assert.equal(c.blue, 145);
+        assert.equal(c.alpha, 1);
+      });
+
       it('supports turn on hue', () => {
         const c = new Color();
         c.parseColorFnString('hsl(0.444turn, 40%, 50%)');
+        assert.equal(c.red, 77);
+        assert.equal(c.green, 179);
+        assert.equal(c.blue, 144);
+        assert.equal(c.alpha, 1);
+      });
+
+      it('supports negative turn on hue', () => {
+        const c = new Color();
+        c.parseColorFnString('hsl(-0.556turn, 40%, 50%)');
         assert.equal(c.red, 77);
         assert.equal(c.green, 179);
         assert.equal(c.blue, 144);
@@ -282,6 +300,19 @@ describe('color.Color', () => {
         assert.equal(c.green, 179);
         assert.equal(c.blue, 144);
         assert.equal(c.alpha, 0.5);
+      });
+
+      it('clips out of gamut values', () => {
+        const c = new Color();
+        c.parseColorFnString('oklch(25% 0.75 345)');
+        assert.equal(c.red, 186);
+        assert.equal(c.green, 0);
+        assert.equal(c.blue, 103);
+        assert.equal(c.alpha, 1);
+
+        assert.equal(c.red, Math.round(c.r * 255));
+        assert.equal(c.green, Math.round(c.g * 255));
+        assert.equal(c.blue, Math.round(c.b * 255));
       });
     });
   });
