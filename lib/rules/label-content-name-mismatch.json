@@ -10,11 +10,13 @@
     "EN-9.2.5.3",
     "a11y-engine",
     "a11y-engine-experimental",
+    "RGAAv4",
+    "RGAA-6.1.5",
     "medium-accuracy"
   ],
   "actIds": ["2ee8b8"],
   "metadata": {
-    "description": "Ensures that elements labelled through their content must have their visible text as part of their accessible name",
+    "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
     "help": "Elements must have their visible text as part of their accessible name"
   },
   "all": [],

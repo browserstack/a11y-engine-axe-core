@@ -32,4 +32,19 @@ describe('axe.constants', function () {
   it('should have groups for results', function () {
     assert.equal(axe.constants.FAIL_GROUP, 'violations');
   });
+
+  it('should have a gridSize', function () {
+    assert.equal(axe.constants.gridSize, 200);
+  });
+
+  it('should have a selectorSimilarFilterLimit', function () {
+    assert.equal(axe.constants.selectorSimilarFilterLimit, 700);
+  });
+
+  it('has a serializableErrorProps array', function () {
+    assert.isArray(axe.constants.serializableErrorProps);
+    axe.constants.serializableErrorProps.forEach(prop => {
+      assert.typeOf(prop, 'string', `prop ${prop} is not a string`);
+    });
+  });
 });

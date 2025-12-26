@@ -11,10 +11,12 @@
     "TTv5",
     "TT4.a",
     "EN-301-549",
-    "EN-9.2.1.1"
+    "EN-9.2.1.1",
+    "RGAAv4",
+    "RGAA-1.1.4"
   ],
   "metadata": {
-    "description": "Ensures that server-side image maps are not used",
+    "description": "Ensure that server-side image maps are not used",
     "help": "Server-side image maps must not be used"
   },
   "all": [],

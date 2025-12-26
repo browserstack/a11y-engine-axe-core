@@ -5,7 +5,7 @@
   "matches": "heading-matches",
   "tags": ["cat.structure", "wcag2aaa", "wcag2410", "a11y-engine"],
   "metadata": {
-    "description": "Ensures the order of headings is semantically correct",
+    "description": "Ensure the order of headings is semantically correct",
     "help": "Heading levels must only increase by one"
   },
   "all": [],
