@@ -236,8 +236,8 @@ var commons;
     }
 
     // query the composed tree AFTER shadowDOM has been attached
-    axe.setup(fixtureNode);
-    return axe.utils.getNodeFromTree(targetCandidate);
+    const vFixture = axe.setup(fixtureNode);
+    return axe.utils.getNodeFromTree(targetCandidate) || vFixture;
   };
 
   /**
@@ -357,7 +357,7 @@ var commons;
         doc.head.appendChild(link);
       });
     } else {
-      q.defer(function (resolve) {
+      q.defer(function (resolve, reject) {
         const style = doc.createElement('style');
         if (data.id) {
           style.id = data.id;
@@ -365,9 +365,25 @@ var commons;
         style.type = 'text/css';
         style.appendChild(doc.createTextNode(data.text));
         doc.head.appendChild(style);
-        setTimeout(function () {
-          resolve();
-        }, 100); // -> note: gives firefox to load (document.stylesheets), other browsers are fine.
+        // In Firefox, there is a delay between adding the element and it appearing in
+        // document.styleSheets, so we poll until we see it there.
+        const timeoutAt = Date.now() + 500;
+        const interval = setInterval(function () {
+          const isLoaded = Array.from(doc.styleSheets).some(
+            sheet => sheet.ownerNode === style
+          );
+          if (isLoaded) {
+            clearInterval(interval);
+            resolve();
+          } else if (Date.now() > timeoutAt) {
+            clearInterval(interval);
+            reject(
+              new Error(
+                'Added <style> element was not reflected in doc.styleSheets within timeout'
+              )
+            );
+          }
+        }, 5);
       });
     }
     return q;
@@ -707,5 +723,87 @@ var commons;
     for (let child of tmp.children) {
       fixtureNode.appendChild(child.cloneNode(true));
     }
+  }
+
+  testUtils.assertResultsDeepEqual = (
+    expected,
+    actual,
+    ignoredPaths = [
+      'timestamp',
+      // testEnvironment is ignored by default because Chrome's UI animations for the
+      // "an automated test is controlling this browser" notification can cause
+      // inconsistencies in windowHeight for otherwise-identical scans.
+      'testEnvironment'
+    ],
+    keyPath = 'result'
+  ) => {
+    const typeObj1 = getType(expected);
+    const typeObj2 = getType(actual);
+
+    axe.utils.assert(
+      typeObj1 === typeObj2,
+      `Expected type of ${keyPath} to equal ${typeObj1} but got ${typeObj2}`
+    );
+
+    if (typeObj1 === 'object') {
+      const res1Keys = Object.keys(expected);
+      const res2Keys = Object.keys(actual);
+
+      axe.utils.assert(
+        res1Keys.length === res2Keys.length &&
+          res1Keys.every(key => res2Keys.includes(key)),
+        `Expected ${keyPath} to have keys "${JSON.stringify(res1Keys)}" but got "${JSON.stringify(res2Keys)}"`
+      );
+
+      for (const key of res1Keys) {
+        if (ignoredPaths.includes(key)) {
+          continue;
+        }
+
+        testUtils.assertResultsDeepEqual(
+          expected[key],
+          actual[key],
+          ignoredPaths,
+          `${keyPath}.${key}`
+        );
+      }
+    } else if (typeObj1 === 'array') {
+      axe.utils.assert(
+        expected.length === actual.length,
+        `Expected ${keyPath} to have length of "${expected.length}" but got "${actual.length}"`
+      );
+
+      for (let i = 0; i < expected.length; i++) {
+        testUtils.assertResultsDeepEqual(
+          expected[i],
+          actual[i],
+          ignoredPaths,
+          `${keyPath}[${i}]`
+        );
+      }
+    } else {
+      axe.utils.assert(
+        expected === actual,
+        `Expected ${keyPath} to equal "${expected}" but got "${actual}"`
+      );
+    }
+  };
+
+  function isObject(obj) {
+    return obj && typeof obj === 'object' && !Array.isArray(obj);
+  }
+
+  function getType(obj) {
+    if (isObject(obj)) {
+      return 'object';
+    }
+    if (Array.isArray(obj)) {
+      return 'array';
+    }
+    if (obj === null) {
+      return 'null';
+    }
+
+    return typeof obj;
   }
 })();
