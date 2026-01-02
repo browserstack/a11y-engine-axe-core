@@ -10,11 +10,13 @@
     "TTv5",
     "TT8.a",
     "EN-301-549",
-    "EN-9.2.2.1"
+    "EN-9.2.2.1",
+    "RGAAv4",
+    "RGAA-13.1.2"
   ],
   "actIds": ["bc659a", "bisz58"],
   "metadata": {
-    "description": "Ensures <meta http-equiv=\"refresh\"> is not used for delayed refresh",
+    "description": "Ensure <meta http-equiv=\"refresh\"> is not used for delayed refresh",
     "help": "Delayed refresh under 20 hours must not be used"
   },
   "all": [],

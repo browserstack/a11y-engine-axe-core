@@ -15,12 +15,14 @@
     "EN-301-549",
     "EN-9.2.4.4",
     "EN-9.4.1.2",
-    "ACT"
+    "ACT",
+    "RGAAv4",
+    "RGAA-1.1.2"
   ],
   "actIds": ["c487ae"],
   "metadata": {
-    "description": "Ensures <area> elements of image maps have alternate text",
-    "help": "Active <area> elements must have alternate text"
+    "description": "Ensure <area> elements of image maps have alternative text",
+    "help": "Active <area> elements must have alternative text"
   },
   "all": [],
   "any": ["non-empty-alt", "aria-label", "aria-labelledby", "non-empty-title"],

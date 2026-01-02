@@ -11,11 +11,13 @@
     "TT13.c",
     "EN-301-549",
     "EN-9.1.4.3",
-    "ACT"
+    "ACT",
+    "RGAAv4",
+    "RGAA-3.2.1"
   ],
   "actIds": ["afw4f7", "09o5cg"],
   "metadata": {
-    "description": "Ensures the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+    "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
     "help": "Elements must meet minimum color contrast ratio thresholds"
   },
   "all": [],
