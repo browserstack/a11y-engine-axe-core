@@ -1,6 +1,6 @@
 {
   "id": "meta-viewport",
-  "impact": "critical",
+  "impact": "moderate",
   "selector": "meta[name=\"viewport\"]",
   "matches": "is-initiator-matches",
   "excludeHidden": false,
@@ -10,11 +10,13 @@
     "wcag144",
     "EN-301-549",
     "EN-9.1.4.4",
-    "ACT"
+    "ACT",
+    "RGAAv4",
+    "RGAA-10.4.2"
   ],
   "actIds": ["b4f0c3"],
   "metadata": {
-    "description": "Ensures <meta name=\"viewport\"> does not disable text scaling and zooming",
+    "description": "Ensure <meta name=\"viewport\"> does not disable text scaling and zooming",
     "help": "Zooming and scaling must not be disabled"
   },
   "all": [],

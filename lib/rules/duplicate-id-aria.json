@@ -4,11 +4,19 @@
   "selector": "[id]",
   "matches": "duplicate-id-aria-matches",
   "excludeHidden": false,
-  "tags": ["cat.parsing", "wcag2a", "wcag412", "EN-301-549", "EN-9.4.1.2"],
+  "tags": [
+    "cat.parsing",
+    "wcag2a",
+    "wcag412",
+    "EN-301-549",
+    "EN-9.4.1.2",
+    "RGAAv4",
+    "RGAA-8.2.1"
+  ],
   "reviewOnFail": true,
   "actIds": ["3ea0c8"],
   "metadata": {
-    "description": "Ensures every id attribute value used in ARIA and in labels is unique",
+    "description": "Ensure every id attribute value used in ARIA and in labels is unique",
     "help": "IDs used in ARIA and labels must be unique"
   },
   "all": [],

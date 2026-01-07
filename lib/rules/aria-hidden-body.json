@@ -11,10 +11,12 @@
     "wcag412",
     "EN-301-549",
     "EN-9.1.3.1",
-    "EN-9.4.1.2"
+    "EN-9.4.1.2",
+    "RGAAv4",
+    "RGAA-10.8.1"
   ],
   "metadata": {
-    "description": "Ensures aria-hidden=\"true\" is not present on the document body.",
+    "description": "Ensure aria-hidden=\"true\" is not present on the document body.",
     "help": "aria-hidden=\"true\" must not be present on the document body"
   },
   "all": [],
