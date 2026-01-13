@@ -3,7 +3,14 @@
   "impact": "minor",
   "selector": "*",
   "excludeHidden": false,
-  "tags": ["cat.structure", "best-practice", "experimental", "review-item"],
+  "tags": [
+    "cat.structure",
+    "best-practice",
+    "review-item",
+    "a11y-engine",
+    "a11y-engine-experimental",
+    "medium-accuracy"
+  ],
   "metadata": {
     "description": "Inform users about hidden content.",
     "help": "Hidden content on the page should be analyzed"

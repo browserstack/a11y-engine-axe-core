@@ -8,7 +8,9 @@
     "best-practice",
     "RGAAv4",
     "RGAA-12.8.1",
-    "experimental"
+    "a11y-engine",
+    "a11y-engine-experimental",
+    "medium-accuracy"
   ],
   "metadata": {
     "description": "Ensure elements in the focus order have a role appropriate for interactive content",
