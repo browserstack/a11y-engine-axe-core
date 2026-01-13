@@ -1,21 +1,16 @@
 const { Builder } = require('selenium-webdriver');
 const chrome = require('selenium-webdriver/chrome');
-const chromedriverPath =
-  process.env.CHROMEDRIVER_BIN ?? require('chromedriver').path;
+const chromedriverPath = require('chromedriver').path;
 
 const getWebdriver = () => {
   const service = new chrome.ServiceBuilder(chromedriverPath);
-  const options = new chrome.Options().addArguments('--headless');
 
-  if (process.env.CHROME_BIN) {
-    options.setBinaryPath(process.env.CHROME_BIN);
-  }
-
-  return new Builder()
-    .setChromeOptions(options)
+  const webdriver = new Builder()
+    .setChromeOptions(new chrome.Options().addArguments('headless'))
     .forBrowser('chrome')
     .setChromeService(service)
     .build();
+  return webdriver;
 };
 
 module.exports.getWebdriver = getWebdriver;
