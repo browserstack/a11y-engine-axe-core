@@ -23,6 +23,11 @@ describe('autocomplete-valid', function () {
     assert.isUndefined(evaluate.apply(checkContext, params));
   });
 
+  it('returns undefined (incomplete) if autocomplete is ignored', function () {
+    var params = checkSetup('<input autocomplete="text" id="target" />');
+    assert.isUndefined(evaluate.apply(checkContext, params));
+  });
+
   it('uses options to change what is valid autocomplete', function () {
     // eslint-disable-next-line no-unused-vars
     var options = { stateTerms: ['foo'] };

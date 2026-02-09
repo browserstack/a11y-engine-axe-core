@@ -28,8 +28,11 @@ module.exports = ({ id, title, axeRules, skipTests = [] }) => {
     this.timeout(50000);
     this.retries(3);
 
-    before(done => {
+    before(async () => {
       driver = getWebdriver();
+    });
+
+    before(done => {
       server = http.createServer((request, response) => {
         return handler(request, response, {
           cleanUrls: false,
