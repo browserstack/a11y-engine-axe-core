@@ -12,12 +12,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version-file: .nvmrc
           cache: 'npm'
       - run: npm ci
+      - run: npm run prepare
       - run: npm run build
       - uses: actions/upload-artifact@v4
         with:
@@ -25,19 +26,31 @@ jobs:
           path: axe.js
           retention-days: 1
 
+  fmt_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run fmt:check
+
   test_node:
     strategy:
       matrix:
-        node: [6, 18, 20]
+        node: [6, 18, 20, 22]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: build
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node}}
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v5
         with:
           name: axe-core
       - run: npm run test:node
