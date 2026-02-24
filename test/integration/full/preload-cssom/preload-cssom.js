@@ -40,10 +40,6 @@ describe('preload cssom integration test', function () {
     styleTagWithCyclicCrossOriginImports: {
       id: 'styleTagWithCyclicCrossOriginImports',
       text: '@import "cyclic-cross-origin-import-1.css";'
-    },
-    styleTagWithNonExistentImport: {
-      id: 'styleTagWithNonExistentImport',
-      text: '@import "non-existent-import.css";'
     }
   };
   let stylesForPage;
@@ -145,7 +141,12 @@ describe('preload cssom integration test', function () {
     });
 
     it('throws if cross-origin stylesheet fail to load', done => {
-      stylesForPage = [styleSheets.styleTagWithNonExistentImport];
+      stylesForPage = [
+        {
+          id: 'nonExistingStylesheet',
+          text: '@import "import-non-existing-cross-origin.css";'
+        }
+      ];
       attachStylesheets(
         {
           root: root,
@@ -156,12 +157,8 @@ describe('preload cssom integration test', function () {
             done(err);
           }
           getPreloadCssom(root)
-            .then(sheets => {
-              done(
-                new Error(
-                  `Expected getPreload to reject, but it resolved with ${JSON.stringify(sheets)}.`
-                )
-              );
+            .then(() => {
+              done(new Error('Expected getPreload to reject.'));
             })
             .catch(e => {
               assert.isDefined(e);

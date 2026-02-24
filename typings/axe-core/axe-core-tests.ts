@@ -16,6 +16,13 @@ axe.run(context, {}, (error: Error, results: axe.AxeResults) => {
   }
   console.log(results.passes.length);
   console.log(results.incomplete.length);
+  const errors = results.incomplete.map(result => result.error);
+  console.log(
+    errors.map(
+      ({ message, stack, ruleId, method }) =>
+        `${message} ${ruleId} ${method}\n\n${stack}`
+    )
+  );
   console.log(results.inapplicable.length);
   console.log(results.violations.length);
   console.log(results.violations[0].nodes[0].failureSummary);
@@ -35,6 +42,13 @@ axe.run(
     console.log(error || results);
   }
 );
+// axe.run preload: boolean
+axe.run({ preload: false });
+axe.run({ preload: true });
+// axe.run preload: options
+axe.run({ preload: { assets: ['cssom'] } });
+axe.run({ preload: { assets: ['cssom'], timeout: 50000 } });
+
 export async function runAsync() {
   await axe.run('main'); // Single selector
   await axe.run(['main']); // Array of one selector
@@ -431,9 +445,35 @@ axe.cleanup();
 const dqElement = new axe.utils.DqElement(document.body);
 const element = axe.utils.shadowSelect(dqElement.selector[0]);
 const uuid = axe.utils.uuid() as string;
+let unknownContext: unknown = JSON.parse('{ foo: "bar" }');
+if (axe.utils.isLabelledShadowDomSelector(unknownContext)) {
+  let context: axe.LabelledShadowDomSelector = unknownContext;
+} else if (axe.utils.isLabelledFramesSelector(unknownContext)) {
+  let context: axe.LabelledFramesSelector = unknownContext;
+} else if (axe.utils.isContextObject(unknownContext)) {
+  let context: axe.ContextObject = unknownContext;
+} else if (axe.utils.isContextProp(unknownContext)) {
+  let context: axe.ContextProp = unknownContext;
+} else if (axe.utils.isContextSpec(unknownContext)) {
+  let context: axe.ContextSpec = unknownContext;
+}
+axe.utils.nodeSerializer.update({
+  toSpec(dqElm: axe.DqElement) {
+    return dqElm.toJSON();
+  },
+  mergeSpecs(childSpec: axe.SerialDqElement, parentSpec: axe.SerialDqElement) {
+    return axe.utils.DqElement.mergeSpecs(childSpec, parentSpec);
+  }
+});
+const spec2: axe.SerialDqElement = axe.utils.nodeSerializer.toSpec(element);
+const spec3: axe.SerialDqElement = axe.utils.nodeSerializer.dqElmToSpec(
+  dqElement,
+  options
+);
 
 // Commons
 axe.commons.aria.getRoleType('img');
 axe.commons.dom.isFocusable(document.body);
 axe.commons.dom.isNativelyFocusable(document.body);
+axe.commons.dom.getNodeGrid(document.body);
 axe.commons.text.accessibleText(document.body);
