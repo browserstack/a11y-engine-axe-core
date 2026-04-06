@@ -14,7 +14,10 @@
   "actIds": ["5c01ea"],
   "metadata": {
     "description": "Ensure ARIA attributes are not prohibited for an element's role",
-    "help": "Elements must only use permitted ARIA attributes"
+    "help": "Elements must only use permitted ARIA attributes",
+    "violationConfidence": 90,
+    "needsReviewConfidence": 60,
+    "defaultCategory": "names-and-labels"
   },
   "all": [],
   "any": [],
