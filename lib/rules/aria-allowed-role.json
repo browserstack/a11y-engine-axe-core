@@ -7,7 +7,8 @@
   "tags": ["cat.aria", "best-practice"],
   "metadata": {
     "description": "Ensure role attribute has an appropriate value for the element",
-    "help": "ARIA role should be appropriate for the element"
+    "help": "ARIA role should be appropriate for the element",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["aria-allowed-role"],

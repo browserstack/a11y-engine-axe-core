@@ -7,7 +7,8 @@
   "tags": ["cat.sensory-and-visual-cues", "wcag22aa", "wcag258"],
   "metadata": {
     "description": "Ensure touch targets have sufficient size and space",
-    "help": "All touch targets must be 24px large, or leave sufficient space"
+    "help": "All touch targets must be 24px large, or leave sufficient space",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["target-size", "target-offset"],

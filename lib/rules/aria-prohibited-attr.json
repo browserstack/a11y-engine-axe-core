@@ -16,7 +16,7 @@
     "description": "Ensure ARIA attributes are not prohibited for an element's role",
     "help": "Elements must only use permitted ARIA attributes",
     "violationConfidence": 90,
-    "needsReviewConfidence": 60,
+    "needsReviewConfidence": 50,
     "defaultCategory": "names-and-labels"
   },
   "all": [],

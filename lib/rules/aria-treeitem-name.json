@@ -6,7 +6,8 @@
   "tags": ["cat.aria", "best-practice"],
   "metadata": {
     "description": "Ensure every ARIA treeitem node has an accessible name",
-    "help": "ARIA treeitem nodes should have an accessible name"
+    "help": "ARIA treeitem nodes should have an accessible name",
+    "violationConfidence": 99
   },
   "all": [],
   "any": [

@@ -6,7 +6,8 @@
   "tags": ["cat.structure", "best-practice", "a11y-engine"],
   "metadata": {
     "description": "Ensure the order of headings is semantically correct",
-    "help": "Heading levels should only increase by one"
+    "help": "Heading levels should only increase by one",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["heading-order"],

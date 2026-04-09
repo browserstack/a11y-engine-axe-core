@@ -9,7 +9,8 @@
   "actIds": ["b20e66"],
   "metadata": {
     "description": "Ensure that links with the same accessible name serve a similar purpose",
-    "help": "Links with the same name must have a similar purpose"
+    "help": "Links with the same name must have a similar purpose",
+    "needsReviewConfidence": 50
   },
   "all": ["identical-links-same-purpose"],
   "any": [],
