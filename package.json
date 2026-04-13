@@ -200,5 +200,8 @@
       "prettier --write",
       "eslint --fix"
     ]
+  },
+  "overrides": {
+    "lodash": "4.18.0"
   }
 }
