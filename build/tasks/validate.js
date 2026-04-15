@@ -229,13 +229,13 @@ function createSchemas() {
             type: 'string'
           },
           violationConfidence: {
-            type: 'number',
+            type: 'number'
           },
           needsReviewConfidence: {
-            type: 'number',
+            type: 'number'
           },
           defaultCategory: {
-            type: 'string',
+            type: 'string'
           }
         }
       }
