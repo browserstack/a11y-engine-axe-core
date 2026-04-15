@@ -17,7 +17,8 @@
   "actIds": ["4b1c6c"],
   "metadata": {
     "description": "Ensure <iframe> and <frame> elements contain a unique title attribute",
-    "help": "Frames must have a unique title attribute"
+    "help": "Frames must have a unique title attribute",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": [],

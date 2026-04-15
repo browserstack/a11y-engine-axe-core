@@ -14,7 +14,8 @@
   ],
   "metadata": {
     "description": "Ensure every ARIA meter node has an accessible name",
-    "help": "ARIA meter nodes must have an accessible name"
+    "help": "ARIA meter nodes must have an accessible name",
+    "violationConfidence": 99
   },
   "all": [],
   "any": ["aria-label", "aria-labelledby", "non-empty-title"],

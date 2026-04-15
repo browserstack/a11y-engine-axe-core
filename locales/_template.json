@@ -59,7 +59,10 @@
     },
     "aria-prohibited-attr": {
       "description": "Ensure ARIA attributes are not prohibited for an element's role",
-      "help": "Elements must only use permitted ARIA attributes"
+      "help": "Elements must only use permitted ARIA attributes",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 60,
+      "defaultCategory": "names-and-labels"
     },
     "aria-required-attr": {
       "description": "Ensure elements with ARIA roles have all required ARIA attributes",
@@ -131,11 +134,17 @@
     },
     "color-contrast-enhanced": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AAA enhanced contrast ratio thresholds",
-      "help": "Elements must meet enhanced color contrast ratio thresholds"
+      "help": "Elements must meet enhanced color contrast ratio thresholds",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 60,
+      "defaultCategory": "text-contrast-enhanced"
     },
     "color-contrast": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-      "help": "Elements must meet minimum color contrast ratio thresholds"
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 60,
+      "defaultCategory": "text-contrast"
     },
     "css-orientation-lock": {
       "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
@@ -243,7 +252,10 @@
     },
     "label-content-name-mismatch": {
       "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
-      "help": "Elements must have their visible text as part of their accessible name"
+      "help": "Elements must have their visible text as part of their accessible name",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 60,
+      "defaultCategory": "names-and-labels"
     },
     "label-title-only": {
       "description": "Ensure that every form element has a visible label and is not solely labeled using hidden labels, or the title or aria-describedby attributes",
@@ -291,7 +303,10 @@
     },
     "link-in-text-block": {
       "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
-      "help": "Links must be distinguishable without relying on color"
+      "help": "Links must be distinguishable without relying on color",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 60,
+      "defaultCategory": "links"
     },
     "link-name": {
       "description": "Ensure links have discernible text",

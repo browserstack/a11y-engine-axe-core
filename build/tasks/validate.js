@@ -227,6 +227,15 @@ function createSchemas() {
           description: {
             required: true,
             type: 'string'
+          },
+          violationConfidence: {
+            type: 'number'
+          },
+          needsReviewConfidence: {
+            type: 'number'
+          },
+          defaultCategory: {
+            type: 'string'
           }
         }
       }

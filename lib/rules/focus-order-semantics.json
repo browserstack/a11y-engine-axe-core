@@ -14,7 +14,8 @@
   ],
   "metadata": {
     "description": "Ensure elements in the focus order have a role appropriate for interactive content",
-    "help": "Elements in the focus order should have an appropriate role"
+    "help": "Elements in the focus order should have an appropriate role",
+    "violationConfidence": 90
   },
   "all": [],
   "any": ["has-widget-role", "valid-scrollable-semantics"],

@@ -16,7 +16,8 @@
   ],
   "metadata": {
     "description": "Ensure form field does not have multiple label elements",
-    "help": "Form field must not have multiple label elements"
+    "help": "Form field must not have multiple label elements",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": [],

@@ -16,7 +16,8 @@
   "actIds": ["307n5z"],
   "metadata": {
     "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
-    "help": "Interactive controls must not be nested"
+    "help": "Interactive controls must not be nested",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["no-focusable-content"],

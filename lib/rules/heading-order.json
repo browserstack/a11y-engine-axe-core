@@ -6,7 +6,8 @@
   "tags": ["cat.structure", "wcag2aaa", "wcag2410", "a11y-engine"],
   "metadata": {
     "description": "Ensure the order of headings is semantically correct",
-    "help": "Heading levels must only increase by one"
+    "help": "Heading levels must only increase by one",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["heading-order"],

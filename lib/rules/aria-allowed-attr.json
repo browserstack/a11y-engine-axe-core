@@ -14,7 +14,8 @@
   "actIds": ["5c01ea"],
   "metadata": {
     "description": "Ensure an element's role supports its ARIA attributes",
-    "help": "Elements must only use supported ARIA attributes"
+    "help": "Elements must only use supported ARIA attributes",
+    "needsReviewConfidence": 50
   },
   "all": ["aria-allowed-attr"],
   "any": [],

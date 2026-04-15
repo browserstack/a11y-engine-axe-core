@@ -13,7 +13,8 @@
   ],
   "metadata": {
     "description": "Inform users about hidden content.",
-    "help": "Hidden content on the page should be analyzed"
+    "help": "Hidden content on the page should be analyzed",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["hidden-content"],
