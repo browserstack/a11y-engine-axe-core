@@ -17,7 +17,8 @@
   "actIds": ["3ea0c8"],
   "metadata": {
     "description": "Ensure every id attribute value used in ARIA and in labels is unique",
-    "help": "IDs used in ARIA and labels must be unique"
+    "help": "IDs used in ARIA and labels must be unique",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["duplicate-id-aria"],

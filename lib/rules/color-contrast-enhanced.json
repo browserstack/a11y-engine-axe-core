@@ -8,7 +8,9 @@
   "actIds": ["09o5cg"],
   "metadata": {
     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AAA enhanced contrast ratio thresholds",
-    "help": "Elements must meet enhanced color contrast ratio thresholds"
+    "help": "Elements must meet enhanced color contrast ratio thresholds",
+    "needsReviewConfidence": 50,
+    "defaultCategory": "text-contrast-enhanced"
   },
   "all": [],
   "any": ["color-contrast-enhanced"],

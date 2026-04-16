@@ -20,7 +20,8 @@
   "actIds": ["97a4e1", "m6b1q3"],
   "metadata": {
     "description": "Ensure buttons have discernible text",
-    "help": "Buttons must have discernible text"
+    "help": "Buttons must have discernible text",
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": [

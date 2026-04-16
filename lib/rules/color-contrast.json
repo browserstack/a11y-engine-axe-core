@@ -18,7 +18,9 @@
   "actIds": ["afw4f7", "09o5cg"],
   "metadata": {
     "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-    "help": "Elements must meet minimum color contrast ratio thresholds"
+    "help": "Elements must meet minimum color contrast ratio thresholds",
+    "needsReviewConfidence": 50,
+    "defaultCategory": "text-contrast"
   },
   "all": [],
   "any": ["color-contrast"],

@@ -1,5 +1,36 @@
 const { build } = require('esbuild');
 const path = require('path');
+const fs = require('fs');
+
+// [a11y-core]: resolve ip-protection imports to real file in monorepo,
+// or fall back to a stub when building axe-core standalone (CI).
+// Set A11Y_FINGERPRINT_PATH env var to override the fingerprint module location.
+const fingerprintFallback = {
+  name: 'a11y-fingerprint-fallback',
+  setup(pluginBuild) {
+    pluginBuild.onResolve(
+      { filter: /ip-protection\/utils\/fingerprint/ },
+      args => {
+        if (process.env.A11Y_FINGERPRINT_PATH) {
+          const envPath = path.resolve(process.env.A11Y_FINGERPRINT_PATH);
+          if (fs.existsSync(envPath)) {
+            return { path: envPath };
+          }
+        }
+        const realPath = path.resolve(args.resolveDir, args.path + '.js');
+        if (fs.existsSync(realPath)) {
+          return { path: realPath };
+        }
+        return {
+          path: path.resolve(
+            __dirname,
+            '../../lib/core/utils/fingerprint-stub.js'
+          )
+        };
+      }
+    );
+  }
+};
 
 module.exports = function (grunt) {
   grunt.registerMultiTask(
@@ -24,7 +55,8 @@ module.exports = function (grunt) {
             outfile: path.join(dest, name),
             minify: false,
             format: 'esm',
-            bundle: true
+            bundle: true,
+            plugins: [fingerprintFallback]
           })
             .then(done)
             .catch(e => {

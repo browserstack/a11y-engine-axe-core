@@ -6,7 +6,8 @@
   "tags": ["cat.keyboard", "best-practice"],
   "metadata": {
     "description": "Ensure every accesskey attribute value is unique",
-    "help": "accesskey attribute value should be unique"
+    "help": "accesskey attribute value should be unique",
+    "violationConfidence": 99
   },
   "all": [],
   "any": [],
