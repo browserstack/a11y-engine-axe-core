@@ -17,7 +17,9 @@
   "actIds": ["2eb176", "afb423"],
   "metadata": {
     "description": "Ensure <audio> elements have captions",
-    "help": "<audio> elements must have a captions track"
+    "help": "<audio> elements must have a captions track",
+    "violationConfidence": 99,
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": [],

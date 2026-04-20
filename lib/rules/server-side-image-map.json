@@ -17,7 +17,9 @@
   ],
   "metadata": {
     "description": "Ensure that server-side image maps are not used",
-    "help": "Server-side image maps must not be used"
+    "help": "Server-side image maps must not be used",
+    "violationConfidence": 99,
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": [],

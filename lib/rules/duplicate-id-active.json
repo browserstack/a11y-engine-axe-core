@@ -9,7 +9,9 @@
   "actIds": ["3ea0c8"],
   "metadata": {
     "description": "Ensure every id attribute value of active elements is unique",
-    "help": "IDs of active elements must be unique"
+    "help": "IDs of active elements must be unique",
+    "violationConfidence": 99,
+    "needsReviewConfidence": 50
   },
   "all": [],
   "any": ["duplicate-id-active"],
