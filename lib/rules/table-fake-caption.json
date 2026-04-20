@@ -19,7 +19,8 @@
   ],
   "metadata": {
     "description": "Ensure that tables with a caption use the <caption> element.",
-    "help": "Data or header cells must not be used to give caption to a data table."
+    "help": "Data or header cells must not be used to give caption to a data table.",
+    "violationConfidence": 90
   },
   "all": ["caption-faked"],
   "any": [],
