@@ -6,7 +6,8 @@
   "tags": ["cat.keyboard", "best-practice", "RGAAv4", "RGAA-12.7.1"],
   "metadata": {
     "description": "Ensure all skip links have a focusable target",
-    "help": "The skip-link target should exist and be focusable"
+    "help": "The skip-link target should exist and be focusable",
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["skip-link"],

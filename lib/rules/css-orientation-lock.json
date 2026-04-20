@@ -19,7 +19,7 @@
     "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
     "help": "CSS Media queries must not lock display orientation",
     "violationConfidence": 90,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["css-orientation-lock"],
   "any": [],

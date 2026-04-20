@@ -22,7 +22,7 @@
   "metadata": {
     "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
     "help": "Page must have means to bypass repeated blocks",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["internal-link-present", "header-present", "landmark"],

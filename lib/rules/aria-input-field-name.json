@@ -19,7 +19,7 @@
   "metadata": {
     "description": "Ensure every ARIA input field has an accessible name",
     "help": "ARIA input fields must have an accessible name",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["aria-label", "aria-labelledby", "non-empty-title"],

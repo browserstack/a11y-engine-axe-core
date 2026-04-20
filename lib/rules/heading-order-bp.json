@@ -7,7 +7,7 @@
   "metadata": {
     "description": "Ensure the order of headings is semantically correct",
     "help": "Heading levels should only increase by one",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["heading-order"],

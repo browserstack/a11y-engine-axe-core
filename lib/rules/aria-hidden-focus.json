@@ -19,7 +19,7 @@
   "metadata": {
     "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
     "help": "ARIA hidden element must not be focusable or contain focusable elements",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [
     "focusable-modal-open",

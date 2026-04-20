@@ -8,7 +8,7 @@
   "metadata": {
     "description": "Ensure touch targets have sufficient size and space",
     "help": "All touch targets must be 24px large, or leave sufficient space",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["target-size", "target-offset"],
