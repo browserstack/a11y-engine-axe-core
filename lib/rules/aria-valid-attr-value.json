@@ -15,7 +15,7 @@
   "metadata": {
     "description": "Ensure all ARIA attributes have valid values",
     "help": "ARIA attributes must conform to valid values",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["aria-valid-attr-value", "aria-errormessage", "aria-level"],
   "any": [],

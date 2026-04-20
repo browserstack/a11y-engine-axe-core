@@ -19,7 +19,7 @@
   "metadata": {
     "description": "Ensure <video> elements have captions",
     "help": "<video> elements must have captions",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": [],

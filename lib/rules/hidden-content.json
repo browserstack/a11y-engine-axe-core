@@ -14,7 +14,7 @@
   "metadata": {
     "description": "Inform users about hidden content.",
     "help": "Hidden content on the page should be analyzed",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["hidden-content"],

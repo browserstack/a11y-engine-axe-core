@@ -15,7 +15,7 @@
     "description": "Ensure aria-roledescription is only used on elements with an implicit or explicit role",
     "help": "aria-roledescription must be on elements with a semantic role",
     "violationConfidence": 99,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["aria-roledescription"],

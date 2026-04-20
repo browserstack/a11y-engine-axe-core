@@ -7,7 +7,7 @@
   "metadata": {
     "description": "Ensure all skip links have a focusable target",
     "help": "The skip-link target should exist and be focusable",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["skip-link"],

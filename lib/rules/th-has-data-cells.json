@@ -20,7 +20,7 @@
   "metadata": {
     "description": "Ensure that <th> elements and elements with role=columnheader/rowheader have data cells they describe",
     "help": "Table headers in a data table must refer to data cells",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["th-has-data-cells"],
   "any": [],

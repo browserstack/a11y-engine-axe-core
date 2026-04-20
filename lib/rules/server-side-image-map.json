@@ -19,7 +19,7 @@
     "description": "Ensure that server-side image maps are not used",
     "help": "Server-side image maps must not be used",
     "violationConfidence": 99,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": [],

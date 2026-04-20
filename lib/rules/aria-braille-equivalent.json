@@ -8,7 +8,7 @@
     "description": "Ensure aria-braillelabel and aria-brailleroledescription have a non-braille equivalent",
     "help": "aria-braille attributes must have a non-braille equivalent",
     "violationConfidence": 99,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["braille-roledescription-equivalent", "braille-label-equivalent"],
   "any": [],

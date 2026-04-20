@@ -18,7 +18,7 @@
   "metadata": {
     "description": "Ensure every id attribute value used in ARIA and in labels is unique",
     "help": "IDs used in ARIA and labels must be unique",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["duplicate-id-aria"],

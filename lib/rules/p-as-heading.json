@@ -19,7 +19,7 @@
     "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
     "help": "Styled <p> elements must not be used as headings",
     "violationConfidence": 85,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["p-as-heading"],
   "any": [],

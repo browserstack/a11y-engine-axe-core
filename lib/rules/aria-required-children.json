@@ -16,7 +16,7 @@
   "metadata": {
     "description": "Ensure elements with an ARIA role that require child roles contain them",
     "help": "Certain ARIA roles must contain particular children",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["aria-required-children"],

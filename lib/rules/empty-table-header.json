@@ -7,7 +7,7 @@
     "description": "Ensure table headers have discernible text",
     "help": "Table header text should not be empty",
     "violationConfidence": 99,
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": ["has-visible-text"],

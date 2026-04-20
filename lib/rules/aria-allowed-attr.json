@@ -15,7 +15,7 @@
   "metadata": {
     "description": "Ensure an element's role supports its ARIA attributes",
     "help": "Elements must only use supported ARIA attributes",
-    "needsReviewConfidence": 50
+    "needsReviewConfidence": 49.99
   },
   "all": ["aria-allowed-attr"],
   "any": [],

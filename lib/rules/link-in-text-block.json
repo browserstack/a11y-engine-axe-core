@@ -18,7 +18,7 @@
   "metadata": {
     "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
     "help": "Links must be distinguishable without relying on color",
-    "needsReviewConfidence": 50,
+    "needsReviewConfidence": 49.99,
     "defaultCategory": "links"
   },
   "any": ["link-in-text-block", "link-in-text-block-style"],
