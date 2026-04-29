@@ -15,7 +15,7 @@
     "RGAA-5.4.1",
     "a11y-engine",
     "a11y-engine-experimental",
-    "medium-accuracy"
+    "high-accuracy"
   ],
   "metadata": {
     "description": "Ensure that tables with a caption use the <caption> element.",
