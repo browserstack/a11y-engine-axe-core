@@ -9,7 +9,7 @@
     "review-item",
     "a11y-engine",
     "a11y-engine-experimental",
-    "medium-accuracy"
+    "high-accuracy"
   ],
   "metadata": {
     "description": "Inform users about hidden content.",

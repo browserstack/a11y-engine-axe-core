@@ -12,7 +12,7 @@
     "a11y-engine-experimental",
     "RGAAv4",
     "RGAA-6.1.5",
-    "medium-accuracy"
+    "high-accuracy"
   ],
   "actIds": ["2ee8b8"],
   "metadata": {
