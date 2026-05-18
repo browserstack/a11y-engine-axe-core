@@ -15,7 +15,8 @@
   "metadata": {
     "description": "Ensure ARIA attributes are not prohibited for an element's role",
     "help": "Elements must only use permitted ARIA attributes",
-    "defaultCategory": "names-and-labels"
+    "defaultCategory": "names-and-labels",
+    "needsReviewConfidence": 49.99
   },
   "all": [],
   "any": [],
