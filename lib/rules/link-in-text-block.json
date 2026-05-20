@@ -22,13 +22,6 @@
     "defaultCategory": "links"
   },
   "any": ["link-in-text-block", "link-in-text-block-style"],
-  "all": [
-    {
-      "options": {
-        "a11yRule": false
-      },
-      "id": "link-in-text-block"
-    }
-  ],
+  "all": [],
   "none": []
 }
