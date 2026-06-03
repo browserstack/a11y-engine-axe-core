@@ -65,7 +65,7 @@
   ],
   "standard-version": {
     "scripts": {
-      "postbump": "npm ci && npm run sri-update && git add doc/rule-descriptions.md"
+      "postbump": "npm ci && npm rebuild esbuild --ignore-scripts=false --foreground-scripts && npm run sri-update && git add doc/rule-descriptions.md"
     },
     "skip": {
       "tag": true

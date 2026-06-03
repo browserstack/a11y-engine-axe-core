@@ -18,6 +18,10 @@ jobs:
           node-version-file: .nvmrc
           cache: 'npm'
       - run: npm ci
+      # .npmrc sets ignore-scripts=true (supply-chain hardening, AXE-3444), which
+      # skips esbuild's postinstall that fetches its native bundler binary. Rebuild
+      # it explicitly so `npm run build` (grunt -> esbuild) can run.
+      - run: npm rebuild esbuild --ignore-scripts=false --foreground-scripts
       - run: npm run prepare
       - run: npm run build
       - uses: actions/upload-artifact@v4

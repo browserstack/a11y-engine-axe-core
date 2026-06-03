@@ -206,8 +206,10 @@ jobs:
       - browser-tools-job
       # install ACT rules
       # install first as for some reason installing a single package
-      # also re-installs all repo dependencies as well
-      - run: npm install w3c/wcag-act-rules#main
+      # also re-installs all repo dependencies as well. .npmrc sets
+      # ignore-scripts=true (AXE-3444); the full re-install would otherwise skip
+      # native postinstalls (e.g. esbuild), so allow scripts for this trusted install.
+      - run: npm install w3c/wcag-act-rules#main --ignore-scripts=false
       - run: npx browser-driver-manager install chromedriver --verbose
       - <<: *restore_build
       - run: npm run test:act
@@ -222,8 +224,10 @@ jobs:
       - browser-tools-job
       # install ARIA practices
       # install first as for some reason installing a single package
-      # also re-installs all repo dependencies as well
-      - run: npm install w3c/aria-practices#main
+      # also re-installs all repo dependencies as well. .npmrc sets
+      # ignore-scripts=true (AXE-3444); the full re-install would otherwise skip
+      # native postinstalls (e.g. esbuild), so allow scripts for this trusted install.
+      - run: npm install w3c/aria-practices#main --ignore-scripts=false
       - run: npx browser-driver-manager install chromedriver --verbose
       - <<: *restore_build
       - run: npm run test:apg
