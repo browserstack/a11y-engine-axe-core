@@ -55,9 +55,6 @@ jobs:
       - browser-tools-job
       - <<: *set_npm_auth
       - run: npm ci
-      # .npmrc sets ignore-scripts=true (supply-chain hardening, AXE-3444), which
-      # skips esbuild's postinstall that fetches its native bundler binary. Rebuild
-      # it explicitly so the cached node_modules carries the binary to build_unix.
       - run: npm rebuild esbuild --ignore-scripts=false --foreground-scripts
       - run: npx browser-driver-manager install chromedriver --verbose
       - save_cache:
@@ -206,10 +203,8 @@ jobs:
       - browser-tools-job
       # install ACT rules
       # install first as for some reason installing a single package
-      # also re-installs all repo dependencies as well. .npmrc sets
-      # ignore-scripts=true (AXE-3444); the full re-install would otherwise skip
-      # native postinstalls (e.g. esbuild), so allow scripts for this trusted install.
-      - run: npm install w3c/wcag-act-rules#main --ignore-scripts=false
+      # also re-installs all repo dependencies as well
+      - run: npm install w3c/wcag-act-rules#main
       - run: npx browser-driver-manager install chromedriver --verbose
       - <<: *restore_build
       - run: npm run test:act
@@ -224,10 +219,8 @@ jobs:
       - browser-tools-job
       # install ARIA practices
       # install first as for some reason installing a single package
-      # also re-installs all repo dependencies as well. .npmrc sets
-      # ignore-scripts=true (AXE-3444); the full re-install would otherwise skip
-      # native postinstalls (e.g. esbuild), so allow scripts for this trusted install.
-      - run: npm install w3c/aria-practices#main --ignore-scripts=false
+      # also re-installs all repo dependencies as well
+      - run: npm install w3c/aria-practices#main
       - run: npx browser-driver-manager install chromedriver --verbose
       - <<: *restore_build
       - run: npm run test:apg
