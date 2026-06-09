@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [4.12.1](https://github.com/dequelabs/axe-core/compare/v4.12.0...v4.12.1) (2026-06-09)
+
+### Bug Fixes
+
+- **axe.d.ts:** make enabled property of RuleMetadata optional ([#5129](https://github.com/dequelabs/axe-core/issues/5129)) ([7eb3d2d](https://github.com/dequelabs/axe-core/commit/7eb3d2d7ce283926a786c8a0fbf2a52c81d5e694))
+
 ## [4.12.0](https://github.com/dequelabs/axe-core/compare/v4.11.4...v4.12.0) (2026-06-01)
 
 ### Features
