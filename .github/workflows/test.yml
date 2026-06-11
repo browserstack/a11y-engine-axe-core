@@ -18,6 +18,7 @@ jobs:
           node-version-file: .nvmrc
           cache: 'npm'
       - run: npm ci
+      - run: npm rebuild esbuild --ignore-scripts=false --foreground-scripts
       - run: npm run prepare
       - run: npm run build
       - uses: actions/upload-artifact@v4
