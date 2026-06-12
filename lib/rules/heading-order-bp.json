@@ -3,7 +3,13 @@
   "impact": "moderate",
   "selector": "h1, h2, h3, h4, h5, h6, [role=heading]",
   "matches": "heading-matches",
-  "tags": ["cat.structure", "best-practice", "a11y-engine"],
+  "tags": [
+    "cat.structure",
+    "best-practice",
+    "a11y-engine",
+    "RGAAv4",
+    "RGAA-9.1.2"
+  ],
   "metadata": {
     "description": "Ensure the order of headings is semantically correct",
     "help": "Heading levels should only increase by one",
