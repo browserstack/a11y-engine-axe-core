@@ -65,7 +65,7 @@
   ],
   "standard-version": {
     "scripts": {
-      "postbump": "npm ci && npm run sri-update && git add doc/rule-descriptions.md"
+      "postbump": "npm ci && npm rebuild esbuild --ignore-scripts=false --foreground-scripts && npm run sri-update && git add doc/rule-descriptions.md"
     },
     "skip": {
       "tag": true
@@ -141,7 +141,7 @@
     "css-selector-parser": "^1.4.1",
     "emoji-regex": "^10.2.1",
     "es6-promise": "^4.2.8",
-    "esbuild": "^0.10.x",
+    "esbuild": "0.19.12",
     "eslint": "^9.2.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-mocha-no-only": "^1.2.0",
