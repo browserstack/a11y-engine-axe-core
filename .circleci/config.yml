@@ -55,6 +55,7 @@ jobs:
       - browser-tools-job
       - <<: *set_npm_auth
       - run: npm ci
+      - run: npm rebuild esbuild --ignore-scripts=false --foreground-scripts
       - run: npx browser-driver-manager install chromedriver --verbose
       - save_cache:
           key: v9-cache-unix-{{ checksum "package-lock.json" }}
