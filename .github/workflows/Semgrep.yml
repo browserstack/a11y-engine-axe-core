@@ -1,6 +1,10 @@
 # Name of this GitHub Actions workflow.
 name: Semgrep
 
+permissions:
+  contents: read
+  security-events: write
+
 on:
   # Scan changed files in PRs (diff-aware scanning):
   pull_request: {}
