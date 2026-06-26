@@ -176,4 +176,56 @@ describe('identical-links-same-purpose-after tests', function () {
     assert.deepEqual(results[1].relatedNodes, []);
     assert.equal(results[1].result, true);
   });
+
+  it('emits the link group selectors in reviewPayload.visualHelperData for identical links', function () {
+    var nodeOneData = {
+      data: {
+        name: 'read more',
+        accessibleText: 'Read More',
+        urlProps: { pathname: '/blog/ai-health' }
+      },
+      relatedNodes: [{ selector: ['#card-1 > a.read-more'] }],
+      result: true
+    };
+    var nodeTwoData = {
+      data: {
+        name: 'read more',
+        accessibleText: 'Read More',
+        urlProps: { pathname: '/blog/ai-finance' }
+      },
+      relatedNodes: [{ selector: ['#card-2 > a.read-more'] }],
+      result: true
+    };
+
+    var results = check.after([nodeOneData, nodeTwoData]);
+    assert.lengthOf(results, 1);
+
+    // full group: the primary link plus every same-name sibling, each entry a
+    // DqElement.selector array identical to relatedNodes[].selector
+    var visualHelperData = results[0].data.reviewPayload.visualHelperData;
+    assert.deepEqual(visualHelperData.identicalLinks, [
+      ['#card-1 > a.read-more'],
+      ['#card-2 > a.read-more']
+    ]);
+    // the actual rendered link text shared by the group (original case)
+    assert.equal(visualHelperData.linkText, 'Read More');
+  });
+
+  it('does not emit reviewPayload when a link has no same-name group', function () {
+    var nodeOneData = {
+      data: { name: 'earth', urlProps: {} },
+      relatedNodes: [{ selector: ['#a'] }],
+      result: true
+    };
+    var nodeTwoData = {
+      data: { name: 'venus', urlProps: {} },
+      relatedNodes: [{ selector: ['#b'] }],
+      result: true
+    };
+
+    var results = check.after([nodeOneData, nodeTwoData]);
+    assert.lengthOf(results, 2);
+    assert.notProperty(results[0].data, 'reviewPayload');
+    assert.notProperty(results[1].data, 'reviewPayload');
+  });
 });

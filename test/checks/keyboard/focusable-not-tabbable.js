@@ -178,4 +178,18 @@ describe('focusable-not-tabbable', function () {
     );
     assert.isUndefined(check.evaluate.apply(checkContext, params));
   });
+
+  it('emits the focusable children selectors in reviewPayload.visualHelperData', () => {
+    var params = checkSetup(
+      '<div id="target" aria-hidden="true"><a href="/">Link</a></div>'
+    );
+    assert.isFalse(check.evaluate.apply(checkContext, params));
+    var focusableChildren =
+      checkContext._data.reviewPayload.visualHelperData.focusableChildren;
+    assert.isArray(focusableChildren);
+    assert.lengthOf(focusableChildren, 1);
+    // each entry is a DqElement.selector array, identical to relatedNodes[].selector
+    assert.isArray(focusableChildren[0]);
+    assert.isString(focusableChildren[0][0]);
+  });
 });
