@@ -200,8 +200,7 @@ describe('identical-links-same-purpose-after tests', function () {
     var results = check.after([nodeOneData, nodeTwoData]);
     assert.lengthOf(results, 1);
 
-    // full group: the primary link plus every same-name sibling, each entry a
-    // DqElement.selector array identical to relatedNodes[].selector
+    // full group (primary + same-name siblings), each a DqElement.selector array
     var visualHelperData = results[0].data.reviewPayload.visualHelperData;
     assert.deepEqual(visualHelperData.identicalLinks, [
       ['#card-1 > a.read-more'],

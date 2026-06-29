@@ -32,8 +32,7 @@ describe('duplicate-id', function () {
   });
 
   it('keeps data a plain id string and emits no reviewPayload when the reviewPayload option is off', function () {
-    // Guards the static/active duplicate-id checks: they share this evaluate
-    // but never pass the reviewPayload option, so they must keep string data.
+    // static/active checks share this evaluate but never set the option.
     fixture.innerHTML = '<div id="target"></div><div id="target"></div>';
     var node = fixture.querySelector('#target');
     assert.isFalse(
@@ -56,8 +55,7 @@ describe('duplicate-id', function () {
   });
 
   it('removes duplicates for object-shaped data (shared after with the aria variant)', function () {
-    // The shared after dedupes by data.id when data is an object
-    // ({ id, reviewPayload }), as emitted by the aria (bulk-review) variant.
+    // shared after dedupes object data by data.id (aria variant shape).
     assert.deepEqual(
       checks['duplicate-id'].after([
         { data: { id: 'a' } },

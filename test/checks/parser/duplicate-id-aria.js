@@ -33,8 +33,7 @@ describe('duplicate-id-aria', function () {
     assert.equal(checkContext._data.id, 'dup');
     var visualHelperData = checkContext._data.reviewPayload.visualHelperData;
     assert.equal(visualHelperData.duplicateId, 'dup');
-    // the OTHER elements sharing the id (relatedNodes), each a
-    // DqElement.selector array identical to relatedNodes[].selector
+    // the other elements sharing the id, each a DqElement.selector array
     assert.lengthOf(visualHelperData.elements, 2);
     assert.isArray(visualHelperData.elements[0]);
     assert.isString(visualHelperData.elements[0][0]);
