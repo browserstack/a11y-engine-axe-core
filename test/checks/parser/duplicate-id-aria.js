@@ -5,6 +5,8 @@ describe('duplicate-id-aria', function () {
   var fixtureSetup = axe.testUtils.fixtureSetup;
   var checkContext = axe.testUtils.MockCheckContext();
   var checkEvaluate = axe.testUtils.getCheckEvaluate('duplicate-id-aria');
+  // duplicate-id-aria enables the bulk-review payload via this check option
+  var options = { reviewPayload: true };
 
   afterEach(function () {
     fixture.innerHTML = '';
@@ -15,7 +17,7 @@ describe('duplicate-id-aria', function () {
   it('returns true and emits no reviewPayload when the id is unique', function () {
     fixtureSetup('<div id="solo"></div>');
     var node = fixture.querySelector('#solo');
-    assert.isTrue(checkEvaluate.call(checkContext, node));
+    assert.isTrue(checkEvaluate.call(checkContext, node, options));
     assert.equal(checkContext._data.id, 'solo');
     assert.notProperty(checkContext._data, 'reviewPayload');
     assert.deepEqual(checkContext._relatedNodes, []);
@@ -26,7 +28,7 @@ describe('duplicate-id-aria', function () {
       '<div id="dup"></div><div id="dup"></div><div id="dup"></div>'
     );
     var node = fixture.querySelector('div');
-    assert.isFalse(checkEvaluate.call(checkContext, node));
+    assert.isFalse(checkEvaluate.call(checkContext, node, options));
 
     assert.equal(checkContext._data.id, 'dup');
     var visualHelperData = checkContext._data.reviewPayload.visualHelperData;
@@ -36,6 +38,16 @@ describe('duplicate-id-aria', function () {
     assert.lengthOf(visualHelperData.elements, 2);
     assert.isArray(visualHelperData.elements[0]);
     assert.isString(visualHelperData.elements[0][0]);
+  });
+
+  it('emits additively — the reviewPayload option does not change the verdict', function () {
+    fixtureSetup('<div id="dup"></div><div id="dup"></div>');
+    var node = fixture.querySelector('div');
+    var withOption = checkEvaluate.call(checkContext, node, options);
+    checkContext.reset();
+    var withoutOption = checkEvaluate.call(checkContext, node, {});
+    assert.equal(withOption, withoutOption);
+    assert.isFalse(withOption);
   });
 
   it('after dedupes results by data.id', function () {

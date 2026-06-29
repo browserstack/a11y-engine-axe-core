@@ -1,7 +1,8 @@
 {
   "id": "duplicate-id-aria",
-  "evaluate": "duplicate-id-aria-evaluate",
-  "after": "duplicate-id-aria-after",
+  "evaluate": "duplicate-id-evaluate",
+  "after": "duplicate-id-after",
+  "options": { "reviewPayload": true },
   "metadata": {
     "impact": "critical",
     "messages": {
