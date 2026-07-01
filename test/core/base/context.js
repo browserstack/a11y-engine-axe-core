@@ -1,5 +1,6 @@
 /*eslint no-new:0*/
 describe('Context', () => {
+  const html = axe.testUtils.html;
   const { Context } = axe._thisWillBeDeletedDoNotUse.base;
   const { createNestedShadowDom } = axe.testUtils;
   const fixture = document.getElementById('fixture');
@@ -16,7 +17,7 @@ describe('Context', () => {
   it('should not mutate exclude in input', () => {
     fixture.innerHTML = '<div id="foo"></div>';
     const context = { exclude: [['iframe', '#foo']] };
-    // eslint-disable-next-line no-new
+
     new Context(context);
     assert.deepEqual(context, { exclude: [['iframe', '#foo']] });
   });
@@ -24,7 +25,7 @@ describe('Context', () => {
   it('should not mutate its include input', () => {
     fixture.innerHTML = '<div id="foo"></div>';
     const context = { include: [['#foo']] };
-    // eslint-disable-next-line no-new
+
     new Context(context);
     assert.deepEqual(context, { include: [['#foo']] });
   });
@@ -87,12 +88,12 @@ describe('Context', () => {
     it('does not match shadow DOM nodes with light DOM selection', () => {
       createNestedShadowDom(
         fixture,
-        `<p id="p1">Light DOM</p>
-        <article id="shadowHost">
-          <p id="p2">Slotted light DOM</p>
-        </article>`,
-        `<section id="shadowHost"> <slot /> </section>
-        <p id="p3">Shadow DOM</p>`
+        html`<p id="p1">Light DOM</p>
+          <article id="shadowHost">
+            <p id="p2">Slotted light DOM</p>
+          </article>`,
+        html`<section id="shadowHost"><slot /></section>
+          <p id="p3">Shadow DOM</p>`
       );
       const result = new Context([[['p']]]);
       assert.deepEqual(selectors(result.include), ['#p1', '#p2']);
@@ -107,6 +108,19 @@ describe('Context', () => {
       );
       const result = new Context([[['#fixture > article', 'section', 'h1']]]);
       assert.equal(result.include[0].props.id, 'target');
+    });
+
+    it('accepts a reference to a ShadowRoot', () => {
+      createNestedShadowDom(
+        fixture,
+        '<article id="shadowHost"></article>',
+        html`<h1 id="h1">Heading</h1>
+          <p id="p">Content</p>`
+      );
+      const shadowHost = fixture.querySelector('#shadowHost');
+      const shadowRoot = shadowHost.shadowRoot;
+      const result = new Context(shadowRoot);
+      assert.deepEqual(selectors(result.include), ['#h1', '#p']);
     });
 
     it('accepts a node reference consisting of nested divs', () => {
@@ -453,7 +467,7 @@ describe('Context', () => {
       context.appendChild(iframe);
     }
 
-    it('adds frames that are explicitly included', function (done) {
+    it('adds frames that are explicitly included', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -468,7 +482,7 @@ describe('Context', () => {
       );
     });
 
-    it('adds frames that are implicitly included', function (done) {
+    it('adds frames that are implicitly included', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -483,7 +497,7 @@ describe('Context', () => {
       );
     });
 
-    it('sets include', function (done) {
+    it('sets include', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -501,7 +515,7 @@ describe('Context', () => {
       );
     });
 
-    it('sets exclude', function (done) {
+    it('sets exclude', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -521,7 +535,7 @@ describe('Context', () => {
       );
     });
 
-    it('sets initiator: false', function (done) {
+    it('sets initiator: false', done => {
       iframeReady(
         '../mock/frames/context.html',
         $id('fixture'),
@@ -586,7 +600,7 @@ describe('Context', () => {
     });
 
     describe('.page', () => {
-      it('is true if context includes the document element', function (done) {
+      it('is true if context includes the document element', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
@@ -602,7 +616,7 @@ describe('Context', () => {
         );
       });
 
-      it("can be false, even if the frame's documentElement is included", function (done) {
+      it("can be false, even if the frame's documentElement is included", done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
@@ -620,12 +634,12 @@ describe('Context', () => {
     });
 
     describe('.focusable', () => {
-      it('is true if tabindex is 0', function (done) {
+      it('is true if tabindex is 0', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
           'target',
-          function (iframe) {
+          iframe => {
             iframe.tabIndex = '0';
             const result = new Context();
             assert.lengthOf(result.frames, 1);
@@ -635,12 +649,12 @@ describe('Context', () => {
         );
       });
 
-      it('is false if the context has a negative tabindex', function (done) {
+      it('is false if the context has a negative tabindex', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
           'target',
-          function (iframe) {
+          iframe => {
             iframe.tabIndex = '-1';
             const result = new Context('#fixture');
             assert.lengthOf(result.frames, 1);
@@ -650,7 +664,7 @@ describe('Context', () => {
         );
       });
 
-      it('is false if the parent context is not focusable', function (done) {
+      it('is false if the parent context is not focusable', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
@@ -669,12 +683,12 @@ describe('Context', () => {
     });
 
     describe('.size', () => {
-      it('sets width and height of the frame', function (done) {
+      it('sets width and height of the frame', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
           'target',
-          function (iframe) {
+          iframe => {
             iframe.width = '100';
             iframe.height = '200';
             const result = new Context('#fixture');
@@ -686,12 +700,12 @@ describe('Context', () => {
         );
       });
 
-      it('works with CSS width / height', function (done) {
+      it('works with CSS width / height', done => {
         iframeReady(
           '../mock/frames/context.html',
           $id('fixture'),
           'target',
-          function (iframe) {
+          iframe => {
             iframe.setAttribute('style', 'width: 100px; height: 200px');
             const result = new Context('#fixture');
             const size = result.frames[0].size;
@@ -703,7 +717,7 @@ describe('Context', () => {
       });
     });
 
-    it('combines includes', function (done) {
+    it('combines includes', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -724,7 +738,7 @@ describe('Context', () => {
       );
     });
 
-    it('does not include the same frame twice', function (done) {
+    it('does not include the same frame twice', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -739,7 +753,7 @@ describe('Context', () => {
       );
     });
 
-    it('should filter out invisible frames', function (done) {
+    it('should filter out invisible frames', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
@@ -756,14 +770,14 @@ describe('Context', () => {
       );
     });
 
-    it('should throw when frame could not be found', function (done) {
+    it('should throw when frame could not be found', done => {
       fixture.innerHTML = '<div id="outer"></div>';
       iframeReady(
         '../mock/frames/context.html',
         $id('outer'),
         'target',
         () => {
-          assert.throws(function () {
+          assert.throws(() => {
             new Context(['#notAFrame', '#foo']);
           });
         },
@@ -827,9 +841,12 @@ describe('Context', () => {
 
     describe('when the selector has length > 1', () => {
       it('sets the frame, rather than include / exclude', () => {
-        fixture.innerHTML = `<iframe id="foo" srcdoc="
-          <h1>Hello world</h1> <img>
-        "></iframe>`;
+        fixture.innerHTML = html`<iframe
+          id="foo"
+          srcdoc="
+  <h1>Hello world</h1> <img>
+"
+        ></iframe>`;
         const result = new Context({
           include: { fromFrames: ['#foo', 'h1'] },
           exclude: { fromFrames: ['iframe', 'img'] }
@@ -840,9 +857,12 @@ describe('Context', () => {
       });
 
       it('creates a context for the frame', () => {
-        fixture.innerHTML = `<iframe id="foo" srcdoc="
-          <h1>Hello world</h1> <img>
-        "></iframe>`;
+        fixture.innerHTML = html`<iframe
+          id="foo"
+          srcdoc="
+  <h1>Hello world</h1> <img>
+"
+        ></iframe>`;
         const result = new Context({
           include: { fromFrames: ['#foo', 'h1'] },
           exclude: { fromFrames: ['iframe', 'img'] }
@@ -912,9 +932,12 @@ describe('Context', () => {
       createNestedShadowDom(
         fixture,
         '<article id="shadowHost"></article>',
-        `<iframe id="foo" srcdoc="
-          <h1>Hello World</h1>
-        "></iframe>`
+        html`<iframe
+          id="foo"
+          srcdoc="
+  <h1>Hello World</h1>
+"
+        ></iframe>`
       );
       assert.throws(() => {
         new Context({
@@ -948,9 +971,12 @@ describe('Context', () => {
         createNestedShadowDom(
           fixture,
           '<article id="shadowHost"></article>',
-          `<iframe id="foo" srcdoc="
-            <h1>Hello World</h1>
-          "></iframe>`
+          html`<iframe
+            id="foo"
+            srcdoc="
+  <h1>Hello World</h1>
+"
+          ></iframe>`
         );
         const result = new Context([
           [
@@ -969,9 +995,12 @@ describe('Context', () => {
         createNestedShadowDom(
           fixture,
           '<article id="shadowHost"></article>',
-          `<iframe id="foo" srcdoc="
-            <h1>Hello World</h1>
-          "></iframe>`
+          html`<iframe
+            id="foo"
+            srcdoc="
+  <h1>Hello World</h1>
+"
+          ></iframe>`
         );
         const result = new Context({
           fromFrames: [

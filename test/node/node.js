@@ -7,7 +7,7 @@ var spawn = require('child_process').spawn;
 var fs = require('fs');
 var path = require('path');
 
-initJsdom(function (err, window) {
+initJsdom((err, window) => {
   assert.equal(err, null);
 
   console.log('running axe');
@@ -17,7 +17,7 @@ initJsdom(function (err, window) {
       preload: false,
       rules: { 'color-contrast': { enabled: false } }
     },
-    function (axeError, results) {
+    (axeError, results) => {
       assert.equal(axeError, null);
       assert.notEqual(results.violations.length, 0);
       console.log('axe ran successfully');
@@ -33,48 +33,47 @@ initJsdom(function (err, window) {
  */
 function initJsdom(callback) {
   try {
-    var nodeToJsdomMatrix = {
-      4: '9.12.0', // last jsdom version that supported this node version
-      6: '11.12.0',
-      8: '15.2.1',
-      10: '16.7.0',
-      12: '19.0.0',
-      14: '21.1.2',
-      16: '22.1.0',
-      18: '26.1.0'
+    var nodeToDeps = {
+      4: ['jsdom@9.12.0', 'sax@1.4.1'], // last jsdom version that supported this node version
+      6: ['jsdom@11.12.0', 'sax@1.4.1'],
+      8: ['jsdom@15.2.1'],
+      10: ['jsdom@16.7.0'],
+      12: ['jsdom@19.0.0'],
+      14: ['jsdom@21.1.2'],
+      16: ['jsdom@22.1.0'],
+      18: ['jsdom@26.1.0']
     };
 
     var majorNodeVersion = process.versions.node.split('.')[0];
-    var jsdomVersion = nodeToJsdomMatrix[majorNodeVersion] || 'latest';
+    console.log(`node version detected as: v${majorNodeVersion}`);
 
-    console.log('node version detected as: v' + majorNodeVersion);
-    console.log('installing jsdom@' + jsdomVersion);
-    var child = spawn(
-      'npm',
-      ['install', 'jsdom@' + jsdomVersion, '--no-save'],
-      {
-        cwd: __dirname
-      }
-    );
+    var deps = nodeToDeps[majorNodeVersion] || ['jsdom@latest'];
+    var nodeInstallArgs = ['install', '--no-save'];
+    for (var dep of deps) {
+      console.log(`installing ${dep}`);
+      nodeInstallArgs.push(dep);
+    }
+
+    var child = spawn('npm', nodeInstallArgs, { cwd: __dirname });
     child.stdout.setEncoding('utf8');
     child.stderr.setEncoding('utf8');
-    child.stdout.on('data', function (data) {
+    child.stdout.on('data', data => {
       console.log(data);
     });
-    child.stderr.on('data', function (data) {
+    child.stderr.on('data', data => {
       console.error(data);
     });
-    child.on('close', function () {
+    child.on('close', () => {
       console.log('installed');
-      var jsdom = require('jsdom');
-      var domStr = fs.readFileSync(
+      const jsdom = require('jsdom');
+      const domStr = fs.readFileSync(
         path.join('test', 'integration', 'full', 'all-rules', 'all-rules.html'),
         'utf8'
       );
 
       // jsdom 9
       if (jsdom.env) {
-        jsdom.env(domStr, function (jsdomError, window) {
+        jsdom.env(domStr, (jsdomError, window) => {
           if (jsdomError) {
             callback(jsdomError);
           }

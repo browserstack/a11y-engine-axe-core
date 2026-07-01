@@ -28,11 +28,8 @@ module.exports = ({ id, title, axeRules, skipTests = [] }) => {
     this.timeout(50000);
     this.retries(3);
 
-    before(async () => {
-      driver = getWebdriver();
-    });
-
     before(done => {
+      driver = getWebdriver();
       server = http.createServer((request, response) => {
         return handler(request, response, {
           cleanUrls: false,
@@ -50,7 +47,7 @@ module.exports = ({ id, title, axeRules, skipTests = [] }) => {
     });
 
     after(async () => {
-      await driver.close();
+      await driver.quit();
       await new Promise(r => server.close(r));
     });
 

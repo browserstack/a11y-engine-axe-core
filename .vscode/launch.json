@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to WTR test:debug",
+      "address": "localhost",
+      "port": 9765, // keep in sync with debugPort in wtr.config.mjs chrome-debug group
+      "webRoot": "${workspaceFolder}",
+      "sourceMaps": true,
+      "sourceMapPathOverrides": {
+        "*": "${webRoot}/*"
+      }
+    }
+  ]
+}
