@@ -1,5 +1,4 @@
 describe('color.Color', () => {
-  'use strict';
   const Color = axe.commons.color.Color;
 
   it('can be constructed without alpha', () => {
@@ -301,6 +300,19 @@ describe('color.Color', () => {
         assert.equal(c.blue, 144);
         assert.equal(c.alpha, 0.5);
       });
+
+      it('clips out of gamut values', () => {
+        const c = new Color();
+        c.parseColorFnString('oklch(25% 0.75 345)');
+        assert.equal(c.red, 186);
+        assert.equal(c.green, 0);
+        assert.equal(c.blue, 103);
+        assert.equal(c.alpha, 1);
+
+        assert.equal(c.red, Math.round(c.r * 255));
+        assert.equal(c.green, Math.round(c.g * 255));
+        assert.equal(c.blue, Math.round(c.b * 255));
+      });
     });
   });
 
@@ -344,7 +356,7 @@ describe('color.Color', () => {
     it('does nothing when passed an invalid string', () => {
       const color = new Color(1, 2, 3, 0.4);
       const values = ['abcdef', '#abcde', '#XYZ', '#0123456789'];
-      values.forEach(function (val) {
+      values.forEach(val => {
         color.parseHexString(val);
         assert.equal(color.red, 1);
         assert.equal(color.green, 2);

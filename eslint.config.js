@@ -124,7 +124,7 @@ module.exports = [
   },
   {
     // disallow imports from node modules
-    ignores: ['lib/core/imports/**/*.js'],
+    ignores: ['lib/core/imports/**/*.js', 'test/**'],
     rules: {
       'no-restricted-imports': [
         'error',
@@ -361,6 +361,21 @@ module.exports = [
     rules: {
       'new-cap': 0,
       'no-use-before-define': 0
+    }
+  },
+  {
+    files: ['.github/bin/*.mjs'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.es2024
+      }
+    },
+    rules: {
+      // Helper scripts for github can import from anywhere
+      'no-restricted-imports': ['off']
     }
   },
   {

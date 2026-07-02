@@ -1,7 +1,8 @@
 const { globSync } = require('glob');
 const chrome = require('selenium-webdriver/chrome');
 const firefox = require('selenium-webdriver/firefox');
-const chromedriver = require('chromedriver');
+const chromedriver =
+  process.env.CHROMEDRIVER_BIN ?? require('chromedriver').path;
 
 const args = process.argv.slice(2);
 
@@ -26,7 +27,7 @@ function collectTestResults(driver) {
       const callback = arguments[arguments.length - 1];
       setTimeout(() => {
         if (!window.mocha) {
-          callback('mocha-missing;' + window.location.href);
+          callback(`mocha-missing;${window.location.href}`);
         }
         // return the mocha results (or undefined if not finished)
         callback(window.mochaResults);
@@ -36,9 +37,8 @@ function collectTestResults(driver) {
       // If there are no results, listen a little longer
       if (typeof result === 'string' && result.includes('mocha-missing')) {
         throw new Error(
-          'Mocha does not exist in: ' +
-            result.split(';')[1] +
-            '\nIf using a frame, put the file in a subdirectory'
+          `Mocha does not exist in: ${result.split(';')[1]}
+If using a frame, put the file in a subdirectory`
         );
       }
       if (!result) {
@@ -75,7 +75,7 @@ function runTestUrls(driver, isMobile, urls, errors) {
         const browserName =
           capabilities.get('browserName') +
           (capabilities.get('mobileEmulationEnabled') ? '-mobile' : '');
-        console.log(url + ' [' + browserName + ']');
+        console.log(`${url} [${browserName}]`);
 
         // Remember the errors
         (result.reports || []).forEach(err => {
@@ -86,17 +86,9 @@ function runTestUrls(driver, isMobile, urls, errors) {
         });
 
         // Log the result of the page tests
-        console[result.failures ? 'error' : 'log'](
-          'passes: ' +
-            result.passes +
-            ', ' +
-            'failures: ' +
-            result.failures +
-            ', ' +
-            'duration: ' +
-            result.duration / 1000 +
-            's'
-        );
+        console[result.failures ? 'error' : 'log'](`passes: ${result.passes}, 
+          failures: ${result.failures}, 
+          duration: ${result.duration / 1000}s`);
         console.log();
       })
       .then(() => {
@@ -118,22 +110,32 @@ function buildWebDriver(browser) {
   let webdriver;
   const mobileBrowser = browser.split('-mobile');
 
-  // fix chrome DevToolsActivePort file doesn't exist in CricleCI (as well as a
+  // fix chrome DevToolsActivePort file doesn't exist in CircleCI (as well as a
   // host of other problems with starting Chrome). the only thing that seems to
   // allow Chrome to start without problems consistently is using ChromeHeadless
   // @see https://stackoverflow.com/questions/50642308/webdriverexception-unknown-error-devtoolsactiveport-file-doesnt-exist-while-t
   if (browser === 'chrome') {
-    const service = new chrome.ServiceBuilder(chromedriver.path).build();
+    const service = new chrome.ServiceBuilder(chromedriver).build();
 
     const options = new chrome.Options().addArguments([
-      'headless',
+      '--headless',
       '--no-sandbox',
       '--disable-extensions',
       '--disable-dev-shm-usage'
     ]);
+
+    if (process.env.CHROME_BIN) {
+      options.setBinaryPath(process.env.CHROME_BIN);
+    }
+
     webdriver = chrome.Driver.createSession(options, service);
   } else if (browser === 'firefox') {
     const options = new firefox.Options().addArguments('--headless');
+
+    if (process.env.FIREFOX_BIN) {
+      options.setBinary(process.env.FIREFOX_BIN);
+    }
+
     webdriver = firefox.Driver.createSession(options);
   }
 
@@ -155,7 +157,7 @@ function start(options) {
   const testUrls = globSync(['test/integration/full/**/*.{html,xhtml}'], {
     ignore: '**/frames/**/*.{html,xhtml}'
   }).map(url => {
-    return 'http://localhost:9876/' + url;
+    return `http://localhost:9876/${url}`;
   });
 
   if (
@@ -167,7 +169,7 @@ function start(options) {
   ) {
     console.log();
     console.log(
-      'Skipped ' + options.browser + ' as it is not supported on this platform'
+      `Skipped ${options.browser} as it is not supported on this platform`
     );
     return process.exit();
   }
@@ -188,10 +190,10 @@ function start(options) {
       // log each error and abort
       testErrors.forEach(err => {
         console.log();
-        console.log('URL: ' + err.url);
-        console.log('Browser: ' + err.browser);
-        console.log('Describe: ' + err.titles.join(' > '));
-        console.log('it ' + err.name);
+        console.log(`URL: ${err.url}`);
+        console.log(`Browser: ${err.browser}`);
+        console.log(`Describe: ${err.titles.join(' > ')}`);
+        console.log(`it ${err.name}`);
         console.log(err.stack);
         console.log();
       });
