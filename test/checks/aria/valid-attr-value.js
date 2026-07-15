@@ -119,7 +119,10 @@ describe('aria-valid-attr-value', function () {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'controlsWithinPopup',
-      needsReview: 'aria-controls="test"'
+      needsReview: 'aria-controls="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-controls="test"' }
+      }
     });
   });
 
@@ -160,7 +163,10 @@ describe('aria-valid-attr-value', function () {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'noId',
-      needsReview: 'aria-describedby="test"'
+      needsReview: 'aria-describedby="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-describedby="test"' }
+      }
     });
   });
 
@@ -174,7 +180,10 @@ describe('aria-valid-attr-value', function () {
       assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
       assert.deepEqual(checkContext._data, {
         messageKey: 'noIdShadow',
-        needsReview: 'aria-describedby="test"'
+        needsReview: 'aria-describedby="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-describedby="test"' }
+        }
       });
     }
   );
@@ -188,7 +197,10 @@ describe('aria-valid-attr-value', function () {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'noId',
-      needsReview: 'aria-labelledby="test"'
+      needsReview: 'aria-labelledby="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-labelledby="test"' }
+      }
     });
   });
 
@@ -202,7 +214,10 @@ describe('aria-valid-attr-value', function () {
       assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
       assert.deepEqual(checkContext._data, {
         messageKey: 'noIdShadow',
-        needsReview: 'aria-labelledby="test"'
+        needsReview: 'aria-labelledby="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-labelledby="test"' }
+        }
       });
     }
   );
@@ -248,7 +263,8 @@ describe('aria-valid-attr-value', function () {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'empty',
-        needsReview: 'aria-checked'
+        needsReview: 'aria-checked',
+        reviewPayload: { visualHelperData: { ariaAttribute: 'aria-checked' } }
       });
     });
 
@@ -261,7 +277,8 @@ describe('aria-valid-attr-value', function () {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'empty',
-        needsReview: 'aria-checked'
+        needsReview: 'aria-checked',
+        reviewPayload: { visualHelperData: { ariaAttribute: 'aria-checked' } }
       });
     });
 
@@ -320,7 +337,10 @@ describe('aria-valid-attr-value', function () {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'idrefs',
-        needsReview: 'aria-owns="test"'
+        needsReview: 'aria-owns="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-owns="test"' }
+        }
       });
     });
 
