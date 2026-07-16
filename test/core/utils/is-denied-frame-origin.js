@@ -1,3 +1,4 @@
+// [a11y-core]: COI denylist Type A gate — matcher tests (AXE-3735).
 describe('axe.utils.isDeniedFrameOrigin', () => {
   const { isDeniedFrameOrigin } = axe.utils;
   const denylist = new Set(['doubleclick.net', 'adnxs.com']);
