@@ -42,6 +42,27 @@ describe('axe.utils.isDeniedFrameOrigin', () => {
     );
   });
 
+  it('denies despite an explicit port (port is stripped)', () => {
+    assert.isTrue(
+      isDeniedFrameOrigin({ src: 'https://doubleclick.net:8080/x' }, denylist)
+    );
+  });
+
+  it('denies an uppercase host (case-insensitive)', () => {
+    assert.isTrue(
+      isDeniedFrameOrigin({ src: 'https://ADS.DOUBLECLICK.NET/x' }, denylist)
+    );
+  });
+
+  it('denies a trailing-dot FQDN (root-label dot stripped)', () => {
+    assert.isTrue(
+      isDeniedFrameOrigin({ src: 'https://doubleclick.net./x' }, denylist)
+    );
+    assert.isTrue(
+      isDeniedFrameOrigin({ src: 'https://ads.doubleclick.net./x' }, denylist)
+    );
+  });
+
   it('is false for non-http(s) / srcless / about:blank frames (never denied)', () => {
     assert.isFalse(isDeniedFrameOrigin({ src: '' }, denylist));
     assert.isFalse(isDeniedFrameOrigin({ src: 'about:blank' }, denylist));

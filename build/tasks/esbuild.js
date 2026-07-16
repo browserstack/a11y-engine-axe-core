@@ -56,10 +56,14 @@ module.exports = function (grunt) {
             minify: false,
             format: 'esm',
             bundle: true,
-            // [a11y-core]: inline bundled plain-text data assets (e.g. the COI
-            // ad-iframe denylist committed in a11y-engine-core/config) as raw
-            // strings so the client parses them at scan start with no runtime
-            // fetch. Only affects `.txt` imports; JS bundling is unchanged.
+            // [a11y-core]: inline bundled plain-text data assets as raw strings so
+            // the client parses them at scan start with no runtime fetch. This
+            // loader lives here (not only in a11y-engine-core) BY DESIGN:
+            // a11y-engine-core/build/tasks/esbuild.js re-exports this exact task
+            // (require('../../../axe-core/build/tasks/esbuild')), so this is the
+            // loader that actually bundles a11y-engine-core/config/coi-denylist.txt
+            // (imported by lib/commons/coi-denylist.js). Only affects `.txt`
+            // imports; JS bundling is unchanged.
             loader: { '.txt': 'text' },
             plugins: [fingerprintFallback]
           })
