@@ -1,1 +1,5 @@
 22
+# a11y-critical: keep Node 22 — do NOT take upstream's .nvmrc 24 bump.
+# Upstream #4960 raised it for dev/CI only (npm@11 for their npm-publish). Our
+# build_axe.sh pins 22.15.0; check-node-version.js gates .nvmrc as a MINIMUM, so
+# 24 would fail our Node-22 build. Reverted once in 023f4f1b. Ref: AXE-3659.
