@@ -31,6 +31,18 @@ describe('duplicate-id', function () {
     assert.deepEqual(checkContext._relatedNodes, [node.nextSibling]);
   });
 
+  it('keeps data a plain id string and emits no reviewPayload when the reviewPayload option is off', function () {
+    // static/active checks share this evaluate but never set the option.
+    fixture.innerHTML = '<div id="target"></div><div id="target"></div>';
+    var node = fixture.querySelector('#target');
+    assert.isFalse(
+      axe.testUtils.getCheckEvaluate('duplicate-id').call(checkContext, node)
+    );
+    assert.isString(checkContext._data);
+    assert.equal(checkContext._data, 'target');
+    assert.isUndefined(checkContext._data.reviewPayload);
+  });
+
   it('should return remove duplicates', function () {
     assert.deepEqual(
       checks['duplicate-id'].after([
@@ -39,6 +51,18 @@ describe('duplicate-id', function () {
         { data: 'b' }
       ]),
       [{ data: 'a' }, { data: 'b' }]
+    );
+  });
+
+  it('removes duplicates for object-shaped data (shared after with the aria variant)', function () {
+    // shared after dedupes object data by data.id (aria variant shape).
+    assert.deepEqual(
+      checks['duplicate-id'].after([
+        { data: { id: 'a' } },
+        { data: { id: 'b' } },
+        { data: { id: 'b' } }
+      ]),
+      [{ data: { id: 'a' } }, { data: { id: 'b' } }]
     );
   });
 

@@ -16,6 +16,7 @@
   "reviewOnFail": true,
   "actIds": ["3ea0c8"],
   "metadata": {
+    "defaultCategory": "duplicate-ids",
     "description": "Ensure every id attribute value used in ARIA and in labels is unique",
     "help": "IDs used in ARIA and labels must be unique",
     "needsReviewConfidence": 49.99

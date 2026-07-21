@@ -109,6 +109,19 @@ describe('Context', () => {
       assert.equal(result.include[0].props.id, 'target');
     });
 
+    it('accepts a reference to a ShadowRoot', () => {
+      createNestedShadowDom(
+        fixture,
+        '<article id="shadowHost"></article>',
+        `<h1 id="h1">Heading</h1>
+				<p id="p">Content</p>`
+      );
+      const shadowHost = fixture.querySelector('#shadowHost');
+      const shadowRoot = shadowHost.shadowRoot;
+      const result = new Context(shadowRoot);
+      assert.deepEqual(selectors(result.include), ['#h1', '#p']);
+    });
+
     it('accepts a node reference consisting of nested divs', () => {
       const div1 = document.createElement('div');
       const div2 = document.createElement('div');
