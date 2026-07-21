@@ -16,7 +16,7 @@ describe('Context', () => {
   it('should not mutate exclude in input', () => {
     fixture.innerHTML = '<div id="foo"></div>';
     const context = { exclude: [['iframe', '#foo']] };
-    // eslint-disable-next-line no-new
+
     new Context(context);
     assert.deepEqual(context, { exclude: [['iframe', '#foo']] });
   });
@@ -24,7 +24,7 @@ describe('Context', () => {
   it('should not mutate its include input', () => {
     fixture.innerHTML = '<div id="foo"></div>';
     const context = { include: [['#foo']] };
-    // eslint-disable-next-line no-new
+
     new Context(context);
     assert.deepEqual(context, { include: [['#foo']] });
   });
@@ -107,6 +107,19 @@ describe('Context', () => {
       );
       const result = new Context([[['#fixture > article', 'section', 'h1']]]);
       assert.equal(result.include[0].props.id, 'target');
+    });
+
+    it('accepts a reference to a ShadowRoot', () => {
+      createNestedShadowDom(
+        fixture,
+        '<article id="shadowHost"></article>',
+        `<h1 id="h1">Heading</h1>
+				<p id="p">Content</p>`
+      );
+      const shadowHost = fixture.querySelector('#shadowHost');
+      const shadowRoot = shadowHost.shadowRoot;
+      const result = new Context(shadowRoot);
+      assert.deepEqual(selectors(result.include), ['#h1', '#p']);
     });
 
     it('accepts a node reference consisting of nested divs', () => {
@@ -321,6 +334,50 @@ describe('Context', () => {
           fromShadowDom: ['frame', '#fixture']
         });
       });
+    });
+  });
+
+  // [a11y-critical]: COI ad denylist — assert denied frames are dropped from
+  // context.frames on the tag-based select('frame, iframe') enumeration path
+  // (the full-page scan path), not just the multi-element selector path.
+  describe('cross-origin iframe ad denylist (COI denylist)', () => {
+    let hadAudit;
+    let priorDenylist;
+    beforeEach(() => {
+      hadAudit = !!axe._audit;
+      axe._audit = axe._audit || {};
+      priorDenylist = axe._audit.crossOriginDenylist;
+    });
+    afterEach(() => {
+      if (hadAudit) {
+        axe._audit.crossOriginDenylist = priorDenylist;
+      } else {
+        axe._audit = undefined;
+      }
+    });
+
+    it('drops a denied ad iframe (keeps a benign one) via the tag-based path', () => {
+      fixture.innerHTML =
+        '<iframe id="ad" width="300" height="150" src="https://ads.doubleclick.net/tag"></iframe>' +
+        '<iframe id="ok" width="300" height="150" src="https://example.com/x"></iframe>';
+      axe._audit.crossOriginDenylist = new Set(['doubleclick.net']);
+
+      const frameNodes = new Context({ include: [['#fixture']] }).frames.map(
+        frame => frame.node
+      );
+      assert.notInclude(frameNodes, $id('ad'));
+      assert.include(frameNodes, $id('ok'));
+    });
+
+    it('enumerates all iframes when the denylist is unset (byte-identical to main)', () => {
+      fixture.innerHTML =
+        '<iframe id="ad" width="300" height="150" src="https://ads.doubleclick.net/tag"></iframe>';
+      axe._audit.crossOriginDenylist = undefined;
+
+      const frameNodes = new Context({ include: [['#fixture']] }).frames.map(
+        frame => frame.node
+      );
+      assert.include(frameNodes, $id('ad'));
     });
   });
 
