@@ -59,10 +59,7 @@
     },
     "aria-prohibited-attr": {
       "description": "Ensure ARIA attributes are not prohibited for an element's role",
-      "help": "Elements must only use permitted ARIA attributes",
-      "violationConfidence": 90,
-      "needsReviewConfidence": 60,
-      "defaultCategory": "names-and-labels"
+      "help": "Elements must only use permitted ARIA attributes"
     },
     "aria-required-attr": {
       "description": "Ensure elements with ARIA roles have all required ARIA attributes",
@@ -113,8 +110,8 @@
       "help": "<audio> elements must have a captions track"
     },
     "autocomplete-valid": {
-      "description": "Ensure that the necessary form fields use the autocomplete attribute with a valid input.",
-      "help": "Autocomplete attribute must have a valid value"
+      "description": "Ensure the autocomplete attribute is correct and suitable for the form field",
+      "help": "autocomplete attribute must be used correctly"
     },
     "avoid-inline-spacing": {
       "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
@@ -134,17 +131,11 @@
     },
     "color-contrast-enhanced": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AAA enhanced contrast ratio thresholds",
-      "help": "Elements must meet enhanced color contrast ratio thresholds",
-      "violationConfidence": 90,
-      "needsReviewConfidence": 60,
-      "defaultCategory": "text-contrast-enhanced"
+      "help": "Elements must meet enhanced color contrast ratio thresholds"
     },
     "color-contrast": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-      "help": "Elements must meet minimum color contrast ratio thresholds",
-      "violationConfidence": 90,
-      "needsReviewConfidence": 60,
-      "defaultCategory": "text-contrast"
+      "help": "Elements must meet minimum color contrast ratio thresholds"
     },
     "css-orientation-lock": {
       "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
@@ -206,13 +197,9 @@
       "description": "Ensure <iframe> and <frame> elements have an accessible name",
       "help": "Frames must have an accessible name"
     },
-    "heading-order-bp": {
-      "description": "Ensure the order of headings is semantically correct",
-      "help": "Heading levels should only increase by one"
-    },
     "heading-order": {
       "description": "Ensure the order of headings is semantically correct",
-      "help": "Heading levels must only increase by one"
+      "help": "Heading levels should only increase by one"
     },
     "hidden-content": {
       "description": "Inform users about hidden content.",
@@ -252,10 +239,7 @@
     },
     "label-content-name-mismatch": {
       "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
-      "help": "Elements must have their visible text as part of their accessible name",
-      "violationConfidence": 90,
-      "needsReviewConfidence": 60,
-      "defaultCategory": "names-and-labels"
+      "help": "Elements must have their visible text as part of their accessible name"
     },
     "label-title-only": {
       "description": "Ensure that every form element has a visible label and is not solely labeled using hidden labels, or the title or aria-describedby attributes",
@@ -303,10 +287,7 @@
     },
     "link-in-text-block": {
       "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
-      "help": "Links must be distinguishable without relying on color",
-      "violationConfidence": 90,
-      "needsReviewConfidence": 60,
-      "defaultCategory": "links"
+      "help": "Links must be distinguishable without relying on color"
     },
     "link-name": {
       "description": "Ensure links have discernible text",
@@ -647,7 +628,8 @@
         "equalRatio": "Element has a 1:1 contrast ratio with the background",
         "shortTextContent": "Element content is too short to determine if it is actual text content",
         "nonBmp": "Element content contains only non-text characters",
-        "pseudoContent": "Element's background color could not be determined due to a pseudo element"
+        "pseudoContent": "Element's background color could not be determined due to a pseudo element",
+        "colorParse": "Could not parse color string ${data.colorParse}"
       }
     },
     "color-contrast": {
@@ -674,7 +656,8 @@
         "equalRatio": "Element has a 1:1 contrast ratio with the background",
         "shortTextContent": "Element content is too short to determine if it is actual text content",
         "nonBmp": "Element content contains only non-text characters",
-        "pseudoContent": "Element's background color could not be determined due to a pseudo element"
+        "pseudoContent": "Element's background color could not be determined due to a pseudo element",
+        "colorParse": "Could not parse color string ${data.colorParse}"
       }
     },
     "link-in-text-block-style": {
@@ -706,7 +689,7 @@
     },
     "autocomplete-valid": {
       "pass": "the autocomplete attribute is correctly formatted",
-      "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\".",
+      "fail": "the autocomplete attribute is incorrectly formatted",
       "incomplete": "the autocomplete attribute has a non-standard value. Check whether any standard value could be used instead."
     },
     "accesskeys": {
@@ -810,8 +793,7 @@
     },
     "label-content-name-mismatch": {
       "pass": "Element contains visible text as part of it's accessible name",
-      "fail": "Ensure that the visible label of the element and the accessible name (provided by `aria-label`, etc.) match exactly. Ensure that the visible label of the element is part of the accessible name of the element. It is advisable that the visible label comes in the beginning of the accessible name",
-      "incomplete": "Check if the visible text is part of the accessible name (provided by `aria-label`, etc.) for the element. Check the accessibility tree to get the accessible name of the element."
+      "fail": "Text inside the element is not included in the accessible name"
     },
     "multiple-label": {
       "pass": "Form field does not have multiple label elements",
@@ -926,7 +908,7 @@
     },
     "heading-order": {
       "pass": "Heading order valid",
-      "fail": "Fix the order of headings. Headings should be in descending order of size without skipping levels. For example, <h2> should be followed by <h3>, not <h4> or <h5>.",
+      "fail": "Heading order invalid",
       "incomplete": "Unable to determine previous heading"
     },
     "identical-links-same-purpose": {
