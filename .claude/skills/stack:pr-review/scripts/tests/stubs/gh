@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Fake `gh` for detect-base-merge.sh tests. Returns raw JSON fixtures from env
+# vars so the script's own jq is exercised. Records status POSTs to FAKE_POST_LOG.
+#
+# Fixtures (env):
+#   FAKE_HEAD_SHA, FAKE_BASE_REF          -> gh pr view
+#   FAKE_PARENTS_JSON                     -> gh api repos/.../commits/<sha>   (must contain .parents[])
+#   FAKE_COMPARE_JSON                     -> gh api repos/.../compare/...     (must contain .status)
+#   FAKE_STATUSES_JSON                    -> gh api repos/.../commits/<p1>/statuses --paginate --slurp
+#   FAKE_STATUSES_FAIL=1                  -> make the parent-status GET exit non-zero
+#   FAKE_POST_LOG                         -> file to append POST arg-lines to
+set -u
+
+sub="${1:-}"
+case "$sub" in
+  pr)  # gh pr view <pr> --repo <r> --json headRefOid,baseRefName
+    printf '{"headRefOid":"%s","baseRefName":"%s"}\n' "${FAKE_HEAD_SHA:-}" "${FAKE_BASE_REF:-}"
+    exit 0
+    ;;
+  api)
+    resource="${2:-}"
+    # A status POST is: repos/<r>/statuses/<sha> with -f flags.
+    if printf '%s' "$resource" | grep -q '/statuses/'; then
+      printf '%s\n' "$*" >> "${FAKE_POST_LOG:-/dev/null}"
+      printf '{"id":1}\n'; exit 0
+    fi
+    case "$resource" in
+      */commits/*/statuses)  # GET parent statuses
+        [ "${FAKE_STATUSES_FAIL:-0}" = "1" ] && exit 1
+        printf '%s\n' "${FAKE_STATUSES_JSON:-[]}"; exit 0 ;;
+      */commits/*)           # GET head commit (parents)
+        printf '%s\n' "${FAKE_PARENTS_JSON:-{}}"; exit 0 ;;
+      */compare/*)           # GET compare
+        printf '%s\n' "${FAKE_COMPARE_JSON:-{}}"; exit 0 ;;
+    esac
+    printf '{}\n'; exit 0
+    ;;
+esac
+printf '{}\n'; exit 0

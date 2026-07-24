@@ -1,0 +1,21 @@
+schema_version: 2
+
+source:
+  repo: https://github.com/browserstack/a11y-engine
+  commit: 9b2575da907f8001e08fac0010fcfa04a2def7f3
+  branch: main
+  subpath: "."
+
+generation:
+  at: "2026-06-16T07:23:00.000Z"
+  plugin: "@browserstack/ai-harness@3.0.0"
+  harness_commit: fe5ca2b979f9350da6e62090aa9390fbb1f9a149
+
+parent_stack: null
+
+referenced_stacks: []
+
+install:
+  path: "."
+
+subprojects: []
