@@ -417,6 +417,30 @@ describe('color.Color', () => {
       assert.equal(c.blue, 144);
       assert.equal(c.alpha, 0.5);
     });
+
+    // [a11y-rule-color-contrast]: AXE-3861 — a detached/inert node's computed
+    // *-color resolves to ''; colorjs throws "Empty color reference" and the abort
+    // takes down the whole in-page Type-B collection. Guard: blank -> transparent.
+    it('does not throw on an empty string (returns transparent)', () => {
+      const c = new Color(255, 255, 255, 1);
+      assert.doesNotThrow(() => c.parseString(''));
+      assert.equal(c.red, 0);
+      assert.equal(c.green, 0);
+      assert.equal(c.blue, 0);
+      assert.equal(c.alpha, 0);
+    });
+
+    it('does not throw on a whitespace-only string', () => {
+      const c = new Color();
+      assert.doesNotThrow(() => c.parseString('   '));
+      assert.equal(c.alpha, 0);
+    });
+
+    it('does not throw on a non-string value', () => {
+      const c = new Color();
+      assert.doesNotThrow(() => c.parseString(null));
+      assert.equal(c.alpha, 0);
+    });
   });
 
   describe('toHexString', () => {
