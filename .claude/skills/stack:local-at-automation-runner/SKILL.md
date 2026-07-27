@@ -119,8 +119,8 @@ Pass creds via env (read from `state.local.json` inside a scratch runner script 
 never lands in a tool-call arg — the auto-mode classifier blocks inline
 `BS_TEST_PASSWORD='…'`): `export BS_TEST_EMAIL="$(jq -r .env_creds.prod.email state.local.json)"`.
 
-⚠️ **CONTENT-ASSERTION CAVEAT (verified 2026-07-06).** The placeholder route gets the wcag_at
-scenarios to _run end-to-end_ (login → set version → wizard → save → dashboard → assert) — good
+⚠️ **CONTENT-ASSERTION CAVEAT (verified 2026-07-06).** The placeholder route gets the wcag*at
+scenarios to \_run end-to-end* (login → set version → wizard → save → dashboard → assert) — good
 enough for **structural / split-wiring run-proof**. It does NOT produce **green content
 assertions**, because the expected rule sets are **account-configuration-specific**: the suite
 is calibrated for the real `best_practice_off` account (best-practice OFF + Advanced ON →

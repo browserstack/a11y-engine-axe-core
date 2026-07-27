@@ -27,15 +27,25 @@ const { execSync } = require('child_process');
 
 // ---------- deps: auto-install ws into scripts/node_modules ----------------
 function loadWS() {
-  try { return require('ws'); } catch (_) { /* not installed */ }
-  process.stderr.write('[run-with-axe] first-run: installing ws into scripts/ ...\n');
+  try {
+    return require('ws');
+  } catch (_) {
+    /* not installed */
+  }
+  process.stderr.write(
+    '[run-with-axe] first-run: installing ws into scripts/ ...\n'
+  );
   try {
     execSync('npm install ws@8 --no-audit --no-fund --silent', {
       cwd: __dirname,
-      stdio: ['ignore', 'ignore', 'inherit'],
+      stdio: ['ignore', 'ignore', 'inherit']
     });
   } catch (_) {
-    process.stderr.write('[run-with-axe] failed to install ws. Run: (cd ' + __dirname + ' && npm install ws@8)\n');
+    process.stderr.write(
+      '[run-with-axe] failed to install ws. Run: (cd ' +
+        __dirname +
+        ' && npm install ws@8)\n'
+    );
     process.exit(1);
   }
   return require('ws');
@@ -45,12 +55,14 @@ const WebSocket = loadWS();
 // ---------- args ----------------------------------------------------------
 const args = process.argv.slice(2);
 if (args.length === 0 || args[0].startsWith('--')) {
-  process.stderr.write('usage: run-with-axe.js <port-script.js> [--match=<substr>] [--wait=<ms>] [--no-setup]\n');
+  process.stderr.write(
+    'usage: run-with-axe.js <port-script.js> [--match=<substr>] [--wait=<ms>] [--no-setup]\n'
+  );
   process.exit(2);
 }
 const scriptPath = args[0];
 const opts = Object.fromEntries(
-  args.slice(1).map((a) => {
+  args.slice(1).map(a => {
     const [k, ...rest] = a.replace(/^--/, '').split('=');
     return [k, rest.length ? rest.join('=') : true];
   })
@@ -65,49 +77,68 @@ if (!fs.existsSync(scriptPath)) {
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 const AXE_PATH = path.join(REPO_ROOT, 'a11y-engine-core', 'dist', 'axe.min.js');
 if (!fs.existsSync(AXE_PATH)) {
-  process.stderr.write(`[run-with-axe] axe bundle missing: ${AXE_PATH}\n  run: (cd ${path.join(REPO_ROOT, 'a11y-engine-core')} && ./build/scripts/build_axe.sh && npm run build)\n`);
+  process.stderr.write(
+    `[run-with-axe] axe bundle missing: ${AXE_PATH}\n  run: (cd ${path.join(REPO_ROOT, 'a11y-engine-core')} && ./build/scripts/build_axe.sh && npm run build)\n`
+  );
   process.exit(6);
 }
 
 // ---------- HTTP helper ---------------------------------------------------
 function httpJson(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
-      let body = '';
-      res.on('data', (c) => (body += c));
-      res.on('end', () => { try { resolve(JSON.parse(body)); } catch (e) { reject(e); } });
-    }).on('error', reject);
+    http
+      .get(url, res => {
+        let body = '';
+        res.on('data', c => (body += c));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(e);
+          }
+        });
+      })
+      .on('error', reject);
   });
 }
 
 // ---------- CDP session ---------------------------------------------------
 async function openSession() {
   let tabs;
-  try { tabs = await httpJson('http://127.0.0.1:9222/json'); }
-  catch (_) {
-    process.stderr.write('[run-with-axe] no Chrome on 127.0.0.1:9222. Start it with scripts/launch-proxy-chrome.js or open-chrome.sh.\n');
+  try {
+    tabs = await httpJson('http://127.0.0.1:9222/json');
+  } catch (_) {
+    process.stderr.write(
+      '[run-with-axe] no Chrome on 127.0.0.1:9222. Start it with scripts/launch-proxy-chrome.js or open-chrome.sh.\n'
+    );
     process.exit(3);
   }
-  const pages = tabs.filter((t) => t.type === 'page' && t.webSocketDebuggerUrl);
+  const pages = tabs.filter(t => t.type === 'page' && t.webSocketDebuggerUrl);
   if (pages.length === 0) {
     process.stderr.write('[run-with-axe] no page targets.\n');
     process.exit(3);
   }
   const target = opts.match
-    ? pages.find((t) => (t.url || '').includes(opts.match))
+    ? pages.find(t => (t.url || '').includes(opts.match))
     : pages[0];
   if (!target) {
-    process.stderr.write(`[run-with-axe] no tab matches --match="${opts.match}". Tabs:\n` +
-      pages.map((t) => '  - ' + t.url).join('\n') + '\n');
+    process.stderr.write(
+      `[run-with-axe] no tab matches --match="${opts.match}". Tabs:\n` +
+        pages.map(t => '  - ' + t.url).join('\n') +
+        '\n'
+    );
     process.exit(5);
   }
   process.stderr.write(`[run-with-axe] target: ${target.url}\n`);
 
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(target.webSocketDebuggerUrl, { perMessageDeflate: false, maxPayload: 200 * 1024 * 1024 });
+    const ws = new WebSocket(target.webSocketDebuggerUrl, {
+      perMessageDeflate: false,
+      maxPayload: 200 * 1024 * 1024
+    });
     let id = 0;
     const pending = new Map();
-    ws.on('message', (raw) => {
+    ws.on('message', raw => {
       const msg = JSON.parse(raw.toString());
       if (msg.id && pending.has(msg.id)) {
         const { resolve: r, reject: j } = pending.get(msg.id);
@@ -116,31 +147,40 @@ async function openSession() {
         else r(msg.result);
       }
     });
-    ws.on('open', () => resolve({
-      send: (method, params = {}) => {
-        const mid = ++id;
-        return new Promise((r, j) => {
-          pending.set(mid, { resolve: r, reject: j });
-          ws.send(JSON.stringify({ id: mid, method, params }));
-        });
-      },
-      close: () => ws.close(),
-    }));
+    ws.on('open', () =>
+      resolve({
+        send: (method, params = {}) => {
+          const mid = ++id;
+          return new Promise((r, j) => {
+            pending.set(mid, { resolve: r, reject: j });
+            ws.send(JSON.stringify({ id: mid, method, params }));
+          });
+        },
+        close: () => ws.close()
+      })
+    );
     ws.on('error', reject);
   });
 }
 
 async function evalJs(session, expression, label) {
   const res = await session.send('Runtime.evaluate', {
-    expression, returnByValue: true, awaitPromise: true, includeCommandLineAPI: false, userGesture: false,
+    expression,
+    returnByValue: true,
+    awaitPromise: true,
+    includeCommandLineAPI: false,
+    userGesture: false
   });
   if (res.exceptionDetails) {
-    throw new Error(`${label || 'eval'} threw: ` + JSON.stringify(res.exceptionDetails).slice(0, 800));
+    throw new Error(
+      `${label || 'eval'} threw: ` +
+        JSON.stringify(res.exceptionDetails).slice(0, 800)
+    );
   }
   return res.result && res.result.value;
 }
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 // ---------- main ---------------------------------------------------------
 (async () => {
@@ -161,7 +201,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     })()
   `;
   const injectRes = await evalJs(session, injectExpr, 'injection');
-  process.stderr.write('[run-with-axe] axe: ' + JSON.stringify(injectRes) + '\n');
+  process.stderr.write(
+    '[run-with-axe] axe: ' + JSON.stringify(injectRes) + '\n'
+  );
   if (!injectRes.injected && !injectRes.reason) {
     session.close();
     process.stderr.write('[run-with-axe] axe injection failed.\n');
@@ -171,10 +213,16 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   // 2. axe.setup() (unless the port will do it itself)
   if (!opts['no-setup']) {
     try {
-      await evalJs(session, '(() => { axe.setup(document); return true; })()', 'setup');
+      await evalJs(
+        session,
+        '(() => { axe.setup(document); return true; })()',
+        'setup'
+      );
     } catch (e) {
       session.close();
-      process.stderr.write('[run-with-axe] axe.setup() threw: ' + e.message + '\n');
+      process.stderr.write(
+        '[run-with-axe] axe.setup() threw: ' + e.message + '\n'
+      );
       process.exit(4);
     }
   }
@@ -187,7 +235,13 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     portRes = await evalJs(session, portSrc, 'port');
   } catch (e) {
     // best-effort teardown
-    try { await evalJs(session, '(() => { try { axe.teardown(); } catch (_) {} return true; })()', 'teardown'); } catch (_) {}
+    try {
+      await evalJs(
+        session,
+        '(() => { try { axe.teardown(); } catch (_) {} return true; })()',
+        'teardown'
+      );
+    } catch (_) {}
     session.close();
     process.stderr.write('[run-with-axe] port error: ' + e.message + '\n');
     process.exit(4);
@@ -195,7 +249,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   session.close();
   console.log(JSON.stringify(portRes, null, 2));
-})().catch((e) => {
-  process.stderr.write('[run-with-axe] fatal: ' + (e.stack || e.message) + '\n');
+})().catch(e => {
+  process.stderr.write(
+    '[run-with-axe] fatal: ' + (e.stack || e.message) + '\n'
+  );
   process.exit(1);
 });

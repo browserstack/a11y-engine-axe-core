@@ -23,15 +23,21 @@ const { execSync } = require('child_process');
 
 // ---------- deps: auto-install `ws` the first time ------------------------
 function loadWS() {
-  try { return require('ws'); } catch (_) {}
+  try {
+    return require('ws');
+  } catch (_) {}
   process.stderr.write('[cdp-run] first-run: installing ws ...\n');
   try {
     execSync('npm install ws@8 --no-audit --no-fund --silent', {
       cwd: __dirname,
-      stdio: ['ignore', 'ignore', 'inherit'],
+      stdio: ['ignore', 'ignore', 'inherit']
     });
   } catch (e) {
-    process.stderr.write('[cdp-run] failed to install ws. Run manually: (cd ' + __dirname + ' && npm install ws@8)\n');
+    process.stderr.write(
+      '[cdp-run] failed to install ws. Run manually: (cd ' +
+        __dirname +
+        ' && npm install ws@8)\n'
+    );
     process.exit(1);
   }
   return require('ws');
@@ -41,12 +47,14 @@ const WebSocket = loadWS();
 // ---------- args ----------------------------------------------------------
 const args = process.argv.slice(2);
 if (args.length === 0 || args[0].startsWith('--')) {
-  process.stderr.write('usage: cdp-run.js <script.js> [--url=<url>] [--wait=<ms>] [--target=front] [--match=<substr>]\n');
+  process.stderr.write(
+    'usage: cdp-run.js <script.js> [--url=<url>] [--wait=<ms>] [--target=front] [--match=<substr>]\n'
+  );
   process.exit(2);
 }
 const scriptPath = args[0];
 const opts = Object.fromEntries(
-  args.slice(1).map((a) => {
+  args.slice(1).map(a => {
     const [k, ...rest] = a.replace(/^--/, '').split('=');
     return [k, rest.length ? rest.join('=') : true];
   })
@@ -61,40 +69,51 @@ const scriptSource = fs.readFileSync(scriptPath, 'utf8');
 // ---------- HTTP helper --------------------------------------------------
 function httpJson(url) {
   return new Promise((resolve, reject) => {
-    http.get(url, (res) => {
-      let body = '';
-      res.on('data', (c) => (body += c));
-      res.on('end', () => {
-        try { resolve(JSON.parse(body)); }
-        catch (e) { reject(new Error(`bad JSON from ${url}: ${e.message}`)); }
-      });
-    }).on('error', reject);
+    http
+      .get(url, res => {
+        let body = '';
+        res.on('data', c => (body += c));
+        res.on('end', () => {
+          try {
+            resolve(JSON.parse(body));
+          } catch (e) {
+            reject(new Error(`bad JSON from ${url}: ${e.message}`));
+          }
+        });
+      })
+      .on('error', reject);
   });
 }
 
 // ---------- pick a target tab --------------------------------------------
 async function pickTarget() {
   let tabs;
-  try { tabs = await httpJson('http://localhost:9222/json'); }
-  catch (e) {
-    process.stderr.write('[cdp-run] no Chrome on port 9222. Run scripts/open-chrome.sh <url> first.\n');
+  try {
+    tabs = await httpJson('http://localhost:9222/json');
+  } catch (e) {
+    process.stderr.write(
+      '[cdp-run] no Chrome on port 9222. Run scripts/open-chrome.sh <url> first.\n'
+    );
     process.exit(3);
   }
-  const pages = tabs.filter((t) => t.type === 'page' && t.webSocketDebuggerUrl);
+  const pages = tabs.filter(t => t.type === 'page' && t.webSocketDebuggerUrl);
   if (pages.length === 0) {
     process.stderr.write('[cdp-run] no page targets.\n');
     process.exit(3);
   }
   if (opts.match) {
-    const hit = pages.find((t) => (t.url || '').includes(opts.match));
+    const hit = pages.find(t => (t.url || '').includes(opts.match));
     if (!hit) {
-      process.stderr.write(`[cdp-run] no tab URL matches "${opts.match}". Tabs:\n` +
-        pages.map((t) => '  - ' + t.url).join('\n') + '\n');
+      process.stderr.write(
+        `[cdp-run] no tab URL matches "${opts.match}". Tabs:\n` +
+          pages.map(t => '  - ' + t.url).join('\n') +
+          '\n'
+      );
       process.exit(3);
     }
     return hit;
   }
-  if (opts.target === 'front') return pages[0];   // Chrome lists front tab first on macOS
+  if (opts.target === 'front') return pages[0]; // Chrome lists front tab first on macOS
   return pages[0];
 }
 
@@ -105,7 +124,7 @@ class Session {
     this.id = 0;
     this.pending = new Map();
     this.listeners = new Map();
-    ws.on('message', (raw) => {
+    ws.on('message', raw => {
       const msg = JSON.parse(raw.toString());
       if (msg.id && this.pending.has(msg.id)) {
         const { resolve, reject } = this.pending.get(msg.id);
@@ -113,7 +132,7 @@ class Session {
         if (msg.error) reject(new Error(msg.error.message));
         else resolve(msg.result);
       } else if (msg.method && this.listeners.has(msg.method)) {
-        this.listeners.get(msg.method).forEach((cb) => cb(msg.params));
+        this.listeners.get(msg.method).forEach(cb => cb(msg.params));
       }
     });
   }
@@ -128,24 +147,31 @@ class Session {
     if (!this.listeners.has(method)) this.listeners.set(method, []);
     this.listeners.get(method).push(cb);
   }
-  close() { this.ws.close(); }
+  close() {
+    this.ws.close();
+  }
 }
 
 function openSession(wsUrl) {
   return new Promise((resolve, reject) => {
-    const ws = new WebSocket(wsUrl, { perMessageDeflate: false, maxPayload: 200 * 1024 * 1024 });
+    const ws = new WebSocket(wsUrl, {
+      perMessageDeflate: false,
+      maxPayload: 200 * 1024 * 1024
+    });
     ws.on('open', () => resolve(new Session(ws)));
     ws.on('error', reject);
   });
 }
 
 function waitForLoad(session) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     session.on('Page.loadEventFired', () => resolve());
   });
 }
 
-function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
+function sleep(ms) {
+  return new Promise(r => setTimeout(r, ms));
+}
 
 // ---------- main ---------------------------------------------------------
 (async () => {
@@ -183,7 +209,7 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
       returnByValue: true,
       awaitPromise: true,
       includeCommandLineAPI: false,
-      userGesture: false,
+      userGesture: false
     });
   } catch (e) {
     process.stderr.write(`[cdp-run] evaluate failed: ${e.message}\n`);
@@ -200,7 +226,9 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
   }
   const wrapped = res.result && res.result.value;
   if (!wrapped) {
-    process.stderr.write('[cdp-run] no return value (possibly DOM node — must return JSON-serialisable)\n');
+    process.stderr.write(
+      '[cdp-run] no return value (possibly DOM node — must return JSON-serialisable)\n'
+    );
     process.exit(5);
   }
   if (!wrapped.ok) {
@@ -208,7 +236,7 @@ function sleep(ms) { return new Promise((r) => setTimeout(r, ms)); }
     process.exit(4);
   }
   console.log(JSON.stringify(wrapped.value, null, 2));
-})().catch((e) => {
+})().catch(e => {
   process.stderr.write(`[cdp-run] fatal: ${e.stack || e.message}\n`);
   process.exit(1);
 });

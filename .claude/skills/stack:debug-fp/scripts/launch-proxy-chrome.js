@@ -30,12 +30,18 @@ const proxyPort = process.argv[3] || '8080';
 // Resolve mini-percy-renderer relative to the repo root (two levels up from .claude/skills/stack:debug-fp/scripts/)
 const REPO_ROOT = path.resolve(__dirname, '..', '..', '..', '..');
 const MPR_DIR = path.join(REPO_ROOT, 'mini-percy-renderer');
-const CHROME_LAUNCHER = path.join(MPR_DIR, 'node_modules', 'chrome-launcher', 'dist', 'index.js');
+const CHROME_LAUNCHER = path.join(
+  MPR_DIR,
+  'node_modules',
+  'chrome-launcher',
+  'dist',
+  'index.js'
+);
 
 if (!fs.existsSync(CHROME_LAUNCHER)) {
   process.stderr.write(
     `[launch-proxy-chrome] chrome-launcher not found at ${CHROME_LAUNCHER}\n` +
-    `  run: (cd ${MPR_DIR} && npm install)\n`
+      `  run: (cd ${MPR_DIR} && npm install)\n`
   );
   process.exit(3);
 }
@@ -58,20 +64,28 @@ process.chdir(MPR_DIR);
       '--disable-background-networking',
       '--disable-sync',
       '--safebrowsing-disable-auto-update',
-      `--proxy-server=localhost:${proxyPort}`,
-    ],
+      `--proxy-server=localhost:${proxyPort}`
+    ]
   });
-  process.stderr.write(`[launch-proxy-chrome] pid=${chrome.pid} port=${chrome.port}\n`);
+  process.stderr.write(
+    `[launch-proxy-chrome] pid=${chrome.pid} port=${chrome.port}\n`
+  );
 
   const shutdown = async () => {
-    try { await chrome.kill(); } catch (_) { /* ignore */ }
+    try {
+      await chrome.kill();
+    } catch (_) {
+      /* ignore */
+    }
     process.exit(0);
   };
   process.on('SIGINT', shutdown);
   process.on('SIGTERM', shutdown);
 
   await new Promise(() => {}); // block forever
-})().catch((e) => {
-  process.stderr.write('[launch-proxy-chrome] fatal: ' + (e.stack || e.message) + '\n');
+})().catch(e => {
+  process.stderr.write(
+    '[launch-proxy-chrome] fatal: ' + (e.stack || e.message) + '\n'
+  );
   process.exit(1);
 });

@@ -12,17 +12,24 @@
   const reasons = [];
   const observed = {
     selectors: TARGET_SELECTORS,
-    selectorMatches: {},   // selector -> matchCount, for debug
-    elements: [],          // one entry per UNIQUE element
-    errors: [],
+    selectorMatches: {}, // selector -> matchCount, for debug
+    elements: [], // one entry per UNIQUE element
+    errors: []
   };
 
   // Gather unique nodes; remember which selectors each came from.
   const nodeToSelectors = new Map();
   for (const sel of TARGET_SELECTORS) {
     let matches;
-    try { matches = Array.from(document.querySelectorAll(sel)); }
-    catch (e) { observed.errors.push({ selector: sel, msg: 'invalid selector: ' + e.message }); continue; }
+    try {
+      matches = Array.from(document.querySelectorAll(sel));
+    } catch (e) {
+      observed.errors.push({
+        selector: sel,
+        msg: 'invalid selector: ' + e.message
+      });
+      continue;
+    }
     observed.selectorMatches[sel] = matches.length;
     for (const n of matches) {
       if (!nodeToSelectors.has(n)) nodeToSelectors.set(n, []);
@@ -30,15 +37,22 @@
     }
   }
   if (nodeToSelectors.size === 0) {
-    return { decision: 'undefined (no elements matched)', reasons: ['TARGET_SELECTORS matched nothing'], observed };
+    return {
+      decision: 'undefined (no elements matched)',
+      reasons: ['TARGET_SELECTORS matched nothing'],
+      observed
+    };
   }
 
   try {
-    if (!window.axe) { observed.errors.push('axe not injected'); return { decision: 'undefined (no axe)', reasons, observed }; }
+    if (!window.axe) {
+      observed.errors.push('axe not injected');
+      return { decision: 'undefined (no axe)', reasons, observed };
+    }
 
     for (const [node, selectorsThatFound] of nodeToSelectors) {
       const entry = {
-        matchedBy: selectorsThatFound,           // all selectors that resolved to this node
+        matchedBy: selectorsThatFound, // all selectors that resolved to this node
         duplicatedAcrossSelectors: selectorsThatFound.length > 1,
         tag: node.tagName,
         id: node.id || null,
@@ -46,7 +60,7 @@
         outerHTML: (node.outerHTML || '').slice(0, 300),
         textContent: (node.textContent || '').trim().slice(0, 200),
         branches: {},
-        verdict: null,
+        verdict: null
       };
 
       // ---- PATH A (preferred): call axe.commons/utils directly ----
@@ -67,9 +81,16 @@
     reasons.push(`inspected ${observed.elements.length} unique element(s)`);
     return { decision: 'see observed.elements[].verdict', reasons, observed };
   } catch (e) {
-    observed.errors.push({ msg: String(e && e.message || e), stack: (e && e.stack || '').slice(0, 400) });
+    observed.errors.push({
+      msg: String((e && e.message) || e),
+      stack: ((e && e.stack) || '').slice(0, 400)
+    });
     return { decision: 'undefined (check errored)', reasons, observed };
   } finally {
-    try { if (window.axe && axe.teardown) axe.teardown(); } catch (_) { /* ignore */ }
+    try {
+      if (window.axe && axe.teardown) axe.teardown();
+    } catch (_) {
+      /* ignore */
+    }
   }
-})()
+})();

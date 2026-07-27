@@ -27,6 +27,7 @@ Cite existing code by file + symbol (the function, class, route, or config key),
 - **`PRD_PATH`** - the first `.md` path in `$ARGUMENTS`. If none is given, HALT and tell the user to pass an existing PRD path, or to run `stack:author-prd` (or the full `stack:dev`) first if they have no PRD. Never fabricate a PRD.
 - **`MODE`** - `auto` if `$ARGUMENTS` contains `--auto`, else `gated`.
 - **`REPOS_TOUCHED`** - detect scope, then derive (mirrors `stack:dev` Stage 1):
+
   ```
   SCOPE=single-repo
   if [ -f bstack-ai-harness.yml ] && grep -qE '^workspace:' bstack-ai-harness.yml; then SCOPE=workspace-root; fi
