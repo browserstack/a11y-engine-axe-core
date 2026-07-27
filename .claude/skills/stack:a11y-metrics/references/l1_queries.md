@@ -67,6 +67,7 @@ ORDER BY product_track, created_date DESC, kind_label
 ```
 
 **Key details:**
+
 - `product_track` has 4 values: `CS OnDemand`, `CS Background`, `AUT`, `WA`
 - `prioritized` is a STRING ("true" / "false") — always compare as string
 - Deduplication: same scan_run_id + kind_type → keep worst status
@@ -75,6 +76,7 @@ ORDER BY product_track, created_date DESC, kind_label
 ## 2. L1 E2E Latency P90 (Daily, per product, per scan type)
 
 E2E latency formula:
+
 - `POSTPROCESS_AI_HTML_WORKER`: `additionalData.a11yScanLatency`
 - Others with `a11y_engine_scan > 0`: `a11y_engine_scan + totalTimeWithAssetUploading + dataCollectionLatencyWithAck`
 - Others with `a11y_engine_scan = 0`: fallback to `worker_latency`
@@ -128,6 +130,7 @@ ORDER BY product_name, created_date DESC, kind_label
 ```
 
 **Key difference from L0 latency:**
+
 - L0 uses type-specific formulas (Type C = `a11y_engine_scan + totalTimeWithAssetUploading` only)
 - L1 E2E adds ALL components: `a11y_engine_scan + totalTimeWithAssetUploading + dataCollectionLatencyWithAck`
 - L1 falls back to `worker_latency` when `a11y_engine_scan` is 0

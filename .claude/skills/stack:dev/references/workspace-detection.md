@@ -3,6 +3,7 @@
 ## Detection (run at startup, Stage 0)
 
 Read `./bstack-ai-harness.yml`:
+
 - `workspace:` field present (or a `stack-workspace.yml` / `.claude/stack-workspace.yml` sits alongside) -> **workspace-root mode**.
 - Otherwise (member repo or standalone repo) -> **single-repo mode**.
 

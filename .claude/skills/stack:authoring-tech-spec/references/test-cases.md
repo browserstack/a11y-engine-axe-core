@@ -9,10 +9,10 @@ variant.
 
 The design skill AND the suite differ by what the spec changes:
 
-| Change type | Design skill | Automation + coverage suite |
-|---|---|---|
-| **Assisted Test** (new/modified) | **`stack:a11y-qa`** (export route → TCM/CSV) | **`BStackAutomation/a11y/`** — existing AT cases live here (+ `stack:a11y-qa` `FEATURE_CATALOG.md`) |
-| New rule / AI integration / heuristic / platform | **`stack:test-case-designer`** | **`BStackAutomation/a11y_engine/`** + engine in-repo unit suites |
+| Change type                                      | Design skill                                 | Automation + coverage suite                                                                         |
+| ------------------------------------------------ | -------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Assisted Test** (new/modified)                 | **`stack:a11y-qa`** (export route → TCM/CSV) | **`BStackAutomation/a11y/`** — existing AT cases live here (+ `stack:a11y-qa` `FEATURE_CATALOG.md`) |
+| New rule / AI integration / heuristic / platform | **`stack:test-case-designer`**               | **`BStackAutomation/a11y_engine/`** + engine in-repo unit suites                                    |
 
 AT is cross-codebase (engine `ip-protection/assistedTests/` + extension wizard + Accessibility Backend +
 TestHub), so its automation deliberately lives in the **accessibility** suite, not the engine suite. Do not
@@ -28,7 +28,7 @@ things so the output is deduped against what already exists and grounded in how 
    feature touches the overall scan flow: `.claude/knowledge/docs/flows/` (`scan-lifecycle`, `rule-types`,
    `socket-protocol`, `versioning`, `workers`, `storage`) + `knowledge/{PRODUCT,GLOSSARY,TESTING}.md`.
    Identify which lanes, workers, contracts, flags, and downstream consumers the change moves.
-2. **Existing coverage baseline — the AllyEngine automation suite.** Inventory what is *already* tested so
+2. **Existing coverage baseline — the AllyEngine automation suite.** Inventory what is _already_ tested so
    you don't duplicate it and can spot the gaps. The engine team's own automation suite lives at
    **`BStackAutomation/a11y_engine/`** (github.com/browserstack/BStackAutomation, `master` branch) — this
    is the engine-owned suite; do **NOT** use `BStackAutomation/a11y/` or `stack-domain-BStackAutomation-a11y`,
@@ -50,8 +50,8 @@ existing automation already covers → feeds the documented-skip decision below)
    passing the Step-0 context (engine KB impact + existing-coverage inventory) alongside the Jira key /
    Task Brief / this tech spec. It emits a **17-column, TCM-import-compatible** table + test plan —
    scoped to the incremental coverage, deduped against the existing suites. Columns: `TC ID | Feature | Title | Folder Path | State | Owner | Priority | Type of
-   Test Case | Automation Status | Automation Method | Impact Area | Description | Preconditions | Template
-   | Steps | Expected Result | Team`.
+Test Case | Automation Status | Automation Method | Impact Area | Description | Preconditions | Template
+| Steps | Expected Result | Team`.
 2. **Land the cases in TCM** (BrowserStack Test Management) — paste/import the table.
 3. **TRA integration** — automated runs report to TRA; results are queryable per TC id / quality-gate via
    `stack:tra-reports` (first-run pass/fail, flaky/new failures, quality-gate status). The spec pins the
@@ -68,7 +68,7 @@ an engine-only Claude session.
    > "Test cases are mandatory and are designed via `stack:test-case-designer`, which isn't installed in
    > this engine-only session. Run `/stack:test-case-designer <JIRA>` at the workspace root (or a
    > BStackAutomation session), then paste back the TCM link + table so I can finish the spec."
-   Do **not** hand-author the 17-column table yourself as a substitute.
+   > Do **not** hand-author the 17-column table yourself as a substitute.
 
 ## Documented skip path (when no new tests are warranted)
 
@@ -78,6 +78,7 @@ refactor, a config-only flag flip, a version bump with no behavior change, or a 
 an existing suite.
 
 A skip is **only** valid as an **explicit, justified statement** in the QA section, not an omission:
+
 - State that no new test cases are added and why (one line).
 - Name the **existing TCM suite / automation cases** that cover the change, and the **TRA build** where
   they run green (queryable via `stack:tra-reports`).
@@ -124,6 +125,7 @@ New test cases were designed for this change (the documented-skip path does not 
 <TCM landing + TRA quality-gate build are downstream follow-ups, not finalization gates for this spec.>
 
 **Planned test dimensions:**
+
 - **Lanes (A/B1/B2/C/AI):** …
 - **Config-flag permutations (safe no-op when off/older):** …
 - **Scope-key / EOF / batching:** …

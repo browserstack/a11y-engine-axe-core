@@ -34,9 +34,10 @@ If `TICKET-KEY...` args were passed, fetch each with `getJiraIssue` (fields `["s
 A ticket is an in-scope **Dependabot dependency bump** when **both** hold:
 
 **(a) It has the Dependabot signature** — either:
+
 - `parent.key == "SC-1097"`, **or**
 - its description contains **all** of: a `**Package:**` line, a `**Package File:**` line pointing at a
-  `package.json` / `package-lock.json` path, and the note *"Dependabot automatically creates PR…"*.
+  `package.json` / `package-lock.json` path, and the note _"Dependabot automatically creates PR…"_.
 
 **(b) It is NOT another security-scanner type.** Exclude when the summary starts with any of
 `[container-vuln]`, `[Nuclei]`, `[malware]`, `[supply-chain-lint]`, or when there is **no** `**Package File:**`
@@ -51,24 +52,24 @@ in the description (code findings, dev-mode hardening, etc.).
 SC-1097 also tracks other repos. Determine each ticket's repo from the **Dependabot PR URL** in the
 description (`github.com/browserstack/<repo>/pulls?...author:dependabot`), falling back to the summary prefix:
 
-| Summary prefix / PR URL repo | Repo | Bulk PR |
-|---|---|---|
-| `a11y-engine-axe-core-*` / `…/a11y-engine-axe-core/…` | `browserstack/a11y-engine-axe-core` (submodule) | axe-core bulk PR |
-| `a11y-engine-*` / `…/a11y-engine/…` | `browserstack/a11y-engine` | a11y-engine bulk PR |
-| `frontend-*` / other | — | **excluded** |
+| Summary prefix / PR URL repo                          | Repo                                            | Bulk PR             |
+| ----------------------------------------------------- | ----------------------------------------------- | ------------------- |
+| `a11y-engine-axe-core-*` / `…/a11y-engine-axe-core/…` | `browserstack/a11y-engine-axe-core` (submodule) | axe-core bulk PR    |
+| `a11y-engine-*` / `…/a11y-engine/…`                   | `browserstack/a11y-engine`                      | a11y-engine bulk PR |
+| `frontend-*` / other                                  | —                                               | **excluded**        |
 
 ### 4. Parse each in-scope ticket
 
 The description carries structured fields — extract them (they drive matching and the risk report):
 
-| Field | Source line | Used for |
-|---|---|---|
-| Package | `**Package:** <name>` | join key to the Dependabot PR |
-| Package File | `**Package File:** <path>` | directory + repo + blast radius |
-| Target version | canonical = the Dependabot PR's "to" version; the advisory `fixed in <pkg>@<ver>` is the **minimum** acceptable. If no PR yet, bump to the advisory's fixed version (or newer). If they disagree, prefer the PR target as long as it's ≥ the advisory minimum. | the bump target |
-| CVSS | `**CVSS Score:** <n>` | risk severity |
-| Advisory | `**GitHub Advisory:** <url>` | reference in PR body |
-| Dependabot PR URL | the note's `…/pulls?...` search URL | confirms the repo, speeds PR lookup |
+| Field             | Source line                                                                                                                                                                                                                                                    | Used for                            |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Package           | `**Package:** <name>`                                                                                                                                                                                                                                          | join key to the Dependabot PR       |
+| Package File      | `**Package File:** <path>`                                                                                                                                                                                                                                     | directory + repo + blast radius     |
+| Target version    | canonical = the Dependabot PR's "to" version; the advisory `fixed in <pkg>@<ver>` is the **minimum** acceptable. If no PR yet, bump to the advisory's fixed version (or newer). If they disagree, prefer the PR target as long as it's ≥ the advisory minimum. | the bump target                     |
+| CVSS              | `**CVSS Score:** <n>`                                                                                                                                                                                                                                          | risk severity                       |
+| Advisory          | `**GitHub Advisory:** <url>`                                                                                                                                                                                                                                   | reference in PR body                |
+| Dependabot PR URL | the note's `…/pulls?...` search URL                                                                                                                                                                                                                            | confirms the repo, speeds PR lookup |
 
 Note that the **same CVE can span multiple tickets/modules** (e.g. `ws` in `a11y-engine-ws` **and**
 `a11y-engine-axe-core-ws`). Keep them as separate tickets — each maps to its own lockfile/repo — but one

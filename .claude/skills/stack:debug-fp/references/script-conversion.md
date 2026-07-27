@@ -26,18 +26,18 @@ Use only when axe injection fails: strict CSP, sandboxed iframes, trusted types.
 
 ## Substitution table (Path B only)
 
-| Original | Native-DOM replacement |
-|---|---|
-| `axe.commons.dom.getRootNode(node)` | `node.getRootNode()` |
-| `axe.commons.dom.isVisible(node)` | `const r = node.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).display !== 'none'` |
-| `axe.commons.aria.getRole(node)` | `node.getAttribute('role') \|\| null` (sufficient for FP checks; inline implicit-role map if needed) |
-| `axe.commons.text.accessibleText(node)` | inline: `aria-labelledby` &rarr; `aria-label` &rarr; `<label for>` &rarr; `.textContent.trim()` &rarr; `title` &rarr; `placeholder` |
-| `axe.utils.querySelectorAll(vn, sel)` | `Array.from(vn.actualNode.querySelectorAll(sel)).map(n => ({ actualNode: n }))` |
-| `axe.utils.getNodeFromTree(node)` | `{ actualNode: node }` |
-| `virtualNode.actualNode` | just `node` |
-| `ErrorHandler.addCheckError(id, err)` | `observed.errors.push({ id, msg: String(err?.message \|\| err) })` |
-| `import X from '…'` | delete; inline helpers |
-| `export default fn` | `(fn)(TARGET)` inside the IIFE |
+| Original                                | Native-DOM replacement                                                                                                                                                      |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `axe.commons.dom.getRootNode(node)`     | `node.getRootNode()`                                                                                                                                                        |
+| `axe.commons.dom.isVisible(node)`       | `const r = node.getBoundingClientRect(); return r.width > 0 && r.height > 0 && getComputedStyle(node).visibility !== 'hidden' && getComputedStyle(node).display !== 'none'` |
+| `axe.commons.aria.getRole(node)`        | `node.getAttribute('role') \|\| null` (sufficient for FP checks; inline implicit-role map if needed)                                                                        |
+| `axe.commons.text.accessibleText(node)` | inline: `aria-labelledby` &rarr; `aria-label` &rarr; `<label for>` &rarr; `.textContent.trim()` &rarr; `title` &rarr; `placeholder`                                         |
+| `axe.utils.querySelectorAll(vn, sel)`   | `Array.from(vn.actualNode.querySelectorAll(sel)).map(n => ({ actualNode: n }))`                                                                                             |
+| `axe.utils.getNodeFromTree(node)`       | `{ actualNode: node }`                                                                                                                                                      |
+| `virtualNode.actualNode`                | just `node`                                                                                                                                                                 |
+| `ErrorHandler.addCheckError(id, err)`   | `observed.errors.push({ id, msg: String(err?.message \|\| err) })`                                                                                                          |
+| `import X from '…'`                     | delete; inline helpers                                                                                                                                                      |
+| `export default fn`                     | `(fn)(TARGET)` inside the IIFE                                                                                                                                              |
 
 ## Return contract
 
@@ -63,6 +63,7 @@ Use `templates/port-skeleton.js` (multi-selector-aware; dedupes by DOM identity)
 ## Worked example &mdash; `label-empty`
 
 ### Path A
+
 ```js
 const virtualNode = axe.utils.getNodeFromTree(node);
 const name = axe.commons.text.accessibleText(virtualNode);
@@ -72,9 +73,11 @@ if (name && name.trim().length > 0) {
   return { decision: true, reasons, observed };
 }
 ```
+
 Axe handles the full spec (`aria-labelledby`, wrapping `<label>`, ARIA fallbacks) &mdash; same implementation as the scanner.
 
 ### Path B
+
 Only checks `aria-label` + `title`. Missing `aria-labelledby`, wrapping `<label>`, etc. &mdash; exactly the divergence Path A avoids. If you can't use Path A, document what's missing in the verdict.
 
 ## Shadow DOM / iframes
@@ -82,10 +85,13 @@ Only checks `aria-label` + `title`. Missing `aria-labelledby`, wrapping `<label>
 - `document.querySelector` does not pierce closed shadow roots. Inject a pierce helper:
   ```js
   function pierce(root, sel) {
-    const m = root.querySelector(sel); if (m) return m;
-    for (const el of root.querySelectorAll('*')) if (el.shadowRoot) {
-      const hit = pierce(el.shadowRoot, sel); if (hit) return hit;
-    }
+    const m = root.querySelector(sel);
+    if (m) return m;
+    for (const el of root.querySelectorAll('*'))
+      if (el.shadowRoot) {
+        const hit = pierce(el.shadowRoot, sel);
+        if (hit) return hit;
+      }
     return null;
   }
   ```

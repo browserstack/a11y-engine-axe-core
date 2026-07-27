@@ -121,10 +121,10 @@ Conditions (if APPROVE-WITH-CONDITIONS): <list>
 
 ## Source-of-truth references
 
-| Topic | File |
-|---|---|
-| Security rules | `rules/security.md` |
-| Auth middlewares | `knowledge/docs/flows/auth.md` |
-| Redis TTL constants and key patterns | `knowledge/docs/flows/storage.md` |
-| Job payload discipline | `rules/api-design.md` |
-| Submodule discipline + tagging | `rules/commit-conventions.md`, `rules/security.md` |
+| Topic                                | File                                               |
+| ------------------------------------ | -------------------------------------------------- |
+| Security rules                       | `rules/security.md`                                |
+| Auth middlewares                     | `knowledge/docs/flows/auth.md`                     |
+| Redis TTL constants and key patterns | `knowledge/docs/flows/storage.md`                  |
+| Job payload discipline               | `rules/api-design.md`                              |
+| Submodule discipline + tagging       | `rules/commit-conventions.md`, `rules/security.md` |

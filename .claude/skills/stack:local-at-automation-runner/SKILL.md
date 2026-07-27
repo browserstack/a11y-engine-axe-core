@@ -23,13 +23,14 @@ anywhere; `chmod 600`). On later runs, read the state file first and only re-ver
 
 ```jsonc
 {
-  "bstackautomation_repo": "<abs path>",        // find: `ls ~/l/BStackAutomation 2>/dev/null || mdfind -name nw_cucumber_runner.js`
-  "frontend_repo": "<abs path>",                // find: dir containing apps/accessibility-toolkit
-  "env_creds": {                                 // per-env login creds — USER fills placeholders;
-    "reg":       { "email": "<FILL_EMAIL>", "password": "<FILL_PASSWORD>" }, // the agent writes
-    "prod":      { "email": "<FILL_EMAIL>", "password": "<FILL_PASSWORD>" }  // ONLY placeholders.
-  },                                             // Never commit; never log values.
-  "last_extension_path": "<abs path to dist>"   // convenience default for the next ask
+  "bstackautomation_repo": "<abs path>", // find: `ls ~/l/BStackAutomation 2>/dev/null || mdfind -name nw_cucumber_runner.js`
+  "frontend_repo": "<abs path>", // find: dir containing apps/accessibility-toolkit
+  "env_creds": {
+    // per-env login creds — USER fills placeholders;
+    "reg": { "email": "<FILL_EMAIL>", "password": "<FILL_PASSWORD>" }, // the agent writes
+    "prod": { "email": "<FILL_EMAIL>", "password": "<FILL_PASSWORD>" } // ONLY placeholders.
+  }, // Never commit; never log values.
+  "last_extension_path": "<abs path to dist>" // convenience default for the next ask
 }
 ```
 
@@ -43,7 +44,7 @@ anywhere; `chmod 600`). On later runs, read the state file first and only re-ver
   anywhere (e.g. a downloaded `8.25.0.0/`). Verify it's a real unpacked extension:
   `manifest.json` present with `"version"`.
 - **Creds: the AGENT must NOT write or inline real credentials.** The auto-mode classifier
-  blocks persisting a password to a file *and* inlining `BS_TEST_PASSWORD=…` in a command — so
+  blocks persisting a password to a file _and_ inlining `BS_TEST_PASSWORD=…` in a command — so
   credentials are **user-filled** in the skill's cred store, which ships pre-seeded with
   `<FILL_…>` placeholders:
   **`state.local.json` in this skill's directory.**
@@ -62,13 +63,13 @@ anywhere; `chmod 600`). On later runs, read the state file first and only re-ver
 
 ## Modes
 
-| | **LOCAL mode** | **ENV mode** |
-|---|---|---|
-| Backends | local dev stack (`accessibility-local.bsstag.com`, `local.bsstag.com`) | hosted env: `reg` / `daily-reg` / `preprod` / `prod` — nothing local except the extension |
-| Extension build flavor | `npm run build:local` (or `-dynamic`) | flavor must match the env (prod build → prod backends, regression build → its bsstag env, `-dynamic` → any bsstag env) |
-| Stack prerequisite | local stack UP (check: `curl -k -s -o /dev/null -w '%{http_code}' https://accessibility-local.bsstag.com` → 200; recovery: `accessibility/script/macbook-setup/restart_services.sh` — walk ALL services) | none |
-| Auth | cookie injection via `local.js` `AUTH_COOKIE` (see LOCAL auth below) | form login with stored env creds via the MANUAL_LOGIN bypass |
-| Config decryption | **not needed** (placeholder configs) — only decrypt if you specifically need real config values | **not needed** (placeholder configs) |
+|                        | **LOCAL mode**                                                                                                                                                                                           | **ENV mode**                                                                                                           |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Backends               | local dev stack (`accessibility-local.bsstag.com`, `local.bsstag.com`)                                                                                                                                   | hosted env: `reg` / `daily-reg` / `preprod` / `prod` — nothing local except the extension                              |
+| Extension build flavor | `npm run build:local` (or `-dynamic`)                                                                                                                                                                    | flavor must match the env (prod build → prod backends, regression build → its bsstag env, `-dynamic` → any bsstag env) |
+| Stack prerequisite     | local stack UP (check: `curl -k -s -o /dev/null -w '%{http_code}' https://accessibility-local.bsstag.com` → 200; recovery: `accessibility/script/macbook-setup/restart_services.sh` — walk ALL services) | none                                                                                                                   |
+| Auth                   | cookie injection via `local.js` `AUTH_COOKIE` (see LOCAL auth below)                                                                                                                                     | form login with stored env creds via the MANUAL_LOGIN bypass                                                           |
+| Config decryption      | **not needed** (placeholder configs) — only decrypt if you specifically need real config values                                                                                                          | **not needed** (placeholder configs)                                                                                   |
 
 **Why no decryption:** `commonHelper.runningTestLocally()` is
 `os.userInfo().username !== 'root'` — always true on a dev Mac regardless of PROFILE, so
@@ -104,39 +105,41 @@ identical). Ciphertext there throws the same import error. Placeholder it too �
 only reads `best_practice_off_p1wa_email` (username/access_key are validated non-empty but
 unused for this flow), and on `preprod`/`prod` the step form-logs with
 `browser.globals.PASSWORD` from the `a11y/ui` config:
+
 ```js
 // a11y_engine/sdk/mocha/configs/<profile>.js — LOCAL ONLY, git-tracked, restore after
 module.exports = {
-  best_practice_off_p1wa_username: 'x', best_practice_off_p1wa_access_key: 'x',
-  best_practice_off_p1wa_email: process.env.BS_TEST_EMAIL,   // never a literal
+  best_practice_off_p1wa_username: 'x',
+  best_practice_off_p1wa_access_key: 'x',
+  best_practice_off_p1wa_email: process.env.BS_TEST_EMAIL // never a literal
 };
 ```
+
 Pass creds via env (read from `state.local.json` inside a scratch runner script so the literal
 never lands in a tool-call arg — the auto-mode classifier blocks inline
 `BS_TEST_PASSWORD='…'`): `export BS_TEST_EMAIL="$(jq -r .env_creds.prod.email state.local.json)"`.
 
 ⚠️ **CONTENT-ASSERTION CAVEAT (verified 2026-07-06).** The placeholder route gets the wcag_at
-scenarios to *run end-to-end* (login → set version → wizard → save → dashboard → assert) — good
+scenarios to _run end-to-end_ (login → set version → wizard → save → dashboard → assert) — good
 enough for **structural / split-wiring run-proof**. It does NOT produce **green content
 assertions**, because the expected rule sets are **account-configuration-specific**: the suite
 is calibrated for the real `best_practice_off` account (best-practice OFF + Advanced ON →
 `focus-entirely-obscured` renders at 2.2 AA). Substituting any other account (e.g. the
-`ai-opt-out` prod fixture in `state.local.json`) renders an *inverted* set
+`ai-opt-out` prod fixture in `state.local.json`) renders an _inverted_ set
 (`keyboard-focus-visible` appears, `focus-entirely-obscured` does not) and every present/absent
-+ tag assertion fails — a stub artifact, NOT a product bug or a split defect. For GREEN content
-proof you need the real `best_practice_off_p1wa_*` values (decrypt the mocha config) on the
-regression env where that account lives — i.e. how CI runs it (`WebA11yUIAutomation`). Don't
-present a stub-account run as content proof.
+
+- tag assertion fails — a stub artifact, NOT a product bug or a split defect. For GREEN content
+  proof you need the real `best_practice_off_p1wa_*` values (decrypt the mocha config) on the
+  regression env where that account lives — i.e. how CI runs it (`WebA11yUIAutomation`). Don't
+  present a stub-account run as content proof.
 
 ## Auth
 
 **ENV mode — form login (MANUAL_LOGIN bypass).** Temporary local-only edit in the
 `I sign-(in|up) on extension with cookie` step (`extension_steps.js`): when
-`MANUAL_LOGIN=true` → `checkFocusAndSwitch()` → `url(\`${URL}/users/sign_in\`)` →
-`LoginPage.login(EMAIL, PASSWORD, false)` → settle pause → **post-login window hygiene**
-(the extension opens its onboarding docs tab on every fresh profile;
-`goToAccessibiltyToolKitTab` blindly closes `handles[0]` when handles > 2 — close every
-window that is neither the login tab nor `devtools://`, then switch back).
+`MANUAL_LOGIN=true` → `checkFocusAndSwitch()` → `url(\`${URL}/users/sign_in\`)`→`LoginPage.login(EMAIL, PASSWORD, false)`→ settle pause → **post-login window hygiene**
+(the extension opens its onboarding docs tab on every fresh profile;`goToAccessibiltyToolKitTab`blindly closes`handles[0]`when handles > 2 — close every
+window that is neither the login tab nor`devtools://`, then switch back).
 ⚠️ **Google SSO does NOT work in automated CfT** (Google blocks OAuth in automated
 browsers) — password accounts only.
 
@@ -191,10 +194,10 @@ nohup env MANUAL_LOGIN=true LOCAL_CDP_DEBUG=true \
 
 ### Known AT regression suites & exact invocations (verified 2026-07-07)
 
-| Suite | Feature file / tag | Account | Env vars (+ the common `PROFILE=prod BROWSER=chrome SETUP_NAME=default MANUAL_LOGIN=true SCANNER_VERSION=<symlink>`) | Verified |
-|---|---|---|---|---|
-| Interactive Elements (AXE-3230), **non-AI** | `features/assisted_test/interactive_elements_at.feature` — `@axe_3299` (11 scenarios) | **ai-opt-out** (non-AI) | `MODULE_OR_PRODUCT=assisted_test PRIORITY=axe_3299` | **11/11 PASS on prod, 2026-07-07** (base-rebase extension) |
-| Interactive Elements **AI/NRV** (ATA-1031) | `features/ai/assisted_test/ai_interactive_elements_nrv.feature` — `@interactive_at_ai_nrv` | **AI-enabled** (`AI_EMAIL` / `aia11y*`), NOT ai-opt-out | `MODULE_OR_PRODUCT=ai PRIORITY=interactive_at_ai_nrv` (NRV flag on) | not run here — needs AI env |
+| Suite                                       | Feature file / tag                                                                         | Account                                                 | Env vars (+ the common `PROFILE=prod BROWSER=chrome SETUP_NAME=default MANUAL_LOGIN=true SCANNER_VERSION=<symlink>`) | Verified                                                   |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Interactive Elements (AXE-3230), **non-AI** | `features/assisted_test/interactive_elements_at.feature` — `@axe_3299` (11 scenarios)      | **ai-opt-out** (non-AI)                                 | `MODULE_OR_PRODUCT=assisted_test PRIORITY=axe_3299`                                                                  | **11/11 PASS on prod, 2026-07-07** (base-rebase extension) |
+| Interactive Elements **AI/NRV** (ATA-1031)  | `features/ai/assisted_test/ai_interactive_elements_nrv.feature` — `@interactive_at_ai_nrv` | **AI-enabled** (`AI_EMAIL` / `aia11y*`), NOT ai-opt-out | `MODULE_OR_PRODUCT=ai PRIORITY=interactive_at_ai_nrv` (NRV flag on)                                                  | not run here — needs AI env                                |
 
 - The `@axe_3299` cases live **ONLY** on the `a11y/axe-3299-3230-presentation-state-leak-tests` branch (0 on AXE-3501) — stash other WIP + check out that branch first, then re-apply the local scaffolding (placeholder configs + MANUAL_LOGIN + frame-fix) fresh, since branch-switch drops them.
 - `PRIORITY=axe_3299` runs the whole set; a unique sub-tag runs ONE for the initial smoke: `axe_3299_presentation_not_interactive`, `_presentation_placeholder`, `_no_role_found_label`, `_customs`, `_s3`, `_s7`, `_s8`, `_s10`.
@@ -207,7 +210,7 @@ nohup env MANUAL_LOGIN=true LOCAL_CDP_DEBUG=true \
   `grep "Scenario ended:.*Status:"`. Soft-assert failures = `•` bullets at scenario end.
 - **`a11y/ui/logs/tests.log`**: `logger.info` markers land HERE, not stdout.
 - **CDP topology JSONL** (below): which targets exist/die at any moment.
-- **Full-suite run (multiple scenarios ≈ 30–40 min)** — run detached and wait on the *process*,
+- **Full-suite run (multiple scenarios ≈ 30–40 min)** — run detached and wait on the _process_,
   not a fixed sleep: `echo $! > run.pid` right after the `nohup … &`, then poll
   `kill -0 "$(cat run.pid)" 2>/dev/null || break` in a background loop. Final verdict:
   `grep -E "Scenario ended:.*Status:" run.log` (count `PASSED`/`FAILED`). The full `@axe_3299`
@@ -236,20 +239,42 @@ Helper scripts (drop in a scratch dir, Node 18+; `ws` pkg is in `a11y/ui/node_mo
 
 ```js
 // cdp_monitor.js — one JSONL line per target-set change; run alongside the test
-const POLL_MS = 1000; let last = '';
-const summarize = (ts) => ts.map((t) => ({ id: t.id.slice(0, 8), type: t.type,
-  title: (t.title || '').slice(0, 80), url: (t.url || '').slice(0, 120) }))
-  .sort((a, b) => a.id.localeCompare(b.id));
+const POLL_MS = 1000;
+let last = '';
+const summarize = ts =>
+  ts
+    .map(t => ({
+      id: t.id.slice(0, 8),
+      type: t.type,
+      title: (t.title || '').slice(0, 80),
+      url: (t.url || '').slice(0, 120)
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
 async function tick() {
   try {
-    const targets = await (await fetch('http://127.0.0.1:9222/json/list')).json();
+    const targets = await (
+      await fetch('http://127.0.0.1:9222/json/list')
+    ).json();
     const snap = JSON.stringify(summarize(targets));
-    if (snap !== last) { last = snap;
-      console.log(JSON.stringify({ ts: new Date().toISOString(), targets: JSON.parse(snap) })); }
-  } catch (e) { const m = `unreachable: ${e.message}`;
-    if (last !== m) { last = m; console.log(JSON.stringify({ ts: new Date().toISOString(), error: m })); } }
+    if (snap !== last) {
+      last = snap;
+      console.log(
+        JSON.stringify({
+          ts: new Date().toISOString(),
+          targets: JSON.parse(snap)
+        })
+      );
+    }
+  } catch (e) {
+    const m = `unreachable: ${e.message}`;
+    if (last !== m) {
+      last = m;
+      console.log(JSON.stringify({ ts: new Date().toISOString(), error: m }));
+    }
+  }
 }
-setInterval(tick, POLL_MS); tick();
+setInterval(tick, POLL_MS);
+tick();
 ```
 
 ```js
@@ -258,13 +283,28 @@ const WebSocket = require('<bstackautomation_repo>/a11y/ui/node_modules/ws');
 const [, , match, expr] = process.argv;
 (async () => {
   const targets = await (await fetch('http://127.0.0.1:9222/json/list')).json();
-  const target = targets.find((t) => (t.url || '').includes(match));
-  if (!target) { targets.forEach((t) => console.error(`[${t.type}] ${t.url}`)); process.exit(2); }
+  const target = targets.find(t => (t.url || '').includes(match));
+  if (!target) {
+    targets.forEach(t => console.error(`[${t.type}] ${t.url}`));
+    process.exit(2);
+  }
   const ws = new WebSocket(target.webSocketDebuggerUrl);
-  ws.on('open', () => ws.send(JSON.stringify({ id: 1, method: 'Runtime.evaluate',
-    params: { expression: expr, returnByValue: true } })));
-  ws.on('message', (d) => { const m = JSON.parse(d);
-    if (m.id === 1) { console.log(JSON.stringify(m.result, null, 2)); process.exit(0); } });
+  ws.on('open', () =>
+    ws.send(
+      JSON.stringify({
+        id: 1,
+        method: 'Runtime.evaluate',
+        params: { expression: expr, returnByValue: true }
+      })
+    )
+  );
+  ws.on('message', d => {
+    const m = JSON.parse(d);
+    if (m.id === 1) {
+      console.log(JSON.stringify(m.result, null, 2));
+      process.exit(0);
+    }
+  });
   setTimeout(() => process.exit(3), 10000);
 })();
 ```
@@ -284,18 +324,18 @@ behavior. Read counts/labels off a live run, not memory — they drift across re
 
 ## Failure signatures (all verified 2026-07-02/03)
 
-| Symptom | Cause | Fix |
-|---|---|---|
-| `Invalid or unexpected token` importing helpers; `getScenarioName` of undefined | `require('configs/<PROFILE>.js')` hit ciphertext (also via symlinked node_modules → main clone in worktrees) | placeholder configs where node_modules really lives |
-| start-info modal times out; dashboard loads but AT won't advance (LOCAL) | `auth-local.bsstag.com` CN-invalid cert stalls OAuth refresh | `--ignore-certificate-errors --allow-insecure-localhost` |
-| `Extension path not found: ~/Downloads/<SCANNER_VERSION>` | symlink/dist missing | re-symlink chosen dist (Step 0) |
-| session won't start / chromedriver version error | CfT vs chromedriver mismatch, or `SETUP_NAME=extension` | `npm run setup:chrome`; `SETUP_NAME=default` |
-| `TypeError: … null (reading 'includes')` in a URL poll | `getCurrentUrl()` null mid-redirect | `(await getCurrentUrl()) \|\| ''` |
-| Login "detected" though nobody logged in | Google-SSO click navigates off `/users/sign_in` → URL-poll false positive | form login; never Google SSO |
+| Symptom                                                                                                                                                                                                                                                                              | Cause                                                                                                                                | Fix                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Invalid or unexpected token` importing helpers; `getScenarioName` of undefined                                                                                                                                                                                                      | `require('configs/<PROFILE>.js')` hit ciphertext (also via symlinked node_modules → main clone in worktrees)                         | placeholder configs where node_modules really lives                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| start-info modal times out; dashboard loads but AT won't advance (LOCAL)                                                                                                                                                                                                             | `auth-local.bsstag.com` CN-invalid cert stalls OAuth refresh                                                                         | `--ignore-certificate-errors --allow-insecure-localhost`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `Extension path not found: ~/Downloads/<SCANNER_VERSION>`                                                                                                                                                                                                                            | symlink/dist missing                                                                                                                 | re-symlink chosen dist (Step 0)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| session won't start / chromedriver version error                                                                                                                                                                                                                                     | CfT vs chromedriver mismatch, or `SETUP_NAME=extension`                                                                              | `npm run setup:chrome`; `SETUP_NAME=default`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `TypeError: … null (reading 'includes')` in a URL poll                                                                                                                                                                                                                               | `getCurrentUrl()` null mid-redirect                                                                                                  | `(await getCurrentUrl()) \|\| ''`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Login "detected" though nobody logged in                                                                                                                                                                                                                                             | Google-SSO click navigates off `/users/sign_in` → URL-poll false positive                                                            | form login; never Google SSO                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `verifyLogin → switchToIframe` 3× "**error** while locating" (vs "not found") while the panel target is alive in topology — often after a first attempt that DID find the iframe+header then a window closed (`no such window: target window already closed` / `web view not found`) | driver parked on a DEAD window handle; `switchToIframe`'s retry loop resets only the FRAME (`switchToFrame(null)`), never the window | in `extension_page.js` `switchToIframe`, call `this.switchToToolkit()` (already implements exactly this re-anchor: iterate `getAllHandles()`, switch to the LAST `DevTools`-titled window) BEFORE the `switchToFrame(null)` reset inside the `catch`. Verified 2026-07-06, and **RE-VERIFIED 2026-07-07** — it recovered the flake mid-scenario during the full `@axe_3299` prod run (11/11 PASS). NOTE: a **fresh branch** (e.g. the `a11y/axe-3299-3230-presentation-state-leak-tests` automation branch) does NOT have the re-anchor — add it manually into the `try` before the first `switchToFrame(null)` (inline: `getAllHandles()` → switch to the LAST `DevTools`-titled handle, wrapped in its own try/catch). Local debug edit — the underlying flake also merits a committed fix via review |
-| Extension save works but dashboard opens the WRONG report | saved-reports list shared across parallel runs + first-page row matching | search list by report name first (`SEARCH_REPORT` = `[data-testid="report-listing-search-input"]`, then name-keyed dynamic row locator) |
-| `clickOnLogin` 10s timeout | benign — already authed, button absent (in `try`) | ignore |
-| redirected to login (LOCAL) | stale `AUTH_COOKIE`/`REFRESH_TOKEN` | recapture cookie jar, repatch `local.js` |
+| Extension save works but dashboard opens the WRONG report                                                                                                                                                                                                                            | saved-reports list shared across parallel runs + first-page row matching                                                             | search list by report name first (`SEARCH_REPORT` = `[data-testid="report-listing-search-input"]`, then name-keyed dynamic row locator)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `clickOnLogin` 10s timeout                                                                                                                                                                                                                                                           | benign — already authed, button absent (in `try`)                                                                                    | ignore                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| redirected to login (LOCAL)                                                                                                                                                                                                                                                          | stale `AUTH_COOKIE`/`REFRESH_TOKEN`                                                                                                  | recapture cookie jar, repatch `local.js`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ## Worktree trap (advanced)
 

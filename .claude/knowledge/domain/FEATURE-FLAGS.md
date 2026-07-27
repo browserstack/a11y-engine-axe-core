@@ -6,11 +6,11 @@ a11y-engine has no traditional feature-flag SaaS provider (LaunchDarkly, Split, 
 
 In `ip-protection/app.js`, on server start, three caches initialize **in parallel**:
 
-| Cache | Initializer | Stores | Used by |
-|---|---|---|---|
-| **Rules cache** | `initializeRulesCache()` (`utils/ruleFilter.js`) | Which rules run per scan, per product, per environment | Every scan's rule-selection step |
+| Cache                 | Initializer                                                  | Stores                                                             | Used by                                                                    |
+| --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| **Rules cache**       | `initializeRulesCache()` (`utils/ruleFilter.js`)             | Which rules run per scan, per product, per environment             | Every scan's rule-selection step                                           |
 | **Kill-switch cache** | `refreshAllKillSwitchCaches()` (`utils/killswitch-utils.js`) | Per-customer rule disablements; the "global kill switch" predicate | `controllers/buildProxyMap.js:isKillSwitchActive(userId, groupId, scanId)` |
-| **Timeout cache** | `initializeTimeoutCache()` (`utils/timeout-cache.js`) | Per-group timeouts for B-type and Type C scans | Worker timeout guards |
+| **Timeout cache**     | `initializeTimeoutCache()` (`utils/timeout-cache.js`)        | Per-group timeouts for B-type and Type C scans                     | Worker timeout guards                                                      |
 
 Any scan reads from all three at dispatch time.
 
@@ -41,10 +41,10 @@ These are **not** feature flags in the SaaS sense — they're code-level gates t
 
 Resolved via `isFeatureEnabledRedis(featureName, userId, groupId, scopeKey)` in `utils/redis-utils.js`. Checks per-user, per-group, and global Redis keys; returns `Boolean`. Known consumers:
 
-| Feature key | Helper | Where it gates |
-|---|---|---|
+| Feature key             | Helper                              | Where it gates                                                                                      |
+| ----------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------- |
 | `cookie_banner_removal` | `isCookieBannerRemovalEnabledRedis` | `dom-forge-core/lib/utils/cookie-banner-removal.js` invocation in color-contrast and reflow runners |
-| `fixed_sticky_two_pass` | `isFixedStickyTwoPassEnabledRedis` | Two-pass color-contrast evaluation (`dom-forge-core/lib/checks/color-contrast-evaluate.js`) |
+| `fixed_sticky_two_pass` | `isFixedStickyTwoPassEnabledRedis`  | Two-pass color-contrast evaluation (`dom-forge-core/lib/checks/color-contrast-evaluate.js`)         |
 
 The string `'true'` is the only accepted "on" value at the all-users level; per-user / per-group lookups accept truthy presence. Treat the helper's return strictly as boolean — `if (rawRedisValue)` on the raw read flips OFF flags ON when Redis returns `'false'` (see `learnings.md` § "Feature-flag truthiness").
 
@@ -66,12 +66,12 @@ The fastest "feature flag" of all: edit a constant array.
 
 ## Environment-gated behavior
 
-| Behavior | Gate | Where |
-|---|---|---|
-| Dev escape hatch for auth | `IS_DEVELOPMENT_ENV` | `utils/middleware.js` — `verifyToken` uses `jwt.decode` (no signature verify); `verifyBasicAuth` short-circuits to `next()` |
-| S3 Transfer Acceleration | env ∈ {`preprod`, `production`, `dr`} | `utils/s3Utils.js` — selects `s3clientWithAcceleration` |
-| Automation routes | `preprod` only | `controllers/automation/*` — returns 400 outside preprod |
-| Read replica fallback | (always available) | `REDIS_READ_REPLICA_OPTIONS` defined in `config/constants.js` |
+| Behavior                  | Gate                                  | Where                                                                                                                       |
+| ------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| Dev escape hatch for auth | `IS_DEVELOPMENT_ENV`                  | `utils/middleware.js` — `verifyToken` uses `jwt.decode` (no signature verify); `verifyBasicAuth` short-circuits to `next()` |
+| S3 Transfer Acceleration  | env ∈ {`preprod`, `production`, `dr`} | `utils/s3Utils.js` — selects `s3clientWithAcceleration`                                                                     |
+| Automation routes         | `preprod` only                        | `controllers/automation/*` — returns 400 outside preprod                                                                    |
+| Read replica fallback     | (always available)                    | `REDIS_READ_REPLICA_OPTIONS` defined in `config/constants.js`                                                               |
 
 ## Reloading the caches
 

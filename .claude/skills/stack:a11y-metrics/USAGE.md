@@ -111,29 +111,29 @@ The skill tries to keep context footprint low so you can run multiple investigat
 
 ### What eats tokens
 
-| Component | Typical cost | Notes |
-|---|---|---|
-| SKILL.md load (every invocation) | ~1.1k | Always-on cost |
-| Reference file (loaded on demand) | 600 – 3.8k | `l0_full_workflow.md` is the largest (~3.8k); `schema.md`, `eds_data_flow.md` are <1k |
-| SQL query in conversation (heredoc + bq command) | 0.5 – 2k per query | Longer for L0 latency queries with multi-CTE |
-| BigQuery CSV result in tool output | ~5 – 20 tokens/row | A 25-row × 6-col detail table is ~1.5k |
-| Markdown table in final response | ~50 – 100 tokens/row | Wide tables with long error-message columns eat more |
-| Subagent spawn (e.g. `a11y-backend` root-causing) | +15 – 25k per agent | Each agent loads its own context; heaviest single cost |
+| Component                                         | Typical cost         | Notes                                                                                 |
+| ------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------- |
+| SKILL.md load (every invocation)                  | ~1.1k                | Always-on cost                                                                        |
+| Reference file (loaded on demand)                 | 600 – 3.8k           | `l0_full_workflow.md` is the largest (~3.8k); `schema.md`, `eds_data_flow.md` are <1k |
+| SQL query in conversation (heredoc + bq command)  | 0.5 – 2k per query   | Longer for L0 latency queries with multi-CTE                                          |
+| BigQuery CSV result in tool output                | ~5 – 20 tokens/row   | A 25-row × 6-col detail table is ~1.5k                                                |
+| Markdown table in final response                  | ~50 – 100 tokens/row | Wide tables with long error-message columns eat more                                  |
+| Subagent spawn (e.g. `a11y-backend` root-causing) | +15 – 25k per agent  | Each agent loads its own context; heaviest single cost                                |
 
 ### Typical costs by operation
 
-| Operation | Example argument | Approx tokens | Notes |
-|---|---|---|---|
-| Single scalar (1 row) | `/a11y-metrics failures yesterday` | **~2 – 3k** | SKILL.md + 1 small query + 1-row result |
-| Single-metric latency | `/a11y-metrics P99 percy exec latency last 7 days` | **~4 – 5k** | + `schema.md` + ~25-row result |
-| Attribution query | `/a11y-metrics who is driving CS Type C latency` | **~5 – 7k** | 2 queries (volume + tail) + ~15-row results each |
-| Rule-level analysis | `/a11y-metrics check errors per rule this week` | **~7 – 9k** | `l2_rule_queries.md` + weekly aggregate + daily trend |
-| Schema / version enumeration | `/a11y-metrics unique a11y-engine versions last 4 months` | **~3 – 5k** | Long time-range but simple aggregate → ~70-row result |
-| Targeted L2 drill | `/a11y-metrics L2 error buckets for yesterday CS` | **~8 – 12k** | `l2_error_queries.md` (UDFs) + detailed table |
-| **Full L0 workflow** | `/a11y-metrics analyse yesterday's L0` | **~10 – 16k** | All 7 phases in one run (post-CSV optimisation; was 18-25k before) |
-| L0 on incident day (more data) | `/a11y-metrics analyse 14th April L0` (21% failure day) | **~15 – 20k** | Larger result tables, more signature matches |
-| L0 + root-cause investigation | L0 + spawn `a11y-backend`/`a11y-frontend` subagents | **~35 – 55k** | +15-25k per subagent spawned |
-| Multi-day trending / forensic audit | `/a11y-metrics how has color-contrast check errors trended last 14 days` | **~8 – 12k** | One query with per-day rows; pipe-to-file if >100 rows |
+| Operation                           | Example argument                                                         | Approx tokens | Notes                                                              |
+| ----------------------------------- | ------------------------------------------------------------------------ | ------------- | ------------------------------------------------------------------ |
+| Single scalar (1 row)               | `/a11y-metrics failures yesterday`                                       | **~2 – 3k**   | SKILL.md + 1 small query + 1-row result                            |
+| Single-metric latency               | `/a11y-metrics P99 percy exec latency last 7 days`                       | **~4 – 5k**   | + `schema.md` + ~25-row result                                     |
+| Attribution query                   | `/a11y-metrics who is driving CS Type C latency`                         | **~5 – 7k**   | 2 queries (volume + tail) + ~15-row results each                   |
+| Rule-level analysis                 | `/a11y-metrics check errors per rule this week`                          | **~7 – 9k**   | `l2_rule_queries.md` + weekly aggregate + daily trend              |
+| Schema / version enumeration        | `/a11y-metrics unique a11y-engine versions last 4 months`                | **~3 – 5k**   | Long time-range but simple aggregate → ~70-row result              |
+| Targeted L2 drill                   | `/a11y-metrics L2 error buckets for yesterday CS`                        | **~8 – 12k**  | `l2_error_queries.md` (UDFs) + detailed table                      |
+| **Full L0 workflow**                | `/a11y-metrics analyse yesterday's L0`                                   | **~10 – 16k** | All 7 phases in one run (post-CSV optimisation; was 18-25k before) |
+| L0 on incident day (more data)      | `/a11y-metrics analyse 14th April L0` (21% failure day)                  | **~15 – 20k** | Larger result tables, more signature matches                       |
+| L0 + root-cause investigation       | L0 + spawn `a11y-backend`/`a11y-frontend` subagents                      | **~35 – 55k** | +15-25k per subagent spawned                                       |
+| Multi-day trending / forensic audit | `/a11y-metrics how has color-contrast check errors trended last 14 days` | **~8 – 12k**  | One query with per-day rows; pipe-to-file if >100 rows             |
 
 ### Observed session sizes (real examples from recent runs)
 

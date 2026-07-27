@@ -6,37 +6,39 @@ Script: `scripts/bumpA11yEngine.sh`.
 
 ## What the script does — 7 stages
 
-| # | Stage | Effect |
-|---|---|---|
-| 1 | Input | Prompts for new version, publish y/n, build set (WA / AUT / both), target environments (`reg`, `preprod`, `daily-reg`, `prod`) |
-| 2 | Publish `a11y-engine-core` | Bumps `a11y-engine-core/package.json`, commits + pushes, triggers Jenkins `A11yEngineProductionPackagePublish` or `A11yEngineStagingPackagePublish` |
-| 3 | Consolidate rules | Runs `a11y-engine-core/build/scripts/consolidate_rules.js` → writes `a11y-engine-core/consolidated_rules.json` |
-| 4 | Copy rules to `accessibility` | `accessibility/db/rules/a11y_engine_${VERSION}.json` (sibling repo, via `gh` CLI) |
-| 5 | Upload rules | Triggers Jenkins `A11yUploadRules` per environment |
-| 6 | Build extension | Triggers Jenkins `BuildProductTools` for WA and/or AUT per environment |
-| 7 | Upload extension | Triggers Jenkins `A11yUploadExtension` for each successful AUT build, then opens PRs in `frontend` and `accessibility` repos via `gh pr create` |
+| #   | Stage                         | Effect                                                                                                                                              |
+| --- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Input                         | Prompts for new version, publish y/n, build set (WA / AUT / both), target environments (`reg`, `preprod`, `daily-reg`, `prod`)                      |
+| 2   | Publish `a11y-engine-core`    | Bumps `a11y-engine-core/package.json`, commits + pushes, triggers Jenkins `A11yEngineProductionPackagePublish` or `A11yEngineStagingPackagePublish` |
+| 3   | Consolidate rules             | Runs `a11y-engine-core/build/scripts/consolidate_rules.js` → writes `a11y-engine-core/consolidated_rules.json`                                      |
+| 4   | Copy rules to `accessibility` | `accessibility/db/rules/a11y_engine_${VERSION}.json` (sibling repo, via `gh` CLI)                                                                   |
+| 5   | Upload rules                  | Triggers Jenkins `A11yUploadRules` per environment                                                                                                  |
+| 6   | Build extension               | Triggers Jenkins `BuildProductTools` for WA and/or AUT per environment                                                                              |
+| 7   | Upload extension              | Triggers Jenkins `A11yUploadExtension` for each successful AUT build, then opens PRs in `frontend` and `accessibility` repos via `gh pr create`     |
 
 ## Files touched
 
 **In this repo:**
+
 - `a11y-engine-core/package.json` (version bump)
 - `a11y-engine-core/package-lock.json`
 - `a11y-engine-core/consolidated_rules.json` (regenerated)
 
 **In sibling repos (via `gh`):**
+
 - `accessibility/db/rules/a11y_engine_${VERSION}.json` (new file per release)
 - `frontend/apps/accessibility-toolkit/package.json` (version bump)
 - `frontend/apps/accessibility-toolkit-headless/package.json` (version bump)
 
 ## Jenkins jobs triggered
 
-| Job | Trigger | Purpose |
-|---|---|---|
-| `A11yEngineProductionPackagePublish` | Stage 2 (prod) | Publishes `@browserstack/a11y-engine-core` npm package |
-| `A11yEngineStagingPackagePublish` | Stage 2 (staging) | Staging package publish |
-| `A11yUploadRules` | Stage 5 | Uploads consolidated rules JSON to a CDN / service |
-| `BuildProductTools` | Stage 6 | Builds WA / AUT extension artifacts |
-| `A11yUploadExtension` | Stage 7 | Uploads extension builds to distribution |
+| Job                                  | Trigger           | Purpose                                                |
+| ------------------------------------ | ----------------- | ------------------------------------------------------ |
+| `A11yEngineProductionPackagePublish` | Stage 2 (prod)    | Publishes `@browserstack/a11y-engine-core` npm package |
+| `A11yEngineStagingPackagePublish`    | Stage 2 (staging) | Staging package publish                                |
+| `A11yUploadRules`                    | Stage 5           | Uploads consolidated rules JSON to a CDN / service     |
+| `BuildProductTools`                  | Stage 6           | Builds WA / AUT extension artifacts                    |
+| `A11yUploadExtension`                | Stage 7           | Uploads extension builds to distribution               |
 
 ## Pre-reqs
 

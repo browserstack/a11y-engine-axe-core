@@ -1,7 +1,7 @@
 ---
 name: stack:debug-fp
 description: Investigate accessibility false positives on a live page. Locate the rule algorithm across a11y-engine-core / axe-core / ip-protection / dom-forge-core, port it to the browser, decide FP vs TP. Triggers&colon; "false positive", "why is this flagged", "debug rule on URL".
-argument-hint: "<rule-id> <url> [css-selector, …]   # one or more selectors for the flagged element(s)"
+argument-hint: '<rule-id> <url> [css-selector, …]   # one or more selectors for the flagged element(s)'
 ---
 
 # debug-fp &mdash; Live-page false-positive investigator
@@ -30,7 +30,7 @@ Follow `references/rule-locator.md`. It covers: rule JSON location, the worker-b
 https://www.browserstack.com/docs/accessibility/rules/a11y-engine/<major.minor>/<rule-id>
 ```
 
-`<major.minor>` comes from `a11y-engine-core/package.json` (e.g. `6.3.1` &rarr; `6.3`). If the page body is *"Content in development"* or empty, stop &mdash; do not retry. Reconstruct intent from the rule's `.json` tags (WCAG SCs, ACT IDs), the wired check JSONs, and the cited WCAG SC itself. State: *"Docs page is a placeholder; inferring intent from `<tag-list>` and `<evaluator-files>`."*
+`<major.minor>` comes from `a11y-engine-core/package.json` (e.g. `6.3.1` &rarr; `6.3`). If the page body is _"Content in development"_ or empty, stop &mdash; do not retry. Reconstruct intent from the rule's `.json` tags (WCAG SCs, ACT IDs), the wired check JSONs, and the cited WCAG SC itself. State: _"Docs page is a placeholder; inferring intent from `<tag-list>` and `<evaluator-files>`."_
 
 Emit the report-back block from `rule-locator.md` §"Output of this phase", including the exact worker filename.
 

@@ -52,6 +52,7 @@ GROUP BY 1 ORDER BY 1 DESC
 ## Complete Check Error Names (50+)
 
 ### Single-name (use `-check` suffix)
+
 autocomplete-attribute-valid-check, bypass-blocks-skip-links-check, distinguishable-link-check,
 fieldset-missing-legend-check, label-empty-check, label-orphan-check, meaningful-sequence-check,
 missing-fieldset-check, text-in-images-check, search-landmark-check, menu-landmark-check,
@@ -64,11 +65,13 @@ contentinfo-landmark-check, aria-required-check, dragging-movements-slider-check
 input-label-name-mismatch-check, aria-disabled-check
 
 ### Dual-name (try `-evaluate` then `-check`)
+
 keyboard-accessible-role, meaningful-sequence-focus-order, meaningful-alt-text,
 link-purpose, show-password, cognitive-captcha, cognitive-captcha-enhanced,
 meaningful-alt-text-ai
 
 ### No-suffix
+
 color-contrast, consistent-identification-links, consistent-navigation-layout,
 consistent-navigation-relative-order, resize-2x-zoom, keyboard-focus-visible,
 reflow-4x-zoom-scroll, non-text-control-contrast, decorative-image, missing-long-alt,
@@ -76,6 +79,7 @@ no-visible-label, pause-moving-content, accessible-name, accessible-name-carouse
 keyboard-interactive, keyboard-menu, pointer-gestures-carousel
 
 ### Data dumping checks (B2-specific)
+
 consistent-identification-links-check, consistent-navigation-layout-check,
 consistent-navigation-relative-order-check
 

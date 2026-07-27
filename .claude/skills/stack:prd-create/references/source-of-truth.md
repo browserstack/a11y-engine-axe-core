@@ -1,16 +1,16 @@
-# Source-of-Truth Hierarchy — how a BrowserStack product *actually* works
+# Source-of-Truth Hierarchy — how a BrowserStack product _actually_ works
 
 When the PRD targets a BrowserStack product, ground in these three sources **in strict
 priority order**. Higher tier wins on any factual disagreement (subject to the conflict
-protocol below). This hierarchy is consulted *in addition to* anything the user passed —
+protocol below). This hierarchy is consulted _in addition to_ anything the user passed —
 user-supplied context is never discarded, but it is reconciled against these tiers.
 
 **Grounding is two-level — don't conflate them:**
 
 - **Orientation (light, Phase 0).** Just enough to map the product and infer depth: the
-  *always-read* index (`.claude/knowledge/product/<product>/KB.md`) + the product's `overview.md`.
+  _always-read_ index (`.claude/knowledge/product/<product>/KB.md`) + the product's `overview.md`.
   Load this and stop — it's orientation, not a deep pull.
-- **Feature-scoped deep grounding (Phase 1, *before* the brainstorm).** The feature ask already
+- **Feature-scoped deep grounding (Phase 1, _before_ the brainstorm).** The feature ask already
   names what's being built, so ground deeply up front — that's what makes the brainstorm's
   questions product-specific instead of generic. The query is the feature ask (refined by any
   brainstorm top-ups). From each tier, lazy-load only the slices that bear on this feature (the
@@ -22,23 +22,24 @@ The product KB is built for exactly this split: `KB.md` is the always-read orien
 `capabilities/<slug>.md` are the lazy-loaded deep slices (faceted — dev reads Current
 behavior/Architecture, prd reads Intent & roadmap/Metrics).
 
-| Rank | Source | What it is | Access |
-|------|--------|-----------|--------|
-| **1** | `github.com/browserstack/docs` | **Absolute** source of truth for how the product is *documented* to work today | shallow clone (read-only) |
-| **2** | `.claude/knowledge/product/<product>/` (installed KB) | Curated product **knowledge base** — `KB.md` index + faceted `capabilities/<slug>.md` + cross-cutting overview/personas/competitive/glossary | local files |
-| **3** | Confluence (Atlassian Rovo MCP) | Live product space — task-briefs, PRDs, roadmap, feedback | MCP, on demand |
-| **C** | **Code context** — the product's source repo(s) | How the product *actually* works (real behavior, limits, feasibility) | `stacks/stack-domain-<repo>/` KB if present (code already condensed), else the repo (clone/grep, read-only) |
+| Rank  | Source                                                | What it is                                                                                                                                   | Access                                                                                                      |
+| ----- | ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **1** | `github.com/browserstack/docs`                        | **Absolute** source of truth for how the product is _documented_ to work today                                                               | shallow clone (read-only)                                                                                   |
+| **2** | `.claude/knowledge/product/<product>/` (installed KB) | Curated product **knowledge base** — `KB.md` index + faceted `capabilities/<slug>.md` + cross-cutting overview/personas/competitive/glossary | local files                                                                                                 |
+| **3** | Confluence (Atlassian Rovo MCP)                       | Live product space — task-briefs, PRDs, roadmap, feedback                                                                                    | MCP, on demand                                                                                              |
+| **C** | **Code context** — the product's source repo(s)       | How the product _actually_ works (real behavior, limits, feasibility)                                                                        | `stacks/stack-domain-<repo>/` KB if present (code already condensed), else the repo (clone/grep, read-only) |
 
-> Tiers 1–3 are the **default** grounding. Tier 1 = *documented* current state; tiers 2–3 = *intent,
-> rationale, what's planned*. **Code (C) is consulted when necessary** — it answers a different
-> question: *what does the implementation actually do?*
+> Tiers 1–3 are the **default** grounding. Tier 1 = _documented_ current state; tiers 2–3 = _intent,
+> rationale, what's planned_. **Code (C) is consulted when necessary** — it answers a different
+> question: _what does the implementation actually do?_
 
 **When to reach for code (C):**
+
 - A behavior/limit/edge-case matters to the PRD and docs are **silent, ambiguous, or suspected stale**.
 - **Feasibility** — does the current architecture support the proposed change, and where would it land.
 - To **verify** a current-state claim before building a requirement on it.
 
-**Precedence with code:** for *documented intent*, docs (tier 1) lead. For ***actual* runtime
+**Precedence with code:** for _documented intent_, docs (tier 1) lead. For **_actual_ runtime
 behavior**, code is the arbiter — if code contradicts docs on what the system really does, **code
 wins** on that fact, and docs become a write-back/flag target (§5). Don't read code by default
 (it's the most expensive source): prefer the condensed `stacks/stack-domain-<repo>/` KB when one
@@ -51,6 +52,7 @@ exists, and drop to the repo only for the specific files the question touches. *
 ## 1. Resolve the product
 
 Infer the product slug from the ask + any context. Map it to each tier:
+
 - **Tier 1:** the matching area under the docs clone (search by product name / known doc path).
 - **Tier 2:** the installed product KB at `.claude/knowledge/product/<product>/` — `KB.md` +
   `capabilities/<slug>.md` + cross-cutting files (built by `product-knowledge-sync`, shipped by the
@@ -88,7 +90,7 @@ to tiers 2–3 — don't block.
 
 For each fact a PRD needs (current behavior, surfaces, limits, naming): take it from the
 **highest tier that has it**. Only descend a tier when the higher one is silent. Tag the
-tier on grounded current-state claims when it aids traceability (e.g. *"(per docs)"*).
+tier on grounded current-state claims when it aids traceability (e.g. _"(per docs)"_).
 
 Tiers 2–3 remain the primary source for **intent** (problem framing, roadmap, customer
 evidence, competitor posture) — tier 1 rarely covers those.
@@ -100,10 +102,11 @@ status, a number), do not auto-resolve by rank. Surface it and ask the user whic
 source of truth — for **any** combination of sources:
 
 > **Conflict on `<fact>`:**
+>
 > - **docs** says: `<X>`
 > - **product KB** says: `<Y>`
-> - *(Confluence says: `<Z>`)*
-> - *(code says: `<W>`)*
+> - _(Confluence says: `<Z>`)_
+> - _(code says: `<W>`)_
 >
 > Which is the source of truth here?
 
@@ -111,7 +114,7 @@ For a contradiction specifically about **actual runtime behavior**, code (C) is 
 answer (see precedence above) — but still confirm with the user before writing the correction
 back, since the fix may land in docs or Confluence.
 
-Carry the user's ruling forward for the rest of the session. (Rank is the *default* when
+Carry the user's ruling forward for the rest of the session. (Rank is the _default_ when
 sources are merely silent or additive — the conflict prompt is for genuine contradictions.)
 
 ## 5. Write back to the resolved source-of-truth's stale siblings

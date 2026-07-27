@@ -1,7 +1,7 @@
 # BRD Coverage — map every business requirement (optional)
 
-Used only when the user supplies a BRD (`--brd <path|url>`). A BRD states *what the business
-needs*; the PRD is *how the product delivers it*. Mirrors `stack:prd-reviewer`'s coverage
+Used only when the user supplies a BRD (`--brd <path|url>`). A BRD states _what the business
+needs_; the PRD is _how the product delivers it_. Mirrors `stack:prd-reviewer`'s coverage
 check so the created PRD maps cleanly.
 
 ## Procedure (during drafting)

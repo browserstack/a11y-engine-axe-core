@@ -29,7 +29,6 @@ All notable changes to this project will be documented in this file. See [standa
 - **target-size:** determine offset using clientRects if target is display:inline ([#5012](https://github.com/dequelabs/axe-core/issues/5012)) ([69d81c1](https://github.com/dequelabs/axe-core/commit/69d81c1cbb6a61a272884516c7983dcd17d28a42))
 - **target-size:** ignore widgets that are inline with other inline elements ([#5000](https://github.com/dequelabs/axe-core/issues/5000)) ([cf8a3c0](https://github.com/dequelabs/axe-core/commit/cf8a3c039b121c0c64a1eb8805c586659b69f3c1))
 
-
 ### [4.11.1](https://github.com/dequelabs/axe-core/compare/v4.11.0...v4.11.1) (2026-01-06)
 
 ### Bug Fixes

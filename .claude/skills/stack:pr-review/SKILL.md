@@ -3,6 +3,7 @@ name: stack:pr-review
 description: "Orchestrated PR review that delegates to installed reviewers, aggregates findings, and posts a 'Claude Code Review' commit status plus a PR comment via gh. Use when reviewing pull requests, before merging, or when asked for code review — even without explicitly saying 'PR review.'"
 allowed-tools: Read, Glob, Grep, Bash(gh auth status), Bash(gh repo view*), Bash(gh pr view*), Bash(gh pr diff*), Bash(gh pr comment*), Bash(gh api repos/*/pulls/*/files*), Bash(gh api repos/*/pulls/*/comments*), Bash(gh api repos/*/pulls/*/reviews*), Bash(gh api repos/*/issues/*/comments*), Bash(gh api repos/*/commits/*), Bash(gh api repos/*/compare/*), Bash(gh api repos/*/statuses/*), Bash(mktemp*), Bash(cat*), Agent, Skill
 ---
+
 <!-- Version: 2026-07-06 | Source: @browserstack/ai-harness | Do not remove this header -->
 
 # PR Review (Orchestrator)
@@ -89,7 +90,7 @@ Read the last `FAST_PATH_RESULT=` line the script prints:
 
 ## Step 1.5 — Locate the latest prior review comment and load state
 
-This and the next three steps run in **all modes**, including `--collect-only`. They establish whether this is the first review or a continuation, and how much to re-review. Nothing here edits any comment — the run posts a *new* comment in Step 4; prior comments are kept.
+This and the next three steps run in **all modes**, including `--collect-only`. They establish whether this is the first review or a continuation, and how much to re-review. Nothing here edits any comment — the run posts a _new_ comment in Step 4; prior comments are kept.
 
 Every Claude review comment carries a hidden state marker at the top of its body:
 
@@ -153,6 +154,7 @@ gh api "repos/$OWNER_REPO/statuses/$HEAD_SHA" \
 echo "No change since last review (same HEAD and same human signal). No new comment posted."
 exit 0
 ```
+
 (If `OPEN_FINDINGS` held a High/Critical finding, re-affirm `failure` with description `Failed - see PR comment` instead. The guard re-affirms the prior gate; it does not recompute it.)
 
 If `HEAD_SHA == LAST_REVIEWED_SHA` but the human signal differs (a human acted), the guard does **not** fire: there is no new code to scan, so set `REVIEW_SCOPE=RECONCILE_ONLY` (Step 2 skips reviewer dispatch); Step 3 still composes and posts a new comment folding in the reconciliation.
@@ -187,6 +189,7 @@ if [ "$REVIEW_SCOPE" = "DELTA" ]; then
   gh api "repos/$OWNER_REPO/compare/$LAST_REVIEWED_SHA...$HEAD_SHA" --jq '.files[].filename' > "$DELTA_FILES_FILE" 2>/dev/null || REVIEW_SCOPE=FULL
 fi
 ```
+
 (`diverged` covers force-push/rebase where the baseline is unreachable → FULL.)
 
 ## Step 2 — Discover and invoke installed reviewers
@@ -204,6 +207,7 @@ Within that scope, match by name OR description against any of these patterns (c
 Typical hits in this harness: `stack:code-reviewer`, plus per-domain reviewers like `stack:th-pr-review` when their stacks are installed. (Names without the `stack:` prefix are also valid if the file lives in the working directory.)
 
 **Exclude the following from discovery (even if in scope):**
+
 - `stack:pr-review` itself (prevent recursion)
 - `stack:code-reviewer` (agent) — redundant with the `stack:code-review` skill where it exists; invoking both is token bloat. Prefer the skill.
 - **Any security-related skill or agent** — temporarily disabled. This includes anything whose name or description matches `security`, `audit`, `auditor`, `vulnerability`, `owasp`, or similar (e.g. `stack:security-review`, `stack:security-auditor`). Re-enable in a follow-up once the security lens is reintegrated cleanly.
@@ -262,18 +266,16 @@ Collect every reviewer's response. If a reviewer errors, capture the error strin
 
 ## Step 2b — Discover and invoke nested subproject reviewers (monorepos)
 
-In a monorepo (e.g. `frontend`, with `apps/*` and `packages/*` subprojects), each subproject installs its **own** `.claude/` under a nested path — `apps/tcm/.claude/`, `packages/synergy/.claude/`, etc. Claude Code only **registers** skills and agents from the **repo-root** `.claude/`; reviewers in nested `.claude/` directories are never loaded into the skill registry, so they never appear as candidates in Step 2 and the `Skill`/`Agent`-by-name tools cannot invoke them. Discover and run them **by file path** instead. (Because invocation is by path, the fact that every subproject ships a skill with the *same* name — `stack:code-review` — is irrelevant; there is no name collision.)
+In a monorepo (e.g. `frontend`, with `apps/*` and `packages/*` subprojects), each subproject installs its **own** `.claude/` under a nested path — `apps/tcm/.claude/`, `packages/synergy/.claude/`, etc. Claude Code only **registers** skills and agents from the **repo-root** `.claude/`; reviewers in nested `.claude/` directories are never loaded into the skill registry, so they never appear as candidates in Step 2 and the `Skill`/`Agent`-by-name tools cannot invoke them. Discover and run them **by file path** instead. (Because invocation is by path, the fact that every subproject ships a skill with the _same_ name — `stack:code-review` — is irrelevant; there is no name collision.)
 
 This path runs **in addition to** Step 2, not instead of it. Step 2's registered reviewers run on the diff selected by Step 1.8 (the **full** PR diff, or the **delta** since the last review); Step 2b's subproject reviewers run on a **subproject-scoped diff** (only the files under their subproject).
 
 1. **Scan** for nested reviewer source files under the current working directory, excluding the repo-root `.claude/`. Use the **`Glob` tool** (not a shell `find`/`awk`) with each of these patterns, then union the results:
-
    - `**/.claude/skills/*.md`
    - `**/.claude/skills/*/SKILL.md`
    - `**/.claude/agents/*.md`
 
    `Glob` returns repo-relative paths. **Discard** any match whose `.claude` is the repo root — a path that begins with `.claude/` — since those reviewers are already registered and handled by Step 2. For each remaining match, derive:
-
    - **`<scopeDir>`** — the path segment before `/.claude/` (e.g. `apps/tcm`, the subproject the reviewer belongs to).
    - **`<sourceFile>`** — the full matched path.
 
@@ -281,7 +283,7 @@ This path runs **in addition to** Step 2, not instead of it. Step 2's registered
 
 2. **Filter** each candidate by reading its frontmatter `name`/`description` and applying the **same matching regex and the same exclusion list as Step 2**: drop `stack:pr-review`; drop any reviewer whose name/description matches `security`/`audit`/`auditor`/`vulnerability`/`owasp`; and when a single subproject ships both a `stack:code-review` skill and a `stack:code-reviewer` agent, keep only the skill (the agent is redundant).
 
-3. **Gate by changed files.** A nested reviewer is *affected* only if at least one path in `$FILES_FILE` (the changed-file snapshot captured in Step 2) begins with `<scopeDir>/`. Skip reviewers whose subproject this PR does not touch — files that fall outside every subproject (or inside a subproject with no reviewer) are still covered by Step 2's root reviewers on the full diff.
+3. **Gate by changed files.** A nested reviewer is _affected_ only if at least one path in `$FILES_FILE` (the changed-file snapshot captured in Step 2) begins with `<scopeDir>/`. Skip reviewers whose subproject this PR does not touch — files that fall outside every subproject (or inside a subproject with no reviewer) are still covered by Step 2's root reviewers on the full diff.
 
 4. **Invoke each affected reviewer** in parallel (same single-message, multiple-`Agent`-call batch style as Step 2). Since the reviewer is not registered, you cannot call it via the `Skill` tool — instead `Read` its source file and dispatch a general-purpose `Agent` whose prompt is:
 
@@ -321,26 +323,26 @@ Collect each subproject reviewer's response exactly as in Step 2; a reviewer tha
 
 The 18-row scaffold below is the canonical Review Table structure used in Step 3 (regardless of which reviewers ran):
 
-| Priority | Category | Check |
-|----------|----------|-------|
-| High | Security | No hardcoded secrets or credentials |
-| High | Security | Authentication/authorization checks present |
-| High | Security | Input validation and sanitization |
-| High | Security | No IDOR — resource ownership validated |
-| High | Security | No SQL injection (parameterized queries) |
-| High | Correctness | Logic is correct, handles edge cases |
-| High | Correctness | Error handling is explicit, no swallowed exceptions |
-| High | Correctness | No race conditions or concurrency issues |
-| Medium | Testing | New code has corresponding tests |
-| Medium | Testing | Error paths and edge cases tested |
-| Medium | Testing | Existing tests still pass (no regressions) |
-| Medium | Performance | No N+1 queries or unbounded data fetching |
-| Medium | Performance | Long-running tasks use background jobs |
-| Medium | Quality | Follows existing codebase patterns |
-| Medium | Quality | Changes are focused (single concern) |
-| Low | Quality | Meaningful names, no dead code |
-| Low | Quality | Comments explain why, not what |
-| Low | Quality | No unnecessary dependencies added |
+| Priority | Category    | Check                                               |
+| -------- | ----------- | --------------------------------------------------- |
+| High     | Security    | No hardcoded secrets or credentials                 |
+| High     | Security    | Authentication/authorization checks present         |
+| High     | Security    | Input validation and sanitization                   |
+| High     | Security    | No IDOR — resource ownership validated              |
+| High     | Security    | No SQL injection (parameterized queries)            |
+| High     | Correctness | Logic is correct, handles edge cases                |
+| High     | Correctness | Error handling is explicit, no swallowed exceptions |
+| High     | Correctness | No race conditions or concurrency issues            |
+| Medium   | Testing     | New code has corresponding tests                    |
+| Medium   | Testing     | Error paths and edge cases tested                   |
+| Medium   | Testing     | Existing tests still pass (no regressions)          |
+| Medium   | Performance | No N+1 queries or unbounded data fetching           |
+| Medium   | Performance | Long-running tasks use background jobs              |
+| Medium   | Quality     | Follows existing codebase patterns                  |
+| Medium   | Quality     | Changes are focused (single concern)                |
+| Low      | Quality     | Meaningful names, no dead code                      |
+| Low      | Quality     | Comments explain why, not what                      |
+| Low      | Quality     | No unnecessary dependencies added                   |
 
 ## Step 3 — Compose the report
 
@@ -351,7 +353,7 @@ REPORT_FILE=$(mktemp -t claude-code-pr-review.XXXXXX.md)
 FINDINGS_FILE=$(mktemp -t claude-code-pr-review-findings.XXXXXX.json)
 ```
 
-**Continuation composition.** Every run composes a fresh, self-contained comment body (the run always posts a *new* comment; prior comments are kept untouched).
+**Continuation composition.** Every run composes a fresh, self-contained comment body (the run always posts a _new_ comment; prior comments are kept untouched).
 
 - The body MUST begin with the state marker, rebuilt with this run's state:
   ```
@@ -362,12 +364,13 @@ FINDINGS_FILE=$(mktemp -t claude-code-pr-review-findings.XXXXXX.json)
   -->
   ```
 - On a continuation (`PRIOR_COMMENT_URL` non-empty), add a line under the header:
-  `_Continues [the previous review](<PRIOR_COMMENT_URL>) — changes since `<LAST_REVIEWED_SHA short>` (<FULL re-review | delta | reconcile-only>)._`
+  `_Continues [the previous review](<PRIOR_COMMENT_URL>) — changes since `<LAST*REVIEWED_SHA short>` (<FULL re-review | delta | reconcile-only>).*`
   Omit this line on a first run.
 - The **Findings** section lists the **cumulative open set** (this run's new findings plus carried-forward unresolved ones). List resolved carried-forward findings struck-through with the reason, e.g. `~~`path:line` High — title~~ Resolved — thread resolved by @user`.
 - Add a `### Raised by other reviewers (not independently confirmed)` subsection for unconfirmed human concerns (non-gating; omit the heading if none).
 
 **Reconciliation (Moderate authority, every change attributed)** using the human signal from Step 1.6:
+
 - **Prune** a carried-forward finding only on a clear signal — its `file:line` is in a **resolved** review thread (`THREADS_JSON`), or the line is **no longer present** in the current diff. Strike it through with the reason and the `@user`.
 - **Add** a human-raised concern as a finding **only if you independently inspect the code and agree** (`Raised by @user — confirmed`); it affects the gate only when rated High/Critical.
 - **Unconfirmed** human concerns go under the "Raised by other reviewers" subsection — never silently dropped, never gating.
@@ -376,19 +379,20 @@ FINDINGS_FILE=$(mktemp -t claude-code-pr-review-findings.XXXXXX.json)
 
 The report must follow this exact structure (preceded by the marker block, and on a continuation by the "Continues …" line):
 
-````markdown
+```markdown
 # Claude Code PR Review
 
-**PR:** <PR_URL>  •  **Head:** <HEAD_SHORT>  •  **Reviewers:** <comma-separated reviewer names — root reviewers from Step 2 plus subproject reviewers from Step 2b labelled by scope dir, e.g. `stack:code-review (apps/tcm)`; or "fallback inline checklist" if none discovered>
+**PR:** <PR_URL> • **Head:** <HEAD_SHORT> • **Reviewers:** <comma-separated reviewer names — root reviewers from Step 2 plus subproject reviewers from Step 2b labelled by scope dir, e.g. `stack:code-review (apps/tcm)`; or "fallback inline checklist" if none discovered>
 
 ## Summary
+
 <one-line description of what the PR does, synthesized from diff + commit messages>
 
 ## Review Table
 
-| Priority | Category | Check | Status | Notes |
-|----------|----------|-------|--------|-------|
-| High | Security | No hardcoded secrets or credentials | Pass/Fail/N/A | … |
+| Priority                                                                            | Category | Check                               | Status        | Notes |
+| ----------------------------------------------------------------------------------- | -------- | ----------------------------------- | ------------- | ----- |
+| High                                                                                | Security | No hardcoded secrets or credentials | Pass/Fail/N/A | …     |
 | ... (all 18 rows from the fallback table above, populated from aggregated findings) |
 
 ## Findings
@@ -402,14 +406,16 @@ The report must follow this exact structure (preceded by the marker block, and o
 - **Suggestion:** <how to fix>
 
 <If a reviewer errored, include a line:>
+
 > ⚠️ `stack:foo-reviewer` errored: <error string>
 
 ---
 
 **Verdict: PASS**
-````
+```
 
 **Verdict rule (apply exactly):**
+
 - If any **High** priority row in the table is `Fail`, OR any finding has severity `Critical` or `High` → write a **negative** verdict (canonical: `**Verdict: FAIL**`).
 - Otherwise → write a **positive** verdict (canonical: `**Verdict: PASS**`).
 
@@ -422,9 +428,9 @@ Trailing prose after the closing `**` is allowed (e.g. `**Verdict: APPROVE** —
 
 ### Step 3b — Emit the inline-comment findings JSON
 
-In addition to the markdown report, write the **anchorable** findings to `$FINDINGS_FILE` as a JSON array. These become inline review comments in Step 4, posted as a single PR review. The full report (with *every* finding, anchorable or not) still posts as the PR comment, so nothing is lost by leaving a finding out of this file.
+In addition to the markdown report, write the **anchorable** findings to `$FINDINGS_FILE` as a JSON array. These become inline review comments in Step 4, posted as a single PR review. The full report (with _every_ finding, anchorable or not) still posts as the PR comment, so nothing is lost by leaving a finding out of this file.
 
-**Anchorable** = the finding's `file:line` lands on an added/modified line of the diff this run actually reviewed — `$DIFF_FILE` on a FULL run, `$DELTA_DIFF_FILE` on a DELTA run. (Carried-forward findings from the prior review are not re-anchored — they live in the comment body only. On a RECONCILE_ONLY run there is no new diff, so write an empty array.) GitHub rejects inline comments on lines outside the diff, and because the reviews API is **all-or-nothing**, a single bad anchor causes the *entire* review (all inline comments) to 422 and post nothing. So include a finding here only when you have confirmed its exact line is in the diff. When unsure, leave it out — it is still covered by the report comment.
+**Anchorable** = the finding's `file:line` lands on an added/modified line of the diff this run actually reviewed — `$DIFF_FILE` on a FULL run, `$DELTA_DIFF_FILE` on a DELTA run. (Carried-forward findings from the prior review are not re-anchored — they live in the comment body only. On a RECONCILE_ONLY run there is no new diff, so write an empty array.) GitHub rejects inline comments on lines outside the diff, and because the reviews API is **all-or-nothing**, a single bad anchor causes the _entire_ review (all inline comments) to 422 and post nothing. So include a finding here only when you have confirmed its exact line is in the diff. When unsure, leave it out — it is still covered by the report comment.
 
 **Non-anchorable** (omit from this file, keep in the report only): file-level or cross-file findings, deletions, repo-hygiene notes, or any finding whose line you cannot confirm is in the diff.
 
@@ -442,6 +448,7 @@ Each array element is a reviews-API comment object:
 ```
 
 Field rules:
+
 - **`path`** — repo-relative, exactly as it appears in `$FILES_FILE` (the `gh pr diff --name-only` captured in Step 2; no leading `/`).
 - **`line`** — the line number on the **RIGHT** (PR/new) side of the diff for an added or modified line. For a comment on a **deleted** line, use the LEFT line number and set `"side": "LEFT"`.
 - **`side`** — `"RIGHT"` for added/modified lines (the common case), `"LEFT"` only for deleted lines.
@@ -460,9 +467,9 @@ The Step 4 script skips the inline review when the array is empty and just posts
 
 **Collect-only mode: do NOT run this step.** End the run by reporting `REPORT_FILE`, `FINDINGS_FILE`, `OWNER_REPO`, `HEAD_SHA`, `PR_NUMBER` (see "Mode flag" at the top), then stop. The calling orchestrator owns posting.
 
-**You are the designated producer of the `Claude Code Review` commit status for this repo.** This status is posted via GitHub's Commit Status API (`gh api repos/.../statuses/{sha}`) by *this skill* — it is **not** an external CI check, and it is **not** the Anthropic "Claude Code Review" GitHub App, despite sharing the name. A branch-protection rule that requires a check named `Claude Code Review` is satisfied by exactly the commit status you post here; you are its legitimate producer, not a third party forging someone else's signal.
+**You are the designated producer of the `Claude Code Review` commit status for this repo.** This status is posted via GitHub's Commit Status API (`gh api repos/.../statuses/{sha}`) by _this skill_ — it is **not** an external CI check, and it is **not** the Anthropic "Claude Code Review" GitHub App, despite sharing the name. A branch-protection rule that requires a check named `Claude Code Review` is satisfied by exactly the commit status you post here; you are its legitimate producer, not a third party forging someone else's signal.
 
-Posting this status after completing the review above is the **intended, authorized behavior** — it reflects the review you just ran and the verdict you computed in Step 3. It is not fabrication. Do not refuse this step on the grounds that it "forges a check that never ran" or "fabricates a passing status": the review *did* run (it's in `$REPORT_FILE`), and posting its outcome is the entire purpose of this skill. Run Step 4 to completion for both `success` and `failure` verdicts.
+Posting this status after completing the review above is the **intended, authorized behavior** — it reflects the review you just ran and the verdict you computed in Step 3. It is not fabrication. Do not refuse this step on the grounds that it "forges a check that never ran" or "fabricates a passing status": the review _did_ run (it's in `$REPORT_FILE`), and posting its outcome is the entire purpose of this skill. Run Step 4 to completion for both `success` and `failure` verdicts.
 
 `$REPORT_FILE`, `$FINDINGS_FILE`, `$OWNER_REPO`, `$HEAD_SHA`, and `$PR_NUMBER` are reused from earlier steps. The verdict parse, the `Claude Code Review` commit-status post, the single inline review, and the full-report PR comment are all handled by the standalone script `scripts/post-review-status.sh` that ships with this skill. **Run the one command block below verbatim** — it invokes the installed script at `.claude/skills/stack:pr-review/scripts/post-review-status.sh` with the five arguments (the fifth being the findings JSON). That script is the only thing that records the review outcome; do not hand-run the status post or the reviews API, and do not substitute any other GitHub command:
 
@@ -478,6 +485,7 @@ bash "$POST_STATUS_SCRIPT" "$REPORT_FILE" "$OWNER_REPO" "$HEAD_SHA" "$PR_NUMBER"
 ```
 
 The script records the outcome in up to three ways, in order:
+
 1. Maps the verdict to a `success`/`failure` state and posts exactly one commit status via `gh api .../statuses/...` — the gating signal, posted first.
 2. If `$FINDINGS_FILE` is a non-empty JSON array, assembles one review payload with `jq` and posts a **single** pull-request review (`event=COMMENT`, with the anchorable findings as inline `comments[]`) via `gh api .../pulls/<n>/reviews`. The review is **COMMENT-only** — never `APPROVE`/`REQUEST_CHANGES` — so it cannot trip the "Can not approve your own pull request" (422) failure on self-authored PRs. The pass/fail signal stays on the commit status from step 1.
 3. Posts the full report as one PR comment via `gh pr comment` — the canonical record and the home for non-anchorable findings.
@@ -485,6 +493,7 @@ The script records the outcome in up to three ways, in order:
 To tweak the status `DESCRIPTION` (e.g. add finding counts like `Failed: 1 high, 3 medium`, keeping it under GitHub's 140-char limit) or the inline review `body`, edit `scripts/post-review-status.sh` directly — the next run picks up the change.
 
 Failure modes handled by the script:
+
 - If the verdict line is missing/malformed, the script exits before touching GitHub.
 - If the commit-status POST fails (e.g. fork PRs without write permission), the script exits **before** posting the review or comment so we don't leave either without a corresponding status.
 - If the inline-review POST fails (e.g. a comment anchors to a line not in the diff, which 422s the whole review; or `jq` is unavailable), the script **warns and continues** to the full-report comment so findings are never lost. Get the anchoring right in Step 3b to avoid this.

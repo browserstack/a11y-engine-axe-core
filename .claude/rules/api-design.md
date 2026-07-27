@@ -1,6 +1,6 @@
 ---
 paths:
-  - "ip-protection/**"
+  - 'ip-protection/**'
 ---
 
 # API and Socket Design Rules
@@ -19,12 +19,12 @@ Backend server (`ip-protection`) is **Express + socket.io + Redis (ioredis) + S3
 
 Defined in `ip-protection/utils/middleware.js`:
 
-| Middleware | When to apply |
-|---|---|
-| `verifySocketAuthToken` | Applied at the `io.use(...)` level. All `socket.on(...)` handlers inherit auth. |
-| `verifyAPIAuthToken` | User-scan HTTP routes. Bearer JWT. Sets `req.userId`, `req.groupId`, `req.apiVersion`, `req.applyConsolidation`. |
-| `verifyAutomationAuth` | Automation-product routes (preprod only). Bearer static token vs `BASIC_AUTHTOKEN`. |
-| `verifyBasicAuth` | Webhook endpoints (AI service callbacks). Note the current `\|\|` vs `&&` bug — `verifyToken` falls back across `JWT_TOKEN_SECRET` and `PREVIOUS_JWT_TOKEN_SECRET` for key rotation. |
+| Middleware              | When to apply                                                                                                                                                                        |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `verifySocketAuthToken` | Applied at the `io.use(...)` level. All `socket.on(...)` handlers inherit auth.                                                                                                      |
+| `verifyAPIAuthToken`    | User-scan HTTP routes. Bearer JWT. Sets `req.userId`, `req.groupId`, `req.apiVersion`, `req.applyConsolidation`.                                                                     |
+| `verifyAutomationAuth`  | Automation-product routes (preprod only). Bearer static token vs `BASIC_AUTHTOKEN`.                                                                                                  |
+| `verifyBasicAuth`       | Webhook endpoints (AI service callbacks). Note the current `\|\|` vs `&&` bug — `verifyToken` falls back across `JWT_TOKEN_SECRET` and `PREVIOUS_JWT_TOKEN_SECRET` for key rotation. |
 
 **Hard rule**: No new HTTP route or socket event ships without one of these four.
 
@@ -46,10 +46,10 @@ Defined in `ip-protection/utils/middleware.js`:
 
 `controllers/apiClient.js` exports two outbound helpers — use them, do not call `axios` directly for these targets:
 
-| Helper | Target | Auth |
-|---|---|---|
-| `sendResponse(payload, jobData, type, task?, isComplete?, retries?)` | WebA11y backend `/api/a11y_engine_jobs` | `Basic BASIC_AUTHTOKEN` |
-| `getAIResponse(payload, requestId, scanId, retries?, endpoint?)` | AI API | `Basic BASIC_AI_AUTHTOKEN` |
+| Helper                                                               | Target                                  | Auth                       |
+| -------------------------------------------------------------------- | --------------------------------------- | -------------------------- |
+| `sendResponse(payload, jobData, type, task?, isComplete?, retries?)` | WebA11y backend `/api/a11y_engine_jobs` | `Basic BASIC_AUTHTOKEN`    |
+| `getAIResponse(payload, requestId, scanId, retries?, endpoint?)`     | AI API                                  | `Basic BASIC_AI_AUTHTOKEN` |
 
 Retries: `MAX_API_RETRIES = 3`, exponential backoff, on status `502/503/504/429` plus network error codes (`NETWORK_EXCEPTIONS`).
 
@@ -62,6 +62,7 @@ Retries: `MAX_API_RETRIES = 3`, exponential backoff, on status `502/503/504/429`
 ## Worker registration
 
 When adding a new queue:
+
 1. Define it in `utils/bullmq.js`.
 2. Bind a worker in the owning process file (`worker.js` for main, `aiWorker.js` for AI).
 3. **Add the worker to the `workers` array passed to `setupWorkerShutdown(workers)` in `utils/workerShutdown.js`** — required for clean SIGTERM/SIGINT drain.

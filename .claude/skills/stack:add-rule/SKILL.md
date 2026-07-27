@@ -1,7 +1,7 @@
 ---
 name: stack:add-rule
 description: Add a new accessibility rule to the engine. Guides through B1, C, or AI rule creation.
-argument-hint: "<rule-name> <type: b1|c|ai>"
+argument-hint: '<rule-name> <type: b1|c|ai>'
 ---
 
 # Add Rule

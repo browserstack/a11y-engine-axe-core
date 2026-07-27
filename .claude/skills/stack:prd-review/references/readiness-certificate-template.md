@@ -34,13 +34,13 @@ If any criterion fails, issue a **Not Ready** certificate instead, listing exact
 
 ## Definition of Ready — All Criteria Met
 
-| Criterion | Status |
-|-----------|--------|
-| Zero P0 findings | ✅ |
-| All 8 dimensions score ≥ 6/10 | ✅ (lowest: <dim> at <X>/10) |
-| Average dimension score ≥ 7.0/10 | ✅ (actual: <X.X>/10) |
-| BRD coverage complete | ✅ (<X>/<X> items mapped) — or — N/A (no BRD provided) |
-| 1:N split scenarios fully specified | ✅ |
+| Criterion                           | Status                                                 |
+| ----------------------------------- | ------------------------------------------------------ |
+| Zero P0 findings                    | ✅                                                     |
+| All 8 dimensions score ≥ 6/10       | ✅ (lowest: <dim> at <X>/10)                           |
+| Average dimension score ≥ 7.0/10    | ✅ (actual: <X.X>/10)                                  |
+| BRD coverage complete               | ✅ (<X>/<X> items mapped) — or — N/A (no BRD provided) |
+| 1:N split scenarios fully specified | ✅                                                     |
 
 ---
 
@@ -61,7 +61,7 @@ This certificate is valid for the PRD version cited above. Material changes to s
 
 ---
 
-*Certificate references: Review Report `prd-review_<prd-name>_<YYYY-MM-DD>.md`*
+_Certificate references: Review Report `prd-review_<prd-name>_<YYYY-MM-DD>.md`_
 ```
 
 ---
@@ -82,13 +82,13 @@ This certificate is valid for the PRD version cited above. Material changes to s
 
 ## Definition of Ready — Criteria Not Met
 
-| Criterion | Status | Detail |
-|-----------|--------|--------|
-| Zero P0 findings | <✅ or ❌> | <count> P0 findings open |
-| All 8 dimensions score ≥ 6/10 | <✅ or ❌> | <list dimensions below 6 if any> |
-| Average dimension score ≥ 7.0/10 | <✅ or ❌> | actual: <X.X>/10 |
-| BRD coverage complete | <✅ or ❌> | <count> unmapped BRD items — or — N/A |
-| 1:N split scenarios fully specified | <✅ or ❌> | <list missing branches if any> |
+| Criterion                           | Status     | Detail                                |
+| ----------------------------------- | ---------- | ------------------------------------- |
+| Zero P0 findings                    | <✅ or ❌> | <count> P0 findings open              |
+| All 8 dimensions score ≥ 6/10       | <✅ or ❌> | <list dimensions below 6 if any>      |
+| Average dimension score ≥ 7.0/10    | <✅ or ❌> | actual: <X.X>/10                      |
+| BRD coverage complete               | <✅ or ❌> | <count> unmapped BRD items — or — N/A |
+| 1:N split scenarios fully specified | <✅ or ❌> | <list missing branches if any>        |
 
 ---
 
@@ -96,9 +96,9 @@ This certificate is valid for the PRD version cited above. Material changes to s
 
 > Listed in suggested resolution order. See Review Report for full finding detail.
 
-1. **<Blocker title>** — <one-line description> — *Finding F-XXX*
-2. **<Blocker title>** — <one-line description> — *Finding F-XXX*
-3. **<Blocker title>** — <one-line description> — *Finding F-XXX*
+1. **<Blocker title>** — <one-line description> — _Finding F-XXX_
+2. **<Blocker title>** — <one-line description> — _Finding F-XXX_
+3. **<Blocker title>** — <one-line description> — _Finding F-XXX_
 
 ---
 
@@ -116,7 +116,7 @@ To reach a Ready state, the author should:
 
 ---
 
-*Certificate references: Review Report `prd-review_<prd-name>_<YYYY-MM-DD>.md`*
+_Certificate references: Review Report `prd-review_<prd-name>_<YYYY-MM-DD>.md`_
 ```
 
 ---

@@ -85,12 +85,12 @@ Verdict: <BLOCK | APPROVE-WITH-CHANGES | APPROVE>
 
 ## Source-of-truth references
 
-| Topic | File |
-|---|---|
-| Lane-specific review checklist | `skills/stack:code-review.md` |
-| Worker-based rule taxonomy | `knowledge/docs/flows/rule-types.md` |
-| Versioning patterns | `rules/database-migrations.md` |
-| API + socket conventions | `rules/api-design.md` |
-| Browser-context rules | `rules/frontend-components.md` |
-| Security rules | `rules/security.md` |
-| Commit conventions + axe-core tagging | `rules/commit-conventions.md` |
+| Topic                                 | File                                 |
+| ------------------------------------- | ------------------------------------ |
+| Lane-specific review checklist        | `skills/stack:code-review.md`        |
+| Worker-based rule taxonomy            | `knowledge/docs/flows/rule-types.md` |
+| Versioning patterns                   | `rules/database-migrations.md`       |
+| API + socket conventions              | `rules/api-design.md`                |
+| Browser-context rules                 | `rules/frontend-components.md`       |
+| Security rules                        | `rules/security.md`                  |
+| Commit conventions + axe-core tagging | `rules/commit-conventions.md`        |

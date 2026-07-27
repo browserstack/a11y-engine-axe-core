@@ -1,22 +1,23 @@
 # EDS Data Flow (Code → BigQuery)
 
 ## Transport Methods
+
 - **Frontend (a11y-engine-core, browser):** HTTP POST to EDS endpoint (`/send_event`)
 - **Backend (ip-protection, Node server):** TCP via `browserstack-dwh` client (`EDSClient.sendTCP`)
 
 ## Event Source Files
 
-| Kind | Source File | Transport |
-|---|---|---|
-| SCAN_RUN | `a11y-engine-core/lib/core/public/run.js` | HTTP POST |
-| ADVANCE_SCAN_RUN | `ip-protection/worker/workerB1.js` | TCP |
-| ADVANCE_SCAN_RUN_WORKER | `ip-protection/worker/workerB2.js` | TCP |
-| ADVANCE_SCAN_RUN_DOMFORGE | `ip-protection/worker/workerC.js`, controllers | TCP |
-| ADVANCE_SCAN_RUN_AI | `ip-protection/worker/workerAI.js`, `jobAIColorContrast.js`, `workerCustomElementsAI.js` | TCP |
-| ASSET_CAPTURE | `a11y-engine-core/devtools/edsHelper.js` | HTTP POST |
-| POSTPROCESS_AI_HTML_WORKER | `ip-protection/utils/eds-debug-utils.js` | TCP |
-| PREPROCESS_AI_HTML_WORKER | `ip-protection/utils/eds-debug-utils.js` | TCP |
-| UPTIME_METRIC_COLLECTION | `a11y-engine-core/lib/core/public/notifyRunStatus.js` | HTTP POST |
+| Kind                       | Source File                                                                              | Transport |
+| -------------------------- | ---------------------------------------------------------------------------------------- | --------- |
+| SCAN_RUN                   | `a11y-engine-core/lib/core/public/run.js`                                                | HTTP POST |
+| ADVANCE_SCAN_RUN           | `ip-protection/worker/workerB1.js`                                                       | TCP       |
+| ADVANCE_SCAN_RUN_WORKER    | `ip-protection/worker/workerB2.js`                                                       | TCP       |
+| ADVANCE_SCAN_RUN_DOMFORGE  | `ip-protection/worker/workerC.js`, controllers                                           | TCP       |
+| ADVANCE_SCAN_RUN_AI        | `ip-protection/worker/workerAI.js`, `jobAIColorContrast.js`, `workerCustomElementsAI.js` | TCP       |
+| ASSET_CAPTURE              | `a11y-engine-core/devtools/edsHelper.js`                                                 | HTTP POST |
+| POSTPROCESS_AI_HTML_WORKER | `ip-protection/utils/eds-debug-utils.js`                                                 | TCP       |
+| PREPROCESS_AI_HTML_WORKER  | `ip-protection/utils/eds-debug-utils.js`                                                 | TCP       |
+| UPTIME_METRIC_COLLECTION   | `a11y-engine-core/lib/core/public/notifyRunStatus.js`                                    | HTTP POST |
 
 ## Key Implementation Files
 

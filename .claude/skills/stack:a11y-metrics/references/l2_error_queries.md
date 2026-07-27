@@ -3,6 +3,7 @@
 "[L2] AllyEngine Error Breakdown" dashboard — error summary, detailed buckets per scan type, uptime errors.
 
 ## Panels
+
 1. Error Summary (all scan types)
 2. SCAN_RUN (Type A) Error Buckets
 3. ADVANCE_SCAN_RUN (Type B1) Error Buckets
@@ -61,6 +62,7 @@ FROM scan_metrics GROUP BY kind_type ORDER BY total_scans DESC
 ```
 
 **Key details:**
+
 - Date range: 2 days back + 3 days forward (effectively ~3 days of data)
 - No internal group_id exclusion (unlike L0/L1)
 - Error detection uses REGEX to find named bucket keys in JSON
@@ -69,6 +71,7 @@ FROM scan_metrics GROUP BY kind_type ORDER BY total_scans DESC
 ## 2. Error Buckets Detailed (per scan type)
 
 Same template — differs only by `{KIND_FILTER}`:
+
 - Type A: `JSON_VALUE(kind, '$.arr[0].type') = 'SCAN_RUN'`
 - Type B1: `= 'ADVANCE_SCAN_RUN'`
 - Type B2: `= 'ADVANCE_SCAN_RUN_WORKER'`
@@ -185,20 +188,21 @@ GROUP BY 1 ORDER BY 2 DESC
 
 ## Error Buckets Reference
 
-| Bucket | Description |
-|---|---|
-| `runtime_errors` | Browser/JS runtime errors |
-| `server_errors` | Backend server errors |
-| `debug_errors` | Debug/diagnostic errors |
-| `DOM_FORGE_CORE_ERROR` | DOM Forge processing errors |
-| `PERCY_RENDERER_ERROR` | Percy rendering errors |
-| `SCRIPT_DOWNLOAD_ERROR` | Script download failures |
-| `uncategorized_errors` | Direct error/message objects without bucket wrapper |
+| Bucket                   | Description                                          |
+| ------------------------ | ---------------------------------------------------- |
+| `runtime_errors`         | Browser/JS runtime errors                            |
+| `server_errors`          | Backend server errors                                |
+| `debug_errors`           | Debug/diagnostic errors                              |
+| `DOM_FORGE_CORE_ERROR`   | DOM Forge processing errors                          |
+| `PERCY_RENDERER_ERROR`   | Percy rendering errors                               |
+| `SCRIPT_DOWNLOAD_ERROR`  | Script download failures                             |
+| `uncategorized_errors`   | Direct error/message objects without bucket wrapper  |
 | `instrumentation_errors` | Uptime metric collection errors (separate structure) |
 
 ## normalize_error_message UDF — Purpose
 
 Groups similar errors by stripping variable parts:
+
 - UUIDs → `[UUID]`
 - Numeric IDs (5+ digits) → `[ID]`
 - URLs → `[URL]`

@@ -1,7 +1,40 @@
 ---
 name: stack:incident-investigator
 description: Read-only incident investigator for a11y-engine (Spectra). Given a parsed Zenduty alert and one lane probe brief, queries HootHoot/BigQuery/Sentry/Jenkins/git and returns structured findings mapped to a11y-engine likely causes. Never mutates, never posts — diagnostic only. Dispatched by stack:debug-alert.
-allowed-tools: [Read, Glob, Grep, Bash(git log:*), Bash(git diff:*), Bash(git show:*), mcp__hoothoot__execute_query, mcp__hoothoot__execute_range_query, mcp__hoothoot__list_metrics, mcp__hoothoot__get_metric_metadata, mcp__hoothoot__get_targets, mcp__honeycomb, mcp__claude_ai_Google_Cloud_BigQuery__execute_sql_readonly, mcp__claude_ai_Google_Cloud_BigQuery__list_table_ids, mcp__claude_ai_Google_Cloud_BigQuery__get_table_info, mcp__plugin_sentry_sentry__search_issues, mcp__plugin_sentry_sentry__search_events, mcp__plugin_sentry_sentry__search_issue_events, mcp__plugin_sentry_sentry__get_issue_tag_values, mcp__plugin_sentry_sentry__get_sentry_resource, mcp__jenkins-mcp-server__builds_list, mcp__jenkins-mcp-server__build_get, mcp__jenkins-mcp-server__build_log_get, mcp__jenkins-mcp-server__build_parameters_get, mcp__jenkins-mcp-server__failure_analysis, mcp__jenkins-mcp-server__jobs_list, mcp__jenkins-mcp-server__jobs_folder_list, mcp__jenkins-mcp-server__job_get, mcp__jenkins-mcp-server__queue_get, mcp__jenkins-mcp-server__github_get_pr_info, mcp__claude_ai_Slack__slack_read_thread]
+allowed-tools:
+  [
+    Read,
+    Glob,
+    Grep,
+    Bash(git log:*),
+    Bash(git diff:*),
+    Bash(git show:*),
+    mcp__hoothoot__execute_query,
+    mcp__hoothoot__execute_range_query,
+    mcp__hoothoot__list_metrics,
+    mcp__hoothoot__get_metric_metadata,
+    mcp__hoothoot__get_targets,
+    mcp__honeycomb,
+    mcp__claude_ai_Google_Cloud_BigQuery__execute_sql_readonly,
+    mcp__claude_ai_Google_Cloud_BigQuery__list_table_ids,
+    mcp__claude_ai_Google_Cloud_BigQuery__get_table_info,
+    mcp__plugin_sentry_sentry__search_issues,
+    mcp__plugin_sentry_sentry__search_events,
+    mcp__plugin_sentry_sentry__search_issue_events,
+    mcp__plugin_sentry_sentry__get_issue_tag_values,
+    mcp__plugin_sentry_sentry__get_sentry_resource,
+    mcp__jenkins-mcp-server__builds_list,
+    mcp__jenkins-mcp-server__build_get,
+    mcp__jenkins-mcp-server__build_log_get,
+    mcp__jenkins-mcp-server__build_parameters_get,
+    mcp__jenkins-mcp-server__failure_analysis,
+    mcp__jenkins-mcp-server__jobs_list,
+    mcp__jenkins-mcp-server__jobs_folder_list,
+    mcp__jenkins-mcp-server__job_get,
+    mcp__jenkins-mcp-server__queue_get,
+    mcp__jenkins-mcp-server__github_get_pr_info,
+    mcp__claude_ai_Slack__slack_read_thread
+  ]
 ---
 
 # Agent: stack:incident-investigator
@@ -40,14 +73,14 @@ A JSON-ish brief from the orchestrator containing:
 
 ## a11y-engine map you apply
 
-| Lane | Stack internals | Key signals |
-|---|---|---|
-| latency | Type C on Percy (dom-forge-core); `workerC.js` sink | `percy_exec_latency`, `worker_latency`, `type_c_worker_wait_time`, `a11y_api_latency` (HootHoot/BQ); `after_job` p90 lives **only in Honeycomb** (`sidekiq-prod` `result` dataset) — query it via `mcp__honeycomb`, not HootHoot |
-| failure-rate | scan success/failure/partial across A/B1/C/AI | BigQuery scan-type breakdown + group/user attribution |
-| 5xx | `ip-protection` Express ingress | 5XX by route (`/build-proxy-map`, `/accept_percy_result`, `/accept_rules_data_percy`) |
-| queue | BullMQ → worker (see `knowledge/docs/flows/workers.md`) | depth/fail/throughput for `typeB1Queue`, `percyResultsQueue`, `aiTypeCProcessingQueue`, `buildProxyMapQueue`, … |
-| k8s | `a11y-engine-worker-rollout` pods | restarts, OOMKilled, CPU/mem saturation |
-| rate-limit | FUP / rate-limit path in `ip-protection` | 429 counts by client/group |
+| Lane         | Stack internals                                         | Key signals                                                                                                                                                                                                                      |
+| ------------ | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| latency      | Type C on Percy (dom-forge-core); `workerC.js` sink     | `percy_exec_latency`, `worker_latency`, `type_c_worker_wait_time`, `a11y_api_latency` (HootHoot/BQ); `after_job` p90 lives **only in Honeycomb** (`sidekiq-prod` `result` dataset) — query it via `mcp__honeycomb`, not HootHoot |
+| failure-rate | scan success/failure/partial across A/B1/C/AI           | BigQuery scan-type breakdown + group/user attribution                                                                                                                                                                            |
+| 5xx          | `ip-protection` Express ingress                         | 5XX by route (`/build-proxy-map`, `/accept_percy_result`, `/accept_rules_data_percy`)                                                                                                                                            |
+| queue        | BullMQ → worker (see `knowledge/docs/flows/workers.md`) | depth/fail/throughput for `typeB1Queue`, `percyResultsQueue`, `aiTypeCProcessingQueue`, `buildProxyMapQueue`, …                                                                                                                  |
+| k8s          | `a11y-engine-worker-rollout` pods                       | restarts, OOMKilled, CPU/mem saturation                                                                                                                                                                                          |
+| rate-limit   | FUP / rate-limit path in `ip-protection`                | 429 counts by client/group                                                                                                                                                                                                       |
 
 Translate raw signal into named causes using `knowledge/docs/errors/ERROR-CATALOG.md` and
 `skills/stack:debugging.md` (e.g. scan-hang → unmarked `COMPLETION_TASK_TYPES`; B1 retries → lock

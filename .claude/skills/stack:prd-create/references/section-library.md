@@ -9,7 +9,7 @@ may be `N/A — <reason>` at lite), **[deep]** (fully elaborated at deep; brief 
 `N/A — <reason>` otherwise).
 
 A section that genuinely does not apply is written as `N/A — <reason>` — never deleted.
-The review skill penalizes *silent* omission, not justified N/A.
+The review skill penalizes _silent_ omission, not justified N/A.
 
 ## The 14 sections
 

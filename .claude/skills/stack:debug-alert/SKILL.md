@@ -1,8 +1,20 @@
 ---
 name: stack:debug-alert
 description: "Read-only on-call triage for a11y-engine Zenduty alerts (#team-a11y-engine-zenduty-notifications). Parses the alert, classifies the a11y-engine lane, runs deploy/metrics/errors probes, and posts a structured analysis to the alert thread. Diagnostic only — never remediates. Use when an alert fires and you want a first-pass analysis. Triggers: 'debug this alert', 'triage incident', 'what happened with this zenduty alert'."
-argument-hint: "<slack-thread-url|channel-id ts> [--dry-run] [--force]"
-allowed-tools: [Read, Glob, Grep, Bash(git log:*), Bash(git diff:*), Agent, Skill, mcp__claude_ai_Slack__slack_read_thread, mcp__claude_ai_Slack__slack_read_channel, mcp__claude_ai_Slack__slack_send_message]
+argument-hint: '<slack-thread-url|channel-id ts> [--dry-run] [--force]'
+allowed-tools:
+  [
+    Read,
+    Glob,
+    Grep,
+    Bash(git log:*),
+    Bash(git diff:*),
+    Agent,
+    Skill,
+    mcp__claude_ai_Slack__slack_read_thread,
+    mcp__claude_ai_Slack__slack_read_channel,
+    mcp__claude_ai_Slack__slack_send_message
+  ]
 ---
 
 # Skill: stack:debug-alert — a11y-engine on-call triage
@@ -43,15 +55,15 @@ on-call wants correlated context fast. `--dry-run` prints the card to terminal a
      `host`). Compute `window = { start: created_at − 30m, end: resolved_at || now }`.
 5. Classify `lane` from `source` + `alert_name`:
 
-   | Lane | Match |
-   |---|---|
-   | latency | HoneyComb; `latency`/`after_job`/`percy`/`DomForge`/Type C |
-   | failure-rate | Prometheus; `DownTimeHighFailureRate` / run failure rate |
-   | 5xx | Prometheus; `NGINXTooMany500s` / 5XX |
-   | queue | Prometheus; `P*JobFailure` / BullMQ / a queue name present |
-   | k8s | Prometheus; `ContainerRestarts` / `Available Replicas Decreased` |
-   | rate-limit | Nagios; `check_elk_data` / 429 |
-   | unknown | no match (run deploy-correlation + errors only; echo raw message) |
+   | Lane         | Match                                                             |
+   | ------------ | ----------------------------------------------------------------- |
+   | latency      | HoneyComb; `latency`/`after_job`/`percy`/`DomForge`/Type C        |
+   | failure-rate | Prometheus; `DownTimeHighFailureRate` / run failure rate          |
+   | 5xx          | Prometheus; `NGINXTooMany500s` / 5XX                              |
+   | queue        | Prometheus; `P*JobFailure` / BullMQ / a queue name present        |
+   | k8s          | Prometheus; `ContainerRestarts` / `Available Replicas Decreased`  |
+   | rate-limit   | Nagios; `check_elk_data` / 429                                    |
+   | unknown      | no match (run deploy-correlation + errors only; echo raw message) |
 
 6. **Idempotency:** if any existing reply contains `⟨triage:#<incident_id>⟩`, print
    `Already triaged incident #<id> (see thread).` and STOP — unless `--force` was passed.
@@ -59,6 +71,7 @@ on-call wants correlated context fast. `--dry-run` prints the card to terminal a
 ## Step 2 — Dispatch read-only probes in parallel
 
 Decide the probe set for the lane:
+
 - every lane → `deploy-correlation`
 - every lane except `unknown` → `metrics`
 - `5xx`, `queue`, `k8s`, `failure-rate`, `unknown` → `errors`

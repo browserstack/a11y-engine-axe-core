@@ -28,34 +28,34 @@ All queues are instantiated in `ip-protection/utils/bullmq.js`. Workers are boun
 
 ### Main worker process (`ip-protection/worker.js`)
 
-| Queue | Job names | Dispatch function | File | Lock duration |
-|---|---|---|---|---|
-| `typeB1Queue` | `TYPE_B1` | `processB1Job` | `worker/workerB1.js` | `QUEUES_LOCK_DURATION` (2 min) |
-| `scanCompleteQueue` | `SCAN_COMPLETE` | `processB2Job` | `worker/workerB2.js` | `QUEUES_LOCK_DURATION_EXTENDED_15_MIN` (15 min) |
-| `percyResultsQueue` | `PERCY_RESULTS` | `processTypeCJob` | `worker/workerC.js` | `QUEUES_LOCK_DURATION` (2 min) |
-| `buildProxyMapQueue` | `BUILD_PROXY_MAP` | `buildProxyMap` | `worker/proxyMapWorker.js` | `QUEUES_LOCK_DURATION` (2 min); 6 attempts w/ exp backoff |
-| `imageProcessingQueue` | `IMAGE_PROCESSING` | `processImageJob` | `worker/workerImage.js` | `QUEUES_LOCK_DURATION_EXTENDED` (5 min) |
-| `consolidationQueue` | `CONSOLIDATION` | `processConsolidationJob` | `worker/consolidationWorker.js` | `QUEUES_LOCK_DURATION` |
-| `onDemandScanQueue` | *any* | `priorityJobs` → switch on `job.name` | `worker/priorityJobsWorker.js` | `QUEUES_LOCK_DURATION` |
-| `workflowAnalyserQueue` | *any* | `priorityJobs` → switch on `job.name` | `worker/priorityJobsWorker.js` | `QUEUES_LOCK_DURATION` |
+| Queue                   | Job names          | Dispatch function                     | File                            | Lock duration                                             |
+| ----------------------- | ------------------ | ------------------------------------- | ------------------------------- | --------------------------------------------------------- |
+| `typeB1Queue`           | `TYPE_B1`          | `processB1Job`                        | `worker/workerB1.js`            | `QUEUES_LOCK_DURATION` (2 min)                            |
+| `scanCompleteQueue`     | `SCAN_COMPLETE`    | `processB2Job`                        | `worker/workerB2.js`            | `QUEUES_LOCK_DURATION_EXTENDED_15_MIN` (15 min)           |
+| `percyResultsQueue`     | `PERCY_RESULTS`    | `processTypeCJob`                     | `worker/workerC.js`             | `QUEUES_LOCK_DURATION` (2 min)                            |
+| `buildProxyMapQueue`    | `BUILD_PROXY_MAP`  | `buildProxyMap`                       | `worker/proxyMapWorker.js`      | `QUEUES_LOCK_DURATION` (2 min); 6 attempts w/ exp backoff |
+| `imageProcessingQueue`  | `IMAGE_PROCESSING` | `processImageJob`                     | `worker/workerImage.js`         | `QUEUES_LOCK_DURATION_EXTENDED` (5 min)                   |
+| `consolidationQueue`    | `CONSOLIDATION`    | `processConsolidationJob`             | `worker/consolidationWorker.js` | `QUEUES_LOCK_DURATION`                                    |
+| `onDemandScanQueue`     | _any_              | `priorityJobs` → switch on `job.name` | `worker/priorityJobsWorker.js`  | `QUEUES_LOCK_DURATION`                                    |
+| `workflowAnalyserQueue` | _any_              | `priorityJobs` → switch on `job.name` | `worker/priorityJobsWorker.js`  | `QUEUES_LOCK_DURATION`                                    |
 
 ### AI short-bucket process (`ip-protection/aiWorker.js`)
 
-| Queue | Job names | Dispatch function | File |
-|---|---|---|---|
-| `aiTypeCProcessingQueue` | `AI_TYPE_C_PROCESSING`, `AI_COLOR_CONTRAST_PROCESSING`, `CUSTOM_ELEMENTS_AI_PROCESSING` | inline switch | `worker/workerAI.js`, `worker/jobAIColorContrast.js`, `worker/workerCustomElementsAI.js` |
-| `customElementsAiQueue` | `CUSTOM_ELEMENTS_AI_PROCESSING` | `processCustomElementsAIJob` | `worker/workerCustomElementsAI.js` |
-| `aiOnDemandScanQueue` | *any* | priority router | `worker/aiWorkerRuntime.js` |
-| `aiWorkflowAnalyserQueue` | *any* | priority router | `worker/aiWorkerRuntime.js` |
+| Queue                     | Job names                                                                               | Dispatch function            | File                                                                                     |
+| ------------------------- | --------------------------------------------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------- |
+| `aiTypeCProcessingQueue`  | `AI_TYPE_C_PROCESSING`, `AI_COLOR_CONTRAST_PROCESSING`, `CUSTOM_ELEMENTS_AI_PROCESSING` | inline switch                | `worker/workerAI.js`, `worker/jobAIColorContrast.js`, `worker/workerCustomElementsAI.js` |
+| `customElementsAiQueue`   | `CUSTOM_ELEMENTS_AI_PROCESSING`                                                         | `processCustomElementsAIJob` | `worker/workerCustomElementsAI.js`                                                       |
+| `aiOnDemandScanQueue`     | _any_                                                                                   | priority router              | `worker/aiWorkerRuntime.js`                                                              |
+| `aiWorkflowAnalyserQueue` | _any_                                                                                   | priority router              | `worker/aiWorkerRuntime.js`                                                              |
 
 ### AI long-bucket process (`ip-protection/aiWorkerLong.js`)
 
-| Queue | Job names | Dispatch function | File |
-|---|---|---|---|
-| `preProcessAIhtmlQueue` | `PRE_PROCESS_AI_HTML` | `processPreProcessAIhtmlJob` | `worker/workerPreProcessAIhtml.js` |
-| `postProcessAIhtmlQueue` | `POST_PROCESS_AI_HTML` | `processPostProcessAIhtmlJob` | `worker/workerPostProcessAIhtml.js` |
-| `aiOnDemandScanQueueLong` | *any* | priority router | `worker/aiWorkerRuntime.js` |
-| `aiWorkflowAnalyserQueueLong` | *any* | priority router | `worker/aiWorkerRuntime.js` |
+| Queue                         | Job names              | Dispatch function             | File                                |
+| ----------------------------- | ---------------------- | ----------------------------- | ----------------------------------- |
+| `preProcessAIhtmlQueue`       | `PRE_PROCESS_AI_HTML`  | `processPreProcessAIhtmlJob`  | `worker/workerPreProcessAIhtml.js`  |
+| `postProcessAIhtmlQueue`      | `POST_PROCESS_AI_HTML` | `processPostProcessAIhtmlJob` | `worker/workerPostProcessAIhtml.js` |
+| `aiOnDemandScanQueueLong`     | _any_                  | priority router               | `worker/aiWorkerRuntime.js`         |
+| `aiWorkflowAnalyserQueueLong` | _any_                  | priority router               | `worker/aiWorkerRuntime.js`         |
 
 When enqueuing on-demand or workflow-analyser AI jobs, `utils/bullmq.js` chooses the `*Long` queue when `job.name` ∈ {`PRE_PROCESS_AI_HTML`, `POST_PROCESS_AI_HTML`} and the short variant otherwise — the routing is in `addAIJobToQueue` and does not need to be re-implemented by callers.
 
@@ -73,19 +73,19 @@ See the `addJobToQueue` / `addAIJobToQueue` helpers in `utils/bullmq.js` — the
 
 Use the typed helpers exported from `utils/bullmq.js`. **Do not call `queue.add(...)` directly** — the helpers encode the priority-routing rules and log shape.
 
-| To enqueue a... | Call |
-|---|---|
-| B1 job | `addJobToTypeB1Queue(job)` |
-| B2 (scan complete) | `addJobToScanCompleteQueue(job)` |
-| Type C | `addJobToPercyResultsQueue(job)` |
-| Proxy map build | `addJobToProxyMapQueue(job)` |
-| Image OCR | `addJobToImageProcessingQueue(job)` |
-| AI Type C | `addJobToAiProcessingQueue(job)` |
-| AI Color Contrast | `addJobToAiColorContrastQueue(job)` |
-| AI Heading preprocess | `addJobToPreProcessAIhtmlQueue(job)` |
+| To enqueue a...        | Call                                  |
+| ---------------------- | ------------------------------------- |
+| B1 job                 | `addJobToTypeB1Queue(job)`            |
+| B2 (scan complete)     | `addJobToScanCompleteQueue(job)`      |
+| Type C                 | `addJobToPercyResultsQueue(job)`      |
+| Proxy map build        | `addJobToProxyMapQueue(job)`          |
+| Image OCR              | `addJobToImageProcessingQueue(job)`   |
+| AI Type C              | `addJobToAiProcessingQueue(job)`      |
+| AI Color Contrast      | `addJobToAiColorContrastQueue(job)`   |
+| AI Heading preprocess  | `addJobToPreProcessAIhtmlQueue(job)`  |
 | AI Heading postprocess | `addJobToPostProcessAIhtmlQueue(job)` |
-| Custom Elements AI | `addJobToCustomElementsAiQueue(job)` |
-| Consolidation | `addJobToConsolidationQueue(job)` |
+| Custom Elements AI     | `addJobToCustomElementsAiQueue(job)`  |
+| Consolidation          | `addJobToConsolidationQueue(job)`     |
 
 ## Job payload discipline
 

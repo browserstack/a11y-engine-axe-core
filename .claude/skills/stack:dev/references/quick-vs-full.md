@@ -1,10 +1,10 @@
 # Quick vs full, per track
 
-| Track | Full | Quick (small tasks) |
-|---|---|---|
-| Backend | superpowers writing-plans -> executing-plans + TDD + requesting-code-review (or self-contained equivalent) | skip the formal plan doc: one focused red-green-refactor TDD pass + a light self-review (the "quicker superpowers") |
-| Frontend | Plumb full chain (`ui-new`) | Plumb `ui-modify` / `logic-only` (already skip variations/pick-component/scaffold) |
-| PRD | author + standard/full review | short PRD + quick-scan review, or skip both for trivial |
+| Track    | Full                                                                                                       | Quick (small tasks)                                                                                                 |
+| -------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Backend  | superpowers writing-plans -> executing-plans + TDD + requesting-code-review (or self-contained equivalent) | skip the formal plan doc: one focused red-green-refactor TDD pass + a light self-review (the "quicker superpowers") |
+| Frontend | Plumb full chain (`ui-new`)                                                                                | Plumb `ui-modify` / `logic-only` (already skip variations/pick-component/scaffold)                                  |
+| PRD      | author + standard/full review                                                                              | short PRD + quick-scan review, or skip both for trivial                                                             |
 
 ## Superpowers preflight (run by the orchestrator at Stage 0, the very beginning)
 

@@ -15,20 +15,20 @@ For large result sets (>100 rows, e.g. per-group daily time series), pipe to `/t
 
 ## Decision tree
 
-| Question | Reference |
-|---|---|
-| **"Analyse L0" / any L0 health check** | **`references/l0_full_workflow.md` — run ALL phases autonomously** |
-| **"Create / schedule a daily L0 routine"** (cloud routine, auto-post to Slack) | **`references/l0_routine.md` — assemble + create the cloud routine** |
+| Question                                                                       | Reference                                                              |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
+| **"Analyse L0" / any L0 health check**                                         | **`references/l0_full_workflow.md` — run ALL phases autonomously**     |
+| **"Create / schedule a daily L0 routine"** (cloud routine, auto-post to Slack) | **`references/l0_routine.md` — assemble + create the cloud routine**   |
 | **"Check L0 routine drift" / "is my routine up to date" / "sync the routine"** | **`references/l0_routine.md` Step 5 — manifest drift check + re-sync** |
-| "Is this a known issue?" / error signatures | `references/signatures.md` — check BEFORE root-causing |
-| "P90/P99 of X latency?" | `references/schema.md` for field → standard UNNEST (see below) |
-| L1 status / E2E latency per product | `references/l1_queries.md` |
-| L2 error buckets / messages | `references/l2_error_queries.md` |
-| Per-rule check_errors, rule latency | `references/l2_rule_queries.md` |
-| Thresholds / investigation workflow | `references/breach_thresholds.md` |
-| AT errors (Assisted Tests error-rate rise) | `references/at_l0_queries.md` |
-| "Where is this event emitted?" (code) | `references/eds_data_flow.md` |
-| LookML validation | `references/looker_views.md` |
+| "Is this a known issue?" / error signatures                                    | `references/signatures.md` — check BEFORE root-causing                 |
+| "P90/P99 of X latency?"                                                        | `references/schema.md` for field → standard UNNEST (see below)         |
+| L1 status / E2E latency per product                                            | `references/l1_queries.md`                                             |
+| L2 error buckets / messages                                                    | `references/l2_error_queries.md`                                       |
+| Per-rule check_errors, rule latency                                            | `references/l2_rule_queries.md`                                        |
+| Thresholds / investigation workflow                                            | `references/breach_thresholds.md`                                      |
+| AT errors (Assisted Tests error-rate rise)                                     | `references/at_l0_queries.md`                                          |
+| "Where is this event emitted?" (code)                                          | `references/eds_data_flow.md`                                          |
+| LookML validation                                                              | `references/looker_views.md`                                           |
 
 ## L0 = full workflow, autonomous
 

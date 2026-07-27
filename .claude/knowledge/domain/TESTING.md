@@ -4,11 +4,11 @@ Three test stacks across the monorepo, one per package. No cross-package integra
 
 ## Frameworks
 
-| Package | Framework | Runner | Test root |
-|---|---|---|---|
-| `a11y-engine-core` | Mocha + Chai inside Karma | `npm test` (cd into the package) | `a11y-engine-core/test/` |
-| `dom-forge-core` | Mocha | `npm test` | `dom-forge-core/test/checks/`, `dom-forge-core/test/*Spec.js` |
-| `ip-protection` | Jest | `npm test` | `ip-protection/test/**/*.test.js` |
+| Package            | Framework                 | Runner                           | Test root                                                     |
+| ------------------ | ------------------------- | -------------------------------- | ------------------------------------------------------------- |
+| `a11y-engine-core` | Mocha + Chai inside Karma | `npm test` (cd into the package) | `a11y-engine-core/test/`                                      |
+| `dom-forge-core`   | Mocha                     | `npm test`                       | `dom-forge-core/test/checks/`, `dom-forge-core/test/*Spec.js` |
+| `ip-protection`    | Jest                      | `npm test`                       | `ip-protection/test/**/*.test.js`                             |
 
 ## What tests must cover (project convention)
 
@@ -22,16 +22,16 @@ Every test suite must include:
 
 The unit suite is necessary but not sufficient. The repeating prod-bug categories ("worked in tests, broke in prod") come from environments the unit suite doesn't cover. Run through this matrix for the affected lanes before declaring a PR ready:
 
-| Dimension | What to cover | Required for |
-|---|---|---|
-| **Site coverage** | P0 sites + at least one site in the affected domain (e.g., e-commerce, banking) | All rule/AT changes |
-| **Shadow DOM** | At least one shadow-DOM-heavy site (Material-UI, Salesforce Lightning, web components) | Any DOM traversal, `querySelector*`, or B1 async handler change |
-| **Cross-origin iframes** | A page with cross-origin iframes; verify cross-origin limits surface as expected | DOM traversal changes |
-| **Mutation ON / OFF** | Full-page mode and mutation scan mode (Workflow Analyser) | Any scan logic, dispatch, or rule list change |
-| **Perception management ON / OFF** | Both states must produce the documented output | Any rule output, tagging, or message change |
-| **Feature flag ON / OFF** | Both code paths exercised, including the OFF default for new flags | Any flag-gated change |
-| **AT sanity** | Auto-Test flow end-to-end (Forms AT, Responsiveness AT, etc.) | Any change touching `lib/at-*`, base AT class, or AT-affected utilities |
-| **Redis stress on staging** | Realistic concurrency (≥100 scans/min) with the new code paths active | Any Redis read/write fan-out increase or new key family |
+| Dimension                          | What to cover                                                                          | Required for                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| **Site coverage**                  | P0 sites + at least one site in the affected domain (e.g., e-commerce, banking)        | All rule/AT changes                                                     |
+| **Shadow DOM**                     | At least one shadow-DOM-heavy site (Material-UI, Salesforce Lightning, web components) | Any DOM traversal, `querySelector*`, or B1 async handler change         |
+| **Cross-origin iframes**           | A page with cross-origin iframes; verify cross-origin limits surface as expected       | DOM traversal changes                                                   |
+| **Mutation ON / OFF**              | Full-page mode and mutation scan mode (Workflow Analyser)                              | Any scan logic, dispatch, or rule list change                           |
+| **Perception management ON / OFF** | Both states must produce the documented output                                         | Any rule output, tagging, or message change                             |
+| **Feature flag ON / OFF**          | Both code paths exercised, including the OFF default for new flags                     | Any flag-gated change                                                   |
+| **AT sanity**                      | Auto-Test flow end-to-end (Forms AT, Responsiveness AT, etc.)                          | Any change touching `lib/at-*`, base AT class, or AT-affected utilities |
+| **Redis stress on staging**        | Realistic concurrency (≥100 scans/min) with the new code paths active                  | Any Redis read/write fan-out increase or new key family                 |
 
 List the test cases you actually executed in the PR description (date, site, mode, flag state, result). Reviewers ask for this — "dev tested" without specifics is a red flag.
 
@@ -74,6 +74,7 @@ This is the canonical workflow for debugging false positives without a live URL 
 ## Pre-commit gate
 
 Husky pre-commit hook runs lint-staged (`.lintstagedrc.js`):
+
 - Prettier on staged files.
 - ESLint `--fix` on staged files.
 

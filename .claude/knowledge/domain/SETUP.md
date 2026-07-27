@@ -121,17 +121,17 @@ Requires `.npmrc` with a PAT. See `README.md` for the full instructions.
 
 ## Common setup failures and fixes
 
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| `nvm use 18.20.4` fails | nvm not installed or shell init missing | Re-run `scripts/setup.sh` or install nvm manually; `source ~/.nvm/nvm.sh` |
-| Vault fetch hangs | Not on VPN | Connect to VPN, re-run |
-| Redis "port 8883 in use" | Old Redis still running | `brew services stop redis-stack && brew services start redis-stack` |
-| ngrok "auth required" | Authtoken missing | `ngrok config add-authtoken <token>` |
-| Submodule init fails | Wrong remote (Deque upstream) | Confirm `.gitmodules` URL points at `git@github.com:browserstack/a11y-engine-axe-core.git`; never re-init against upstream |
-| `npm install` ENOAUTH on `@browserstack/*` | `NODE_AUTH_TOKEN` unset in shell | `source ~/.config/a11y-engine/npm-auth.env` or re-run `./scripts/setup.sh <pat>` |
-| `git pull` refuses to overwrite local `.npmrc` | Stale token-bearing copy from pre-hardening clone | `mv .npmrc /tmp/npmrc.bak && git pull && ./scripts/setup.sh <pat>` |
-| Husky hooks not installed after `npm install` | `ignore-scripts=true` blocks the `prepare` hook | `npx husky install` (explicit, post-install) |
-| Grunt missing | Not installed globally | `npm i -g grunt` |
-| `karma-cli` missing | Not installed globally | `npm i -g karma-cli` |
+| Symptom                                        | Likely cause                                      | Fix                                                                                                                        |
+| ---------------------------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `nvm use 18.20.4` fails                        | nvm not installed or shell init missing           | Re-run `scripts/setup.sh` or install nvm manually; `source ~/.nvm/nvm.sh`                                                  |
+| Vault fetch hangs                              | Not on VPN                                        | Connect to VPN, re-run                                                                                                     |
+| Redis "port 8883 in use"                       | Old Redis still running                           | `brew services stop redis-stack && brew services start redis-stack`                                                        |
+| ngrok "auth required"                          | Authtoken missing                                 | `ngrok config add-authtoken <token>`                                                                                       |
+| Submodule init fails                           | Wrong remote (Deque upstream)                     | Confirm `.gitmodules` URL points at `git@github.com:browserstack/a11y-engine-axe-core.git`; never re-init against upstream |
+| `npm install` ENOAUTH on `@browserstack/*`     | `NODE_AUTH_TOKEN` unset in shell                  | `source ~/.config/a11y-engine/npm-auth.env` or re-run `./scripts/setup.sh <pat>`                                           |
+| `git pull` refuses to overwrite local `.npmrc` | Stale token-bearing copy from pre-hardening clone | `mv .npmrc /tmp/npmrc.bak && git pull && ./scripts/setup.sh <pat>`                                                         |
+| Husky hooks not installed after `npm install`  | `ignore-scripts=true` blocks the `prepare` hook   | `npx husky install` (explicit, post-install)                                                                               |
+| Grunt missing                                  | Not installed globally                            | `npm i -g grunt`                                                                                                           |
+| `karma-cli` missing                            | Not installed globally                            | `npm i -g karma-cli`                                                                                                       |
 
 For any service-startup failure beyond these: from the **accessibility** repo, run `/restart-services` — see above.

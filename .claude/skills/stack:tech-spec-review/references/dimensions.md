@@ -1,4 +1,5 @@
 <!-- Version: 2026-07-07 | Source: @browserstack/ai-harness | Do not remove this header -->
+
 # Tech Spec review dimensions
 
 The seven dimensions the generic reviewer audits. Both the generic per-module review and the always-on cross-cutting pass apply these. Each dimension states what it audits, the check to run against the spec, and what earns a P0 vs P1 vs P2.
@@ -47,7 +48,7 @@ Grading: unjustified new machinery (a heavier option chosen without weighing a s
 
 ## 6. Requirement fidelity
 
-Audits whether the spec satisfies the PRD. The spec must cover the PRD's *what* (the requirements), and any place the PRD's illustrative *how* (a concrete path, route, enum, or schema it names) conflicts with grounded convention must be surfaced as `[NEEDS CLARIFICATION]`, not silently adopted.
+Audits whether the spec satisfies the PRD. The spec must cover the PRD's _what_ (the requirements), and any place the PRD's illustrative _how_ (a concrete path, route, enum, or schema it names) conflicts with grounded convention must be surfaced as `[NEEDS CLARIFICATION]`, not silently adopted.
 
 Check: map each PRD requirement to where the spec addresses it; flag a requirement with no coverage. Flag any PRD path/route/enum the spec adopted verbatim where it conflicts with the subsystem's sibling convention.
 

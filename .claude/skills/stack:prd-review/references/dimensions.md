@@ -9,6 +9,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Are all the sections an engineer, designer, or QA tester would need actually present?
 
 **Required sections** (most PRDs need most of these):
+
 - Problem statement / user need
 - Goals and non-goals
 - Target users / personas
@@ -25,6 +26,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - Open questions
 
 **Scoring anchors:**
+
 - **9-10**: Every section present and substantive
 - **6-8**: Most sections present; minor gaps that don't block dev
 - **3-5**: Several critical sections missing or one-line placeholders
@@ -39,6 +41,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Can two engineers read this and build the same thing?
 
 **Look for:**
+
 - Undefined terms (especially domain jargon used without a glossary)
 - Vague modifiers: "fast", "easy", "robust", "scalable", "intuitive", "modern", "seamless"
 - Pronouns with ambiguous antecedents ("it should handle this")
@@ -47,6 +50,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - Inconsistent terminology (calling the same thing "user", "customer", "account" in different sections)
 
 **Scoring anchors:**
+
 - **9-10**: Every requirement reads exactly one way; terms defined; quantified
 - **6-8**: Mostly clear; a few vague phrases that need pinning down
 - **3-5**: Multiple ambiguities in core requirements
@@ -61,6 +65,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Do the requirements agree with each other, and do they make internal sense?
 
 **Look for:**
+
 - Direct contradictions ("users can do X" in one section, "X is not allowed" in another)
 - Implicit contradictions (a flow that requires data that an earlier requirement says we don't store)
 - State machines with unreachable or undefined states
@@ -69,6 +74,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - Math that doesn't add up (percentages > 100%, mutually exclusive options that are both default)
 
 **Scoring anchors:**
+
 - **9-10**: No contradictions found; all flows internally consistent
 - **6-8**: Minor inconsistencies in non-core areas
 - **3-5**: One or more contradictions in core flows
@@ -81,17 +87,20 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Can QA write a test plan from this without making things up?
 
 **Every requirement should have:**
+
 - A measurable acceptance criterion (number, threshold, observable behavior)
 - A clear pass/fail condition
 - For performance requirements: a metric, a threshold, and a load condition ("p95 latency < 200ms at 1000 RPS")
 
 **Anti-patterns:**
+
 - "The system should be performant"
 - "Users will find it easy to use"
 - "Handles errors gracefully"
 - "Works across all major browsers" (which ones? what counts as "works"?)
 
 **Scoring anchors:**
+
 - **9-10**: Every functional and non-functional requirement has acceptance criteria
 - **6-8**: Most do; a few non-critical ones are unmeasurable
 - **3-5**: Many requirements have no acceptance criteria
@@ -104,12 +113,14 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Is the boundary between in-scope and out-of-scope obvious and defended?
 
 **Look for:**
+
 - An explicit "Out of scope" / "Non-goals" section
 - MVP vs future-phase distinction where applicable
 - Scope creep signals: "and also...", "we might want to...", "would be nice if..."
 - Hidden scope: requirements buried in prose that imply major work (e.g., one sentence mentioning "syncs with their calendar" implies an entire integration)
 
 **Scoring anchors:**
+
 - **9-10**: Crisp scope; non-goals listed; phases explicit
 - **6-8**: Scope clear; minor scope creep in a few sections
 - **3-5**: No explicit out-of-scope section; significant hidden scope
@@ -122,6 +133,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Has the author thought about what happens when things go wrong?
 
 **Required coverage for each major flow:**
+
 - Empty state (no data yet)
 - Error state (API fails, network drops, validation fails)
 - Permissions denied
@@ -131,6 +143,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - Partial failure (multi-step operation fails midway)
 
 **Scoring anchors:**
+
 - **9-10**: Each flow has explicit edge-case handling
 - **6-8**: Common edge cases covered; some less common ones missed
 - **3-5**: Happy path only; few error states defined
@@ -143,6 +156,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** Does the PRD acknowledge what could derail it?
 
 **Look for:**
+
 - Upstream dependencies (other teams' deliverables, infrastructure changes)
 - Downstream consumers (services or features that will need to adapt)
 - Third-party dependencies (APIs, libraries, vendor SLAs)
@@ -152,6 +166,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - A risks section with mitigations, not just a list
 
 **Scoring anchors:**
+
 - **9-10**: Dependencies mapped; risks identified with mitigations
 - **6-8**: Most dependencies named; risks listed but mitigation thin
 - **3-5**: Major dependencies omitted or no risk section
@@ -164,6 +179,7 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 **The question:** For each requirement, can you answer "why is this here?"
 
 **Every requirement should trace to one of:**
+
 - A user need or pain point (with evidence: research, support tickets, data)
 - A business goal or OKR
 - A BRD item (if a BRD exists)
@@ -171,11 +187,13 @@ Each dimension scores 0-10. Use the anchors below to calibrate.
 - A technical constraint or tech-debt remediation
 
 **Anti-patterns:**
+
 - "Users want this" (which users? how do you know?)
 - Requirements that exist with no stated rationale
 - Mismatched priorities (P0 requirements that trace to a "nice to have" goal)
 
 **Scoring anchors:**
+
 - **9-10**: Every requirement traces to a documented need; evidence cited
 - **6-8**: Most trace; a few orphan requirements
 - **3-5**: Many requirements have no clear rationale

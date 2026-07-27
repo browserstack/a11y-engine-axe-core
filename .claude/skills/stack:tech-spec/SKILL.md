@@ -1,17 +1,18 @@
 ---
 name: stack:tech-spec
-description: "Stage 4 of stack:dev: produce a repo-grounded technical design + cross-module interface contract before per-track implementation planners run. Discovers team tech-spec skills and defers to one that covers the whole feature; otherwise drafts covered modules via their skills, gathers boundary needs for frontend/uncovered modules, ideates genuinely-open (uncovered non-frontend) design via superpowers:brainstorming, and synthesizes one Tech Spec with a mandatory Failure & Edge Cases pass. Invoked by stack:dev as Stage 4, or standalone against an existing PRD (pass the PRD path as an argument)."
+description: 'Stage 4 of stack:dev: produce a repo-grounded technical design + cross-module interface contract before per-track implementation planners run. Discovers team tech-spec skills and defers to one that covers the whole feature; otherwise drafts covered modules via their skills, gathers boundary needs for frontend/uncovered modules, ideates genuinely-open (uncovered non-frontend) design via superpowers:brainstorming, and synthesizes one Tech Spec with a mandatory Failure & Edge Cases pass. Invoked by stack:dev as Stage 4, or standalone against an existing PRD (pass the PRD path as an argument).'
 allowed-tools: Read, Write, Glob, Grep, Bash, Agent, Skill
 ---
+
 <!-- Version: 2026-07-02 | Source: @browserstack/ai-harness | Do not remove this header -->
 
-You produce the Tech Spec for `stack:dev`'s Stage 4: a grounded technical design, a systematic Failure & Edge Cases pass, and an explicit cross-module interface contract. You delegate genuinely-open *design* (to team tech-spec skills and to `superpowers:brainstorming`) and own the *synthesis* yourself. You never write implementation code, task breakdowns, or file-level plans.
+You produce the Tech Spec for `stack:dev`'s Stage 4: a grounded technical design, a systematic Failure & Edge Cases pass, and an explicit cross-module interface contract. You delegate genuinely-open _design_ (to team tech-spec skills and to `superpowers:brainstorming`) and own the _synthesis_ yourself. You never write implementation code, task breakdowns, or file-level plans.
 
 ## Inputs
 
 `stack:dev` passes all three explicitly. Standalone (direct `/stack:tech-spec`), they are absent and Step 0 sources them - see there.
 
-- `PRD_PATH`: absolute path to the PRD (read it first). The PRD is authoritative on *what* (the requirements) - do not re-derive those. It is only *illustrative* on *how*: any concrete path, route, enum value, or schema it names is a suggestion to verify against repo convention, never a directive to copy. Where the PRD's *how* conflicts with grounded convention, that is a `[NEEDS CLARIFICATION]`, not a silent adoption of the PRD's version.
+- `PRD_PATH`: absolute path to the PRD (read it first). The PRD is authoritative on _what_ (the requirements) - do not re-derive those. It is only _illustrative_ on _how_: any concrete path, route, enum value, or schema it names is a suggestion to verify against repo convention, never a directive to copy. Where the PRD's _how_ conflicts with grounded convention, that is a `[NEEDS CLARIFICATION]`, not a silent adoption of the PRD's version.
 - `REPOS_TOUCHED`: `stage_plan.repos_touched` from `stack:dev` Stage 1. Do not re-derive it when `stack:dev` provides it; standalone, derive per Step 0.
 - `MODE`: `gated` or `auto` (from `stage_plan.checkpoints`); standalone defaults to `gated` per Step 0.
 
@@ -31,6 +32,7 @@ Cite existing code by file + symbol (the function, class, route, or config key),
   if [ -f bstack-ai-harness.yml ] && grep -qE '^workspace:' bstack-ai-harness.yml; then SCOPE=workspace-root; fi
   if [ -f stack-workspace.yml ] || [ -f .claude/stack-workspace.yml ]; then SCOPE=workspace-root; fi
   ```
+
   - **single-repo:** `REPOS_TOUCHED` is the current repo.
   - **workspace-root:** the member repos the PRD names. If that is ambiguous, ask the human (gated) rather than guessing; under `--auto`, fall back to every member repo the PRD references and note the assumption.
 
@@ -39,6 +41,7 @@ Everything from Step 1 on is identical for both entry points.
 ## Step 1: Discover tech-spec skills
 
 One inventory pass over the relevant scope:
+
 - **workspace mode:** the workspace root's own `.claude/skills`/`.claude/agents` AND every member repo's own `.claude/skills`/`.claude/agents`.
 - **domain/single-repo mode:** just that repo's own `.claude/skills`/`.claude/agents`.
 
@@ -52,7 +55,8 @@ For each candidate, read its own description for what it covers: named repos/mod
 
 ## Step 3: Single-source shortcut
 
-If one candidate's coverage spans *every* module the feature touches (after the Step 4 subdivision below), defer the whole stage to it:
+If one candidate's coverage spans _every_ module the feature touches (after the Step 4 subdivision below), defer the whole stage to it:
+
 - Run it to completion, full ceremony, including its own publish/decompose/gate. Invoke via `Skill()` foreground if it is interactive (gated mode).
 - **Always materialize a local `docs/prd/<slug>-tech-spec.md`** capturing its content - write one from its returned/published content if it only published remotely. Downstream builders read the local file; they cannot be assumed to have Atlassian/other MCP access, especially under `--auto`.
 - Print the deferral transparency line: `Deferring the entire Tech Spec to <skill>; its failure-mode coverage is whatever <skill> does natively.` The human may override into the multi-source path.
@@ -75,6 +79,7 @@ Multiple candidates covering one module: no "pick one" conflict (nothing runs as
 ## Step 6: Draft phase (parallel)
 
 Dispatch in one message, multiple calls:
+
 - **Covered modules:** invoke each covering skill **steered to STOP before its own publish/decompose/side-effect steps** and return a pre-publish draft. Treat its draft at "initial draft" fidelity (not its post-publish form). Separately extract that skill's **declared hard rules** - its "never"/"must"/"mandatory"/"non-negotiable" language - as a tagged block, distinguishing rules that apply only to its module from rules that span more than one repo (the latter feed Cross-cutting invariants in Step 8).
   - **If a covering skill cannot be steered to stop before its side-effects** (e.g. it publishes as its first step): HALT with a clear message naming the skill and its owner to ping. Do not run it (unwanted side effects) and do not silently drop it. Internal tech-spec skills are required to support stop-before-side-effects; a skill that does not is a bug to fix, not to work around.
 - **Frontend + uncovered-non-frontend modules:** dispatch `stack:dev-architect` (grounding + boundary).
@@ -84,6 +89,7 @@ Wait for all Draft-phase dispatches to finish before Step 7 (hard prerequisite).
 ## Step 7: Ideation phase (only if there are uncovered non-frontend modules)
 
 Invoke **one** shared `superpowers:brainstorming` session covering all uncovered non-frontend modules together (never one session per module - one shared session keeps them from diverging). Seed it with: the PRD, those modules' grounding packets, and the **covered modules' + frontend modules' boundary/Contract portions as FIXED context** (design against them, do not renegotiate them). Steer with three overrides:
+
 1. The PRD is settled - skip your own requirements-gathering step.
 2. The provided grounding and the fixed-context interfaces are primary - design against them; independent re-verification against the live tree is fine, renegotiating decided interfaces is not.
 3. Stop once the design is produced - do NOT auto-continue into `writing-plans`.
@@ -121,7 +127,7 @@ Before any cited existing pattern becomes a TEMPLATE (not merely a reference), s
 ### Failure & Edge Cases checklist (all five, every multi-source run)
 
 1. **Partial failure** - one module's write commits, another's doesn't (or a request spans N modules and fails partway): observable outcome, self-heal or not?
-2. **Concurrency** - worst-case concurrent/overlapping pattern *across* modules.
+2. **Concurrency** - worst-case concurrent/overlapping pattern _across_ modules.
 3. **Consistency window / blind spots** - can two consumers observe divergent state momentarily; does anything read the underlying primitive directly without knowing about the new behavior (silently wrong, not gracefully degrading)?
 4. **Toggle/rollback mid-flight** - feature flag flips off, or the change is rolled back, while something is mid-lifecycle.
 5. **Scale/load** - any volume assumption that breaks under real load (lock contention, N+1, polling storms)?

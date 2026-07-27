@@ -2,7 +2,7 @@
 name: stack:submit-pr
 description: Create a pull request with pre-flight validation.
 disable-model-invocation: true
-argument-hint: "[base-branch]  default: main"
+argument-hint: '[base-branch]  default: main'
 ---
 
 # Submit PR
@@ -17,6 +17,7 @@ git log --oneline "${BASE_BRANCH}...HEAD"
 ```
 
 Validate:
+
 - All changes committed
 - Branch is up to date with base
 - Diff size: <200 LOC preferred, 200-600 warn, >600 recommend split
@@ -28,6 +29,7 @@ Run the `stack:code-review` skill checklist against the diff (lane-aware checks 
 ## Step 3 — Lint & Test
 
 Run affected package tests:
+
 ```bash
 npm run lint:check
 # + package-specific tests

@@ -12,23 +12,23 @@ The AI Service (misc-services/context_generator) provides LLM-powered accessibil
 
 ## Outbound Endpoints (a11y-engine → AI Service)
 
-| AI sub-pipeline | Endpoint constant | Path | Triggered by |
-|---|---|---|---|
-| Alt-text / image | `AI_API_ENDPOINTS.ALT_TEXT` | `/web-ally/suggest-alt-text` | `workerAI.js` after receiving candidates from `/accept_rules_data_percy` |
-| Color contrast | `AI_API_ENDPOINTS.COLOR_CONTRAST_V1` | `/web-ally/analyse-text-contrast` | `jobAIColorContrast.js` after receiving candidates from `/accept_rules_data_percy` |
-| Heading issues | `AI_API_ENDPOINTS.HEADING_RULE_AI` | `/web-ally/analyze-heading-issues` | `workerPreProcessAIhtml.js` after B1 handler enqueues with `enableHeadingAIRule` |
-| Custom elements | `AI_API_ENDPOINTS.CUSTOM_ELEMENTS_AI` | `/web-ally/analyze-custom-element-interaction` | `workerCustomElementsAI.js` after receiving candidates from `/accept_rules_data_percy` |
-| Cookie banner / overlay | — (hardcoded in dom-forge-core, no constant) | `${apiData.aiHost}/web-ally/analyze-overlay` | `dom-forge-core/lib/core/runners/cookie-banner-detection-snapshot.js` on Percy (BrowserStack's cloud browser rendering service) |
+| AI sub-pipeline         | Endpoint constant                            | Path                                           | Triggered by                                                                                                                    |
+| ----------------------- | -------------------------------------------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Alt-text / image        | `AI_API_ENDPOINTS.ALT_TEXT`                  | `/web-ally/suggest-alt-text`                   | `workerAI.js` after receiving candidates from `/accept_rules_data_percy`                                                        |
+| Color contrast          | `AI_API_ENDPOINTS.COLOR_CONTRAST_V1`         | `/web-ally/analyse-text-contrast`              | `jobAIColorContrast.js` after receiving candidates from `/accept_rules_data_percy`                                              |
+| Heading issues          | `AI_API_ENDPOINTS.HEADING_RULE_AI`           | `/web-ally/analyze-heading-issues`             | `workerPreProcessAIhtml.js` after B1 handler enqueues with `enableHeadingAIRule`                                                |
+| Custom elements         | `AI_API_ENDPOINTS.CUSTOM_ELEMENTS_AI`        | `/web-ally/analyze-custom-element-interaction` | `workerCustomElementsAI.js` after receiving candidates from `/accept_rules_data_percy`                                          |
+| Cookie banner / overlay | — (hardcoded in dom-forge-core, no constant) | `${apiData.aiHost}/web-ally/analyze-overlay`   | `dom-forge-core/lib/core/runners/cookie-banner-detection-snapshot.js` on Percy (BrowserStack's cloud browser rendering service) |
 
 The first 4 pipelines go through `getAIResponse()` in `controllers/apiClient.js` (ip-protection). Cookie banner detection is different — it calls the AI Service **directly from dom-forge-core running on Percy** (browser context), bypassing ip-protection entirely.
 
 ## Inbound Webhooks (AI Service → a11y-engine)
 
-| Webhook route | Auth | Handler | Queue dispatched |
-|---|---|---|---|
-| `POST /ai/webhook` | `verifyBasicAuth` | `acceptAIResult` | `aiTypeCProcessingQueue` (alt-text result processing) |
-| `POST /ai/webhook/heading` | `verifyBasicAuth` | `acceptHeadingsAIResult` | `postProcessAIhtmlQueue` (DOM reconstruction) |
-| `POST /ai/webhook/custom-elements` | `verifyBasicAuth` | `acceptCustomElementsAIResult` | `customElementsAiQueue` |
+| Webhook route                      | Auth              | Handler                        | Queue dispatched                                      |
+| ---------------------------------- | ----------------- | ------------------------------ | ----------------------------------------------------- |
+| `POST /ai/webhook`                 | `verifyBasicAuth` | `acceptAIResult`               | `aiTypeCProcessingQueue` (alt-text result processing) |
+| `POST /ai/webhook/heading`         | `verifyBasicAuth` | `acceptHeadingsAIResult`       | `postProcessAIhtmlQueue` (DOM reconstruction)         |
+| `POST /ai/webhook/custom-elements` | `verifyBasicAuth` | `acceptCustomElementsAIResult` | `customElementsAiQueue`                               |
 
 Webhook auth uses rotating tokens: `BASIC_WEBHOOK_AUTHTOKEN_0` / `BASIC_WEBHOOK_AUTHTOKEN_1`. Note: there is a known bug where the condition uses `||` instead of `&&` in `utils/middleware.js:verifyBasicAuth`, effectively rejecting valid tokens unless both env vars hold the same value.
 
@@ -100,6 +100,7 @@ See dedicated section below — unique flow that bypasses ip-protection entirely
 Unlike the other 4 AI pipelines, this one does **not** flow through ip-protection workers. It runs entirely in dom-forge-core on Percy and calls back to the accessibility repo (not a11y-engine).
 
 **Flow:**
+
 1. `dom-forge-core/lib/core/runners/cookie-banner-detection-snapshot.js` runs on Percy (BrowserStack's cloud browser rendering service used for Type C rule execution) during a Type C scan
 2. Gated by `apiData.isCookieBannerDetectionEnabled`
 3. Captures a viewport screenshot (1280×1024, 2x scale), uploads to S3 via presigned URL
@@ -116,15 +117,16 @@ Unlike the other 4 AI pipelines, this one does **not** flow through ip-protectio
 
 WebA11y BE sends `a11yCoreConfig` as part of the scan configuration. These flags control which AI pipelines activate in a11y-engine. The flags arrive via socket on scan start and are stored in Redis by `scanStartedHandler.js`.
 
-| Flag in `a11yCoreConfig` | What it enables | Gate function | Min engine version |
-|---|---|---|---|
-| `altTextAI: true` (new) / `ai: true` (legacy fallback) | Alt-text AI (image classification + meaningful alt text) | `isAltTextAIEnabled()` in `a11y-engine-core/lib/core/utils/helpers.js` — checks `altTextAI` first, falls back to `ai` if undefined (backward compat for scans started before Rails emits `altTextAI`) | — |
-| `colorContrastAI: true` | Color contrast AI | checked in `typeCRunner.js` directly | — |
-| `headingRulesAI: true` | Heading AI (preprocess + postprocess) | `enableHeadingAIRule(config, metadata)` in `commons/helper.js` | `>= 5.12.0` |
-| `customElementsAI: true` | Custom elements AI | `isCustomElementsAIEnabled(config, metadata)` in `commons/helper.js` | `>= MIN_CUSTOM_ELEMENTS_ENGINE_VERSION` |
-| `enableAdvancedRules: true` | Master gate — all AI pipelines require this to be true (along with `experimental` tag enabled) | checked in `determineExpectedTasks` | — |
+| Flag in `a11yCoreConfig`                               | What it enables                                                                                | Gate function                                                                                                                                                                                         | Min engine version                      |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| `altTextAI: true` (new) / `ai: true` (legacy fallback) | Alt-text AI (image classification + meaningful alt text)                                       | `isAltTextAIEnabled()` in `a11y-engine-core/lib/core/utils/helpers.js` — checks `altTextAI` first, falls back to `ai` if undefined (backward compat for scans started before Rails emits `altTextAI`) | —                                       |
+| `colorContrastAI: true`                                | Color contrast AI                                                                              | checked in `typeCRunner.js` directly                                                                                                                                                                  | —                                       |
+| `headingRulesAI: true`                                 | Heading AI (preprocess + postprocess)                                                          | `enableHeadingAIRule(config, metadata)` in `commons/helper.js`                                                                                                                                        | `>= 5.12.0`                             |
+| `customElementsAI: true`                               | Custom elements AI                                                                             | `isCustomElementsAIEnabled(config, metadata)` in `commons/helper.js`                                                                                                                                  | `>= MIN_CUSTOM_ELEMENTS_ENGINE_VERSION` |
+| `enableAdvancedRules: true`                            | Master gate — all AI pipelines require this to be true (along with `experimental` tag enabled) | checked in `determineExpectedTasks`                                                                                                                                                                   | —                                       |
 
 **How flags propagate:**
+
 1. WebA11y BE sets flags in `a11yCoreConfig` based on user's plan, opt-in status, and feature fencing (see accessibility stack's `ai-service.md`)
 2. On scan start, `scanStartedHandler.js` stores `ai_enabled` in Redis via `storeAIConfigAndUserGroup`
 3. `determineExpectedTasks()` in `utils/redis-utils.js` reads these flags to register expected completion tasks (`AI`, `AICC`, `AIH`, `AICE`)
@@ -163,20 +165,20 @@ Both have TTL of 2 hours. Webhook controllers read whichever key is present to h
 
 ## Key Files
 
-| File | Purpose |
-|------|---------|
-| `controllers/apiClient.js` | `getAIResponse` — outbound HTTP to AI Service with retries |
-| `controllers/acceptAIResult.js` | `acceptAIResult`, `acceptHeadingsAIResult`, `acceptCustomElementsAIResult` — webhook handlers |
-| `routes/scanRoutes.js` | Route definitions for AI webhooks |
-| `config/constants.js` | `AI_API_ENDPOINTS`, `AI_WEBHOOK_ENDPOINT`, `CUSTOM_ELEMENTS_AI_REDIS_KEYS` |
-| `worker/workerAI.js` | Alt-text AI job processing |
-| `worker/jobAIColorContrast.js` | Color-contrast AI job processing |
-| `worker/workerPreProcessAIhtml.js` | Heading AI preprocessing (DOM stamping, S3 upload, AI call) |
-| `worker/workerPostProcessAIhtml.js` | Heading AI postprocessing (DOM reconstruction, selector mapping) |
-| `worker/workerCustomElementsAI.js` | Custom-elements AI job processing |
-| `checks/checkHandler-v2.js` | B1 handler that gates heading AI enqueue via `enableHeadingAIRule` |
-| `utils/redis-utils.js` | `setAIHtmlMetadataIfAIKeyEmpty` (Lua atomic guard), `createAIrunIdMapping`, `getMetaData` |
-| `dom-forge-core/lib/core/runners/cookie-banner-detection-snapshot.js` | Cookie banner screenshot capture + direct AI Service call (runs on Percy) |
+| File                                                                  | Purpose                                                                                       |
+| --------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `controllers/apiClient.js`                                            | `getAIResponse` — outbound HTTP to AI Service with retries                                    |
+| `controllers/acceptAIResult.js`                                       | `acceptAIResult`, `acceptHeadingsAIResult`, `acceptCustomElementsAIResult` — webhook handlers |
+| `routes/scanRoutes.js`                                                | Route definitions for AI webhooks                                                             |
+| `config/constants.js`                                                 | `AI_API_ENDPOINTS`, `AI_WEBHOOK_ENDPOINT`, `CUSTOM_ELEMENTS_AI_REDIS_KEYS`                    |
+| `worker/workerAI.js`                                                  | Alt-text AI job processing                                                                    |
+| `worker/jobAIColorContrast.js`                                        | Color-contrast AI job processing                                                              |
+| `worker/workerPreProcessAIhtml.js`                                    | Heading AI preprocessing (DOM stamping, S3 upload, AI call)                                   |
+| `worker/workerPostProcessAIhtml.js`                                   | Heading AI postprocessing (DOM reconstruction, selector mapping)                              |
+| `worker/workerCustomElementsAI.js`                                    | Custom-elements AI job processing                                                             |
+| `checks/checkHandler-v2.js`                                           | B1 handler that gates heading AI enqueue via `enableHeadingAIRule`                            |
+| `utils/redis-utils.js`                                                | `setAIHtmlMetadataIfAIKeyEmpty` (Lua atomic guard), `createAIrunIdMapping`, `getMetaData`     |
+| `dom-forge-core/lib/core/runners/cookie-banner-detection-snapshot.js` | Cookie banner screenshot capture + direct AI Service call (runs on Percy)                     |
 
 ## See Also
 

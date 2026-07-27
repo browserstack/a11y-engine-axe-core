@@ -8,6 +8,7 @@ description: Debugging skill for a11y-engine — false-positive investigation on
 ## When to invoke
 
 Use this skill when the user reports:
+
 - A rule **false positive** ("why is this flagged?", "this isn't a violation").
 - A scan that **never completes** ("hangs", "no response", "stuck on Type C").
 - A worker that **crashes or retries** ("workerB1 keeps failing", "AI webhook never came back").
@@ -18,14 +19,14 @@ Use this skill when the user reports:
 
 Ask the user (or infer from context):
 
-| Symptom | Lane | First file to open |
-|---|---|---|
-| Rule fires on a node that doesn't violate the SC | A / B1 / C / AI — depends on rule | `knowledge/docs/flows/rule-types.md` |
-| Scan never completes | Cross-lane — usually consolidation | `knowledge/docs/flows/scan-lifecycle.md` |
-| Worker keeps retrying | Worker — check queue + lock | `knowledge/docs/flows/workers.md` |
-| Webhook lands but result is wrong | AI sub-pipeline | `knowledge/docs/flows/rule-types.md` § AI fan-out |
-| Redis key not found / expired too soon | TTL bug | `knowledge/docs/flows/storage.md` |
-| Auth fails on a new route | Middleware | `knowledge/docs/flows/auth.md` |
+| Symptom                                          | Lane                               | First file to open                                |
+| ------------------------------------------------ | ---------------------------------- | ------------------------------------------------- |
+| Rule fires on a node that doesn't violate the SC | A / B1 / C / AI — depends on rule  | `knowledge/docs/flows/rule-types.md`              |
+| Scan never completes                             | Cross-lane — usually consolidation | `knowledge/docs/flows/scan-lifecycle.md`          |
+| Worker keeps retrying                            | Worker — check queue + lock        | `knowledge/docs/flows/workers.md`                 |
+| Webhook lands but result is wrong                | AI sub-pipeline                    | `knowledge/docs/flows/rule-types.md` § AI fan-out |
+| Redis key not found / expired too soon           | TTL bug                            | `knowledge/docs/flows/storage.md`                 |
+| Auth fails on a new route                        | Middleware                         | `knowledge/docs/flows/auth.md`                    |
 
 ## Phase 2 — False positive (rule-level)
 
@@ -33,8 +34,8 @@ When the user says "rule X fired on URL Y, is it a real violation?", **delegate 
 
 Use this phase only for the classification + paper-triage that decides whether to invoke `stack:debug-fp`:
 
-| Intake | Required | Preferred |
-|---|---|---|
+| Intake        | Required         | Preferred                                                                                                                   |
+| ------------- | ---------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | Rule-level FP | `rule-id`, `url` | One or more CSS selectors (always a list — same DOM node may be reported via multiple paths; de-duplicate by node identity) |
 
 **AI vs non-AI:** If the rule has both routes (e.g., `color-contrast` and `color-contrast-ai`), ask which mode produced the violation before invoking `stack:debug-fp`.

@@ -36,18 +36,18 @@ git diff --name-status "$SHA"..HEAD -- <allowlist paths>
 
 Group changed paths by the architecture file they most likely affect:
 
-| Changed area | Likely-affected arch file(s) |
-|---|---|
-| `a11y-engine-core/lib/rules/**`, `lib/checks/**` | `rule-types.md` |
-| `ip-protection/worker/**`, `worker.js`, `aiWorker.js`, `utils/bullmq.js` | `workers.md`, `rule-types.md`, `scan-lifecycle.md` |
-| `ip-protection/routes/**`, `controllers/**` | `scan-lifecycle.md` |
-| `ip-protection/app.js` (socket handlers) | `socket-protocol.md` |
-| `ip-protection/utils/middleware.js` | `auth.md` |
-| `ip-protection/config/constants.js` | `storage.md`, `auth.md` (TTLs, tokens) |
-| `ip-protection/commons/v2/**`, `checks/combined-rules/**`, `worker/combined-rules-class-*.js` | `versioning.md` |
-| `dom-forge-core/percy/**`, `lib/core/**` | `dom-capture.md` |
-| `scripts/bumpA11yEngine.sh` | `release.md` |
-| `ip-protection/utils/logger.js`, `eds-utils.js` | `observability.md` |
+| Changed area                                                                                  | Likely-affected arch file(s)                       |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| `a11y-engine-core/lib/rules/**`, `lib/checks/**`                                              | `rule-types.md`                                    |
+| `ip-protection/worker/**`, `worker.js`, `aiWorker.js`, `utils/bullmq.js`                      | `workers.md`, `rule-types.md`, `scan-lifecycle.md` |
+| `ip-protection/routes/**`, `controllers/**`                                                   | `scan-lifecycle.md`                                |
+| `ip-protection/app.js` (socket handlers)                                                      | `socket-protocol.md`                               |
+| `ip-protection/utils/middleware.js`                                                           | `auth.md`                                          |
+| `ip-protection/config/constants.js`                                                           | `storage.md`, `auth.md` (TTLs, tokens)             |
+| `ip-protection/commons/v2/**`, `checks/combined-rules/**`, `worker/combined-rules-class-*.js` | `versioning.md`                                    |
+| `dom-forge-core/percy/**`, `lib/core/**`                                                      | `dom-capture.md`                                   |
+| `scripts/bumpA11yEngine.sh`                                                                   | `release.md`                                       |
+| `ip-protection/utils/logger.js`, `eds-utils.js`                                               | `observability.md`                                 |
 
 If a change lands in an allowlisted path not in this table, flag it as **"needs human judgement"** — don't assume it only affects one file.
 

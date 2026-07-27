@@ -35,21 +35,21 @@ XPath is accepted but treated as a string; if the page has non-trivial shadow DO
 
 - **Ready at least one selector.** A screenshot alone is not enough; the agent will ask for one. Running against every element that matches the rule is last-resort and noisy.
 - **Know which mode produced the violation (AI vs non-AI)** for rules that have both routes (`image-alt`, `link-name`, `accessible-name`, …). The agent will ask if it's ambiguous.
-- **If the URL is inaccessible** (auth-gated, geo-blocked, removed, changed since scan) — have a `proxy_map.json` from the original scan ready and drop it at `mini-percy-renderer/proxy_map.json`. Mention this in the prompt: *"inaccessible site, proxyMap added at …"*.
+- **If the URL is inaccessible** (auth-gated, geo-blocked, removed, changed since scan) — have a `proxy_map.json` from the original scan ready and drop it at `mini-percy-renderer/proxy_map.json`. Mention this in the prompt: _"inaccessible site, proxyMap added at …"_.
 - **Launch Claude Code with `claude --chrome`** if you want the live path (Path A). Not required for Path B.
 
 ## Path A vs Path B
 
 The agent chooses automatically but will confirm before switching paths.
 
-| | Path A — live URL | Path B — proxyMap replay |
-|---|---|---|
-| Launched via | `claude --chrome` | `scripts/launch-proxy-chrome.js` + jackproxy |
-| Works for auth-gated / geo-blocked pages | ✗ (you'd need to log in) | ✓ (snapshot already captured it) |
-| Works for removed or changed pages | ✗ | ✓ (scan-time DOM) |
-| Platform | any | darwin-arm64 only (jackproxy binary) |
-| Manual interaction (clicks, dropdowns) | ✓ | limited |
-| Requires proxy_map.json | ✗ | ✓ |
+|                                          | Path A — live URL        | Path B — proxyMap replay                     |
+| ---------------------------------------- | ------------------------ | -------------------------------------------- |
+| Launched via                             | `claude --chrome`        | `scripts/launch-proxy-chrome.js` + jackproxy |
+| Works for auth-gated / geo-blocked pages | ✗ (you'd need to log in) | ✓ (snapshot already captured it)             |
+| Works for removed or changed pages       | ✗                        | ✓ (scan-time DOM)                            |
+| Platform                                 | any                      | darwin-arm64 only (jackproxy binary)         |
+| Manual interaction (clicks, dropdowns)   | ✓                        | limited                                      |
+| Requires proxy_map.json                  | ✗                        | ✓                                            |
 
 **Never silently fall from A to B** — the agent will ask you which to use.
 
@@ -63,7 +63,7 @@ The agent chooses automatically but will confirm before switching paths.
 6. **Inject axe + write port.** Loads `a11y-engine-core/dist/axe.min.js`, calls `axe.setup(document)`, writes a port at `/tmp/debug-fp-<rule-id>.js` that iterates your selectors and calls the rule's actual helpers.
 7. **Execute.** Runs the port, captures the returned JSON.
 8. **Analyse.** Two axes: does WCAG apply? does the algorithm fire correctly? Combined into TP / FP-by-design / FP-by-bug / INCONCLUSIVE.
-9. **Reuse or tear down.** Agent asks whether to run another selector/rule on the same page (session is still warm — much cheaper) or to kill Chrome + jackproxy. *Always answer this prompt — silently saying "done" is fine but tearing down is irreversible for the current session.*
+9. **Reuse or tear down.** Agent asks whether to run another selector/rule on the same page (session is still warm — much cheaper) or to kill Chrome + jackproxy. _Always answer this prompt — silently saying "done" is fine but tearing down is irreversible for the current session._
 
 ## Output shape
 
@@ -85,11 +85,12 @@ Artifacts:
 Fix hint:     Replace `alt="…"` with `aria-label="…"` on the <i>, or mark the icon decorative with aria-hidden="true".
 ```
 
-Verdicts are *two-axis*: the WCAG axis can say "SC does not apply" even when the algorithm is doing exactly what its tests expect. That combination = **FP by design** — the engine needs a scope change, not a bug fix.
+Verdicts are _two-axis_: the WCAG axis can say "SC does not apply" even when the algorithm is doing exactly what its tests expect. That combination = **FP by design** — the engine needs a scope change, not a bug fix.
 
 ## Reuse the session to save tokens
 
 The first run on a page pays for:
+
 - agent reading `SKILL.md` + references + the axe rule JSON + check evaluators (one-time, amortized),
 - starting jackproxy, launching Chrome, injecting `axe.min.js`,
 - writing and executing the port,
@@ -97,7 +98,7 @@ The first run on a page pays for:
 
 A **second run on the same page** (another selector, a different rule, a re-probe with different logic) skips almost all of the above: axe is already injected (`run-with-axe.js` detects it and no-ops), jackproxy is already serving, the tab is already on the page. Only the new port + summary cost tokens.
 
-When the agent asks *"Chrome (`:9222`) + jackproxy (`:8080`) are still live on `<url>`. Run another selector, another rule, or tear down?"* — if you have anything else to check on this page, **say yes**.
+When the agent asks _"Chrome (`:9222`) + jackproxy (`:8080`) are still live on `<url>`. Run another selector, another rule, or tear down?"_ — if you have anything else to check on this page, **say yes**.
 
 ## Output artifacts (survive the session)
 
@@ -109,18 +110,18 @@ Files in `/tmp/` are ephemeral — copy anything you want to keep.
 
 ## Troubleshooting
 
-| Symptom | Likely cause | Fix |
-|---|---|---|
-| *"no Chrome on 127.0.0.1:9222"* | Path B Chrome not up, or died | Re-run `node .claude/skills/stack:debug-fp/scripts/launch-proxy-chrome.js <url>` |
-| Port returns `decision: "undefined (no elements matched)"` | Selector is wrong for the hydrated DOM, or page didn't finish rendering | Re-run with `--wait=2000`; or inspect the page in DevTools and give the agent a corrected selector |
-| Port returns `decision: "undefined (no axe)"` | Axe injection failed (strict CSP, closed shadow root) | Fall back to the native-DOM conversion described in `references/script-conversion.md` Path B |
-| Background task reports *"exit code 143"* | `jackproxy` or Chrome received SIGTERM at teardown | Expected. Not a failure. |
-| Docs page returns *"Content in development"* | Docs for this rule aren't published yet | Agent falls back to axe rule JSON + check evaluators automatically |
-| Verdict says **INCONCLUSIVE** | Paper-triage + live probe both ambiguous | Ask the agent for the next probe it recommends (usually a specific attribute / computed-style check) |
+| Symptom                                                    | Likely cause                                                            | Fix                                                                                                  |
+| ---------------------------------------------------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| _"no Chrome on 127.0.0.1:9222"_                            | Path B Chrome not up, or died                                           | Re-run `node .claude/skills/stack:debug-fp/scripts/launch-proxy-chrome.js <url>`                     |
+| Port returns `decision: "undefined (no elements matched)"` | Selector is wrong for the hydrated DOM, or page didn't finish rendering | Re-run with `--wait=2000`; or inspect the page in DevTools and give the agent a corrected selector   |
+| Port returns `decision: "undefined (no axe)"`              | Axe injection failed (strict CSP, closed shadow root)                   | Fall back to the native-DOM conversion described in `references/script-conversion.md` Path B         |
+| Background task reports _"exit code 143"_                  | `jackproxy` or Chrome received SIGTERM at teardown                      | Expected. Not a failure.                                                                             |
+| Docs page returns _"Content in development"_               | Docs for this rule aren't published yet                                 | Agent falls back to axe rule JSON + check evaluators automatically                                   |
+| Verdict says **INCONCLUSIVE**                              | Paper-triage + live probe both ambiguous                                | Ask the agent for the next probe it recommends (usually a specific attribute / computed-style check) |
 
 ## Limits and known issues
 
-- **Type AI rules** (`image-alt-ai`, `link-name-ai`, AI heading-family): the port can reproduce the *client-side pre-filter*, but not the server-side Gemini judgement. The agent will say so explicitly.
+- **Type AI rules** (`image-alt-ai`, `link-name-ai`, AI heading-family): the port can reproduce the _client-side pre-filter_, but not the server-side Gemini judgement. The agent will say so explicitly.
 - **Shadow DOM / cross-origin iframes**: open shadow roots work; closed ones don't; cross-origin iframes follow normal browser rules and are usually unreachable.
 - **Platform**: Path B requires darwin-arm64 (jackproxy binary). Path A works anywhere `claude --chrome` works.
 - **Does not modify rule source.** If the verdict is FP, the agent points at the file:line to change, but fixing the rule is the `add-rule` / normal dev flow.

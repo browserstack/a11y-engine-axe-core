@@ -84,13 +84,13 @@ If no output — stop and debug the push.
 2. Click **Build with Parameters**.
 3. Fill in:
 
-| Field | Value |
-|-------|-------|
-| `ENVIRONMENT` | `preprod` / `regression` / other (one per build) |
-| `RULES_FILE` | `a11y_engine_<ENGINE_VERSION>.json` |
-| `ACCESSIBILITY_BRANCH` | `<ACCESSIBILITY_BRANCH>` |
-| `ENGINE_VERSION` | `<ENGINE_VERSION>` |
-| `IS_AT` | **unchecked** |
+| Field                  | Value                                            |
+| ---------------------- | ------------------------------------------------ |
+| `ENVIRONMENT`          | `preprod` / `regression` / other (one per build) |
+| `RULES_FILE`           | `a11y_engine_<ENGINE_VERSION>.json`              |
+| `ACCESSIBILITY_BRANCH` | `<ACCESSIBILITY_BRANCH>`                         |
+| `ENGINE_VERSION`       | `<ENGINE_VERSION>`                               |
+| `IS_AT`                | **unchecked**                                    |
 
 > **Important:** `RULES_FILE` is the **filename only** — do **not** include the `db/rules/` path prefix.
 

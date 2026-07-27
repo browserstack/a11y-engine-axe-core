@@ -1,6 +1,6 @@
 ---
 paths:
-  - "**"
+  - '**'
 ---
 
 # Commit Conventions
@@ -30,15 +30,16 @@ Every modification in the `axe-core/` submodule **must** carry a comment that ta
 // [tag]: short description
 ```
 
-| Tag | Scope |
-|---|---|
-| `a11y-critical` | Affects multiple modules (global blast radius) |
-| `a11y-domforge` | dom-forge-core impact |
-| `a11y-ip` | ip-protection impact |
-| `a11y-core` | a11y-engine-core impact |
+| Tag                | Scope                                            |
+| ------------------ | ------------------------------------------------ |
+| `a11y-critical`    | Affects multiple modules (global blast radius)   |
+| `a11y-domforge`    | dom-forge-core impact                            |
+| `a11y-ip`          | ip-protection impact                             |
+| `a11y-core`        | a11y-engine-core impact                          |
 | `a11y-rule-<name>` | Rule-specific (e.g., `a11y-rule-color-contrast`) |
 
 **Guidelines for tag descriptions**:
+
 - Keep concise and clear.
 - **Never include sensitive information** — this is a public repository.
 
@@ -58,6 +59,7 @@ Every modification in the `axe-core/` submodule **must** carry a comment that ta
 ## When NOT to skip the hook
 
 Do not pass `--no-verify` to bypass the pre-commit hook unless:
+
 1. It's a documentation-only commit AND the hook is wrongly tripping on unrelated files, OR
 2. You're committing a hot fix and will follow up with a lint-clean commit immediately.
 

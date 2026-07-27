@@ -142,11 +142,11 @@ Wait for confirmation before proceeding.
 
 ## Phase 5 — Test
 
-| Sub-project | Framework | Run |
-|---|---|---|
+| Sub-project        | Framework            | Run                               |
+| ------------------ | -------------------- | --------------------------------- |
 | `a11y-engine-core` | Karma + Mocha + Chai | `cd a11y-engine-core && npm test` |
-| `dom-forge-core` | Mocha | `cd dom-forge-core && npm test` |
-| `ip-protection` | Jest | `cd ip-protection && npm test` |
+| `dom-forge-core`   | Mocha                | `cd dom-forge-core && npm test`   |
+| `ip-protection`    | Jest                 | `cd ip-protection && npm test`    |
 
 Tests **MUST cover**: happy path, null/missing input state (empty DOM, missing scan context), and at least one error path. This is non-negotiable per project conventions.
 

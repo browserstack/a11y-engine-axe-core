@@ -1,7 +1,7 @@
 ---
 paths:
-  - "a11y-engine-core/**"
-  - "dom-forge-core/**"
+  - 'a11y-engine-core/**'
+  - 'dom-forge-core/**'
 ---
 
 # Browser-Context Rules

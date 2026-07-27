@@ -30,6 +30,7 @@ git merge master
 ```
 
 **Handling merge conflicts:**
+
 - Conflict in `pnpm-lock.yaml` → `git checkout --theirs pnpm-lock.yaml && git add pnpm-lock.yaml`
 - Conflict in `apps/accessibility-toolkit/package.json` on `@browserstack/a11y-engine-core` version → resolve by setting it to `<ENGINE_VERSION>` (the value you're about to set anyway). Expected when the branch already has a different staging version than master.
 - Conflict in **any other file** → stop and ask the user to resolve manually.
@@ -84,17 +85,17 @@ git push origin <MANUAL_BRANCH>
 1. Open: <https://minion.browserstack.com/job/FrontendDeploys/job/BuildProductTools/build?delay=0sec>
 2. Fill in the form:
 
-| Field | Value | Notes |
-|-------|-------|-------|
-| `BUILD_TYPE` | `CHROME_EXT` | Default — leave as-is |
-| `PRODUCT` | `accessibility-toolkit` | Dropdown |
-| `REPO_NAME` | `frontend` | Type in |
-| `BRANCH_NAME` | `<MANUAL_BRANCH>` | Type in |
-| `BUILD_ENV` | `preprod` / `regression` / etc. | Default is `production` — **must change**. One per build. |
-| `UPDATE_SUFFIX` | **checked** | |
-| `FULL_SUFFIX` | unchecked | |
-| `CUSTOM_SUFFIX` | leave empty | |
-| `A11Y_BASE_URL_OVERRIDE` | leave empty | |
+| Field                    | Value                           | Notes                                                     |
+| ------------------------ | ------------------------------- | --------------------------------------------------------- |
+| `BUILD_TYPE`             | `CHROME_EXT`                    | Default — leave as-is                                     |
+| `PRODUCT`                | `accessibility-toolkit`         | Dropdown                                                  |
+| `REPO_NAME`              | `frontend`                      | Type in                                                   |
+| `BRANCH_NAME`            | `<MANUAL_BRANCH>`               | Type in                                                   |
+| `BUILD_ENV`              | `preprod` / `regression` / etc. | Default is `production` — **must change**. One per build. |
+| `UPDATE_SUFFIX`          | **checked**                     |                                                           |
+| `FULL_SUFFIX`            | unchecked                       |                                                           |
+| `CUSTOM_SUFFIX`          | leave empty                     |                                                           |
+| `A11Y_BASE_URL_OVERRIDE` | leave empty                     |                                                           |
 
 3. Click **Build**. Note the build number and share the link.
 4. Repeat for each environment.

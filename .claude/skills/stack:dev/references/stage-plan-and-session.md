@@ -9,11 +9,11 @@ stage_plan:
   review_depth: none | scan | standard | full
   tracks: [backend?, frontend?]
   mode_per_track: { backend: full | quick, frontend: full | quick }
-  needs_design_review: true | false   # FE touches rendered surfaces AND stack:design-review installed
-  needs_qa_tests: true | false        # change has testable behavior worth spec-derived QA tests
+  needs_design_review: true | false # FE touches rendered surfaces AND stack:design-review installed
+  needs_qa_tests: true | false # change has testable behavior worth spec-derived QA tests
   repos_touched: [<repo-or-member>, ...]
   checkpoints: gated | auto
-  providers:                          # selected provider per role (see references/providers.md). dev.providers in bstack-ai-harness.yml may set a name, a priority list, or off; this stores the chosen one
+  providers: # selected provider per role (see references/providers.md). dev.providers in bstack-ai-harness.yml may set a name, a priority list, or off; this stores the chosen one
     prd_author: stack:prd-create
     prd_review: stack:prd-review
     tech_spec: stack:tech-spec
@@ -23,7 +23,7 @@ stage_plan:
     qa: stack:qa-test-author
     design_review: stack:design-review
     open_pr: stack:open-pr
-    code_review: stack:pr-review      # workspace-root mode defaults to stack:workspace-pr-review
+    code_review: stack:pr-review # workspace-root mode defaults to stack:workspace-pr-review
 ```
 
 ## Classification signals (how the plan is derived)
@@ -40,12 +40,15 @@ Path: `.claude/dev/sessions/<session-id>.json`
 {
   "session_id": "<id>",
   "input": "<original raw input>",
-  "stage_plan": { },
+  "stage_plan": {},
   "prd_path": "<path or null>",
   "tech_spec_path": "<path or null>",
   "tech_spec_review_path": "<path or null>",
   "modules": [
-    { "path": "<repo-or-subpath>", "contributor": "<covering skill name | stack:dev-architect | plumb-deferred>" }
+    {
+      "path": "<repo-or-subpath>",
+      "contributor": "<covering skill name | stack:dev-architect | plumb-deferred>"
+    }
   ],
   "engine": "superpowers | self-contained | pending-restart",
   "design_review_verdict": "approve | comment | request-changes | critical | skipped-logic-only | skipped-not-installed | not-run | null",
@@ -60,7 +63,11 @@ Path: `.claude/dev/sessions/<session-id>.json`
     }
   ],
   "learnings": [
-    { "text": "<one learning>", "target_stack": "domain|lang|workspace|org", "rationale": "<one line>" }
+    {
+      "text": "<one learning>",
+      "target_stack": "domain|lang|workspace|org",
+      "rationale": "<one line>"
+    }
   ]
 }
 ```
@@ -71,15 +78,15 @@ Path: `.claude/dev/sessions/<session-id>.json`
 
 Records the outcome of design-review so the Stage 8 gate can tell "not needed" from "needed but never ran". Written to the session file in Stage 7 before `prs` is added to `completed_stages`; `null` until then.
 
-| Value | Meaning |
-|---|---|
-| `approve` | Design-review ran, approved |
-| `comment` | Design-review ran, non-blocking comments only |
-| `request-changes` | Design-review ran, blocking |
-| `critical` | Design-review ran, critical / blocking |
-| `skipped-logic-only` | Legitimate skip: no rendered surfaces touched |
+| Value                   | Meaning                                                                                                                                                                            |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `approve`               | Design-review ran, approved                                                                                                                                                        |
+| `comment`               | Design-review ran, non-blocking comments only                                                                                                                                      |
+| `request-changes`       | Design-review ran, blocking                                                                                                                                                        |
+| `critical`              | Design-review ran, critical / blocking                                                                                                                                             |
+| `skipped-logic-only`    | Legitimate skip: no rendered surfaces touched                                                                                                                                      |
 | `skipped-not-installed` | Legitimate skip: `stack:design-review` unavailable AND the Stage 1 machine-local design-module install (`ai-harness add design --scope local`) failed; absence alone is not a skip |
-| `not-run` | Required (`needs_design_review: true`) but no verdict collected: a blocker at Stage 8, never a pass |
+| `not-run`               | Required (`needs_design_review: true`) but no verdict collected: a blocker at Stage 8, never a pass                                                                                |
 
 ## Rework records (late upstream findings)
 

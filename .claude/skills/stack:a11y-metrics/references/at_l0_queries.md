@@ -17,10 +17,10 @@ AT events live in the same table as scanner events but under a different `produc
 
 ### Error categorisation
 
-| Bucket | Message pattern | Meaning |
-|---|---|---|
-| **Timeout** | `LIKE '%timed out%' OR LIKE '%timeout%'` (lowercased) | 20-min idle abandonment from the `setTimeout` in `assistedTestsHandler.js`. **User-driven, not an engine failure.** Informational only — never breach. |
-| **Non-timeout** | everything else with a non-null `$.message` | Genuine engine failures. **This is the AT errors breach metric.** |
+| Bucket          | Message pattern                                       | Meaning                                                                                                                                                |
+| --------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Timeout**     | `LIKE '%timed out%' OR LIKE '%timeout%'` (lowercased) | 20-min idle abandonment from the `setTimeout` in `assistedTestsHandler.js`. **User-driven, not an engine failure.** Informational only — never breach. |
+| **Non-timeout** | everything else with a non-null `$.message`           | Genuine engine failures. **This is the AT errors breach metric.**                                                                                      |
 
 ## Query — 7-day daily series (breach metric)
 
@@ -71,6 +71,7 @@ Note: `total_runs` is the row count **after** the errors-array unnest, so it's p
 ## Breach evaluation
 
 Given the 7-day series above, let:
+
 - `today_pct` = `non_timeout_error_percentage` for today's row
 - `prior_pct_median` = median of `non_timeout_error_percentage` over the prior 6 days (exclude today)
 - `today_runs` = `total_runs` for today
@@ -93,12 +94,12 @@ Edge case: if `prior_pct_median = 0`, fall back to rule 1 only (any value > 2pp 
 
 **Status resolution (canvas/JIRA wording — Slack is one-liner only, see below):**
 
-| `breach_triggered` | `low_volume_today` | Status | Canvas wording |
-|---|---|---|---|
-| false | false | ✅ | `✅ AT errors — No breach` |
-| false | true  | ✅ | `✅ AT errors — No breach (low volume: {today_runs} runs vs 7-day median {prior_runs_median})` |
-| true  | false | 🔴 | `🔴 AT errors — Breach — non-timeout error rate {today_pct}% (7-day median {prior_pct_median}%)` |
-| true  | true  | ⚠️ | `⚠️ AT errors — Elevated error rate {today_pct}% (7-day median {prior_pct_median}%), but volume is low ({today_runs} vs median {prior_runs_median}) — error signal may be noise, review before escalating` |
+| `breach_triggered` | `low_volume_today` | Status | Canvas wording                                                                                                                                                                                             |
+| ------------------ | ------------------ | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| false              | false              | ✅     | `✅ AT errors — No breach`                                                                                                                                                                                 |
+| false              | true               | ✅     | `✅ AT errors — No breach (low volume: {today_runs} runs vs 7-day median {prior_runs_median})`                                                                                                             |
+| true               | false              | 🔴     | `🔴 AT errors — Breach — non-timeout error rate {today_pct}% (7-day median {prior_pct_median}%)`                                                                                                           |
+| true               | true               | ⚠️     | `⚠️ AT errors — Elevated error rate {today_pct}% (7-day median {prior_pct_median}%), but volume is low ({today_runs} vs median {prior_runs_median}) — error signal may be noise, review before escalating` |
 
 The last row is the key change vs. the earlier design: low-volume days with elevated errors are still surfaced (data shown, signal narrated), but they're labelled ⚠️ rather than 🔴 so a reader knows the breach formula tripped on a small sample and may not warrant a P1.
 
@@ -112,11 +113,11 @@ Format per phase: `<emoji> <Phase> — <status> ([Looker dashboard](URL))`
 
 For AT errors specifically:
 
-| Case | Slack line |
-|---|---|
-| ✅ Clean (any volume) | `✅ AT errors — No breach ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))` |
-| 🔴 Breach (normal volume) | `🔴 AT errors — Breach ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))` |
-| ⚠️ Breach but low volume | `⚠️ AT errors — Elevated, low volume ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))` |
+| Case                      | Slack line                                                                                                  |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| ✅ Clean (any volume)     | `✅ AT errors — No breach ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))`            |
+| 🔴 Breach (normal volume) | `🔴 AT errors — Breach ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))`               |
+| ⚠️ Breach but low volume  | `⚠️ AT errors — Elevated, low volume ([Looker dashboard](https://browserstack.looker.com/dashboards/2976))` |
 
 Never omit the line. Never inline numbers, percentages, or run counts in the Slack message — those go in the canvas.
 

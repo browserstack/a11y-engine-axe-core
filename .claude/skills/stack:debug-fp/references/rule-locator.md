@@ -17,6 +17,7 @@ grep -rln "\"id\"[[:space:]]*:[[:space:]]*\"<rule-id>\"" \
 ```
 
 Then for each hit, open:
+
 - the rule JSON (gives `selector`, `all` / `any` / `none` check ids, `tags`, `impact`)
 - each referenced check JSON (gives `evaluate` file name)
 - the `*-evaluate.js` (the algorithm you will port)
@@ -25,25 +26,25 @@ Then for each hit, open:
 
 Type is determined by **which worker dispatches the rule**, not by where the rule JSON lives. Some rules have multiple routes gated by a runtime flag (e.g. `accessible-name` runs through `workerB1` in deterministic mode, `workerAI` when the AI flag is on) &mdash; always ask the user which mode is active before porting.
 
-| Type | Rule JSON lives in | Judgement runs in (worker) | Notes |
-|---|---|---|---|
-| **A** | `axe-core/lib/rules/` (fork) and `a11y-engine-core/lib/rules/` | browser (client-side, via a11y-engine-core's axe) | Pure client, no server round-trip. |
-| **B1** | `ip-protection/rules/` + `ip-protection/checks/` | `ip-protection/worker/workerB1.js` &rarr; `combinedRulesRunner` &rarr; `combined-rules-class-v*.js` | Server-side deterministic, operates on the `nodeData` snapshot. Most of the combined-rules chain (accessible-name, role-required, keyboard-*, menu-*, etc.) lives here. |
-| **B2** | `ip-protection/rules/` + `ip-protection/checks/b2Rules.js` | `ip-protection/worker/workerB2.js` | Uses `reconstructDOM`, batched, post-processed. |
-| **C** | logically dom-forge-core territory; dispatched via ip-protection | `ip-protection/worker/workerC.js` | Handles custom-element / DOM-snapshot / screenshot-coupled paths (`getAndDeleteCustomElementsMetadata`, `proxyUrl`, `percyStartTime`). |
-| **AI** | `ip-protection/checks/aiRules.js` / `aiChecks.js` (+ `ip-protection/checks/<rule>-ai/`) | **family** of workers in `ip-protection/worker/` &mdash; see below | LLM calls (Gemini), image pipelines, OCR. A rule may have both a B1/B2/C deterministic route and an AI route gated by a flag. |
+| Type   | Rule JSON lives in                                                                      | Judgement runs in (worker)                                                                          | Notes                                                                                                                                                                   |
+| ------ | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A**  | `axe-core/lib/rules/` (fork) and `a11y-engine-core/lib/rules/`                          | browser (client-side, via a11y-engine-core's axe)                                                   | Pure client, no server round-trip.                                                                                                                                      |
+| **B1** | `ip-protection/rules/` + `ip-protection/checks/`                                        | `ip-protection/worker/workerB1.js` &rarr; `combinedRulesRunner` &rarr; `combined-rules-class-v*.js` | Server-side deterministic, operates on the `nodeData` snapshot. Most of the combined-rules chain (accessible-name, role-required, keyboard-_, menu-_, etc.) lives here. |
+| **B2** | `ip-protection/rules/` + `ip-protection/checks/b2Rules.js`                              | `ip-protection/worker/workerB2.js`                                                                  | Uses `reconstructDOM`, batched, post-processed.                                                                                                                         |
+| **C**  | logically dom-forge-core territory; dispatched via ip-protection                        | `ip-protection/worker/workerC.js`                                                                   | Handles custom-element / DOM-snapshot / screenshot-coupled paths (`getAndDeleteCustomElementsMetadata`, `proxyUrl`, `percyStartTime`).                                  |
+| **AI** | `ip-protection/checks/aiRules.js` / `aiChecks.js` (+ `ip-protection/checks/<rule>-ai/`) | **family** of workers in `ip-protection/worker/` &mdash; see below                                  | LLM calls (Gemini), image pipelines, OCR. A rule may have both a B1/B2/C deterministic route and an AI route gated by a flag.                                           |
 
 ### The AI worker family
 
 "Type AI" is not one worker &mdash; it's a dispatch family. Different AI-rule categories go through different workers:
 
-| Worker | Rules it handles | Notes |
-|---|---|---|
-| `workerAI.js` | generic AI rules (anything routed via `aiRules.js` not caught by a specific worker below) | Imports `aiRules` + `aiChecks`; baseline path. |
-| `jobAIColorContrast.js` | `color-contrast` in AI mode | Dedicated job; runs the color-contrast LLM heuristic against image samples. |
-| `workerCustomElementsAI.js` | custom-element AI rules (classifying custom tags, `role-required` / `accessible-name` / `keyboard-interactive` on unknown elements) | Uses `fetchAndDeleteCustomElementData` and `aiRulesId` constants. |
+| Worker                                                          | Rules it handles                                                                                                                      | Notes                                                                                                                              |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `workerAI.js`                                                   | generic AI rules (anything routed via `aiRules.js` not caught by a specific worker below)                                             | Imports `aiRules` + `aiChecks`; baseline path.                                                                                     |
+| `jobAIColorContrast.js`                                         | `color-contrast` in AI mode                                                                                                           | Dedicated job; runs the color-contrast LLM heuristic against image samples.                                                        |
+| `workerCustomElementsAI.js`                                     | custom-element AI rules (classifying custom tags, `role-required` / `accessible-name` / `keyboard-interactive` on unknown elements)   | Uses `fetchAndDeleteCustomElementData` and `aiRulesId` constants.                                                                  |
 | `workerPreProcessAIhtml.js` &rarr; `workerPostProcessAIhtml.js` | heading-family AI rules: `missing-heading-ai`, `invalid-heading-ai`, `incorrect-heading-ai` (and anything using the AI-HTML pipeline) | Pre-worker reduces the DOM + ships to the AI API; post-worker consumes the AI response, calls `reconstructDOM`, re-runs `aiRules`. |
-| `workerImage.js` | OCR-backed rules (`text-in-images`, image-description feeds) | Schedules OCR via `OCRScheduler`, may be upstream of the above workers. |
+| `workerImage.js`                                                | OCR-backed rules (`text-in-images`, image-description feeds)                                                                          | Schedules OCR via `OCRScheduler`, may be upstream of the above workers.                                                            |
 
 The canonical list of AI-routed rule IDs lives in `ip-protection/utils/constants.js` as `aiRulesId`. As of this writing:
 
@@ -96,11 +97,11 @@ The per-node iteration also explains why capture-time scan data (which elements 
 
 ## The "which is the judgement path" question
 
-For Type B1/B2/C/AI, a rule often has *both* a client side (selector + DOM capture via a11y-engine-core's axe) and a server side (the actual pass/fail decision). The **judgement** is whatever code returns `true|false|undefined` for the violation. Port that one. If the judgement is LLM-only (a Gemini call on a screenshot), the skill cannot faithfully reproduce it in-browser &mdash; document the limit, port the client pre-filter only, and classify as "needs server re-run".
+For Type B1/B2/C/AI, a rule often has _both_ a client side (selector + DOM capture via a11y-engine-core's axe) and a server side (the actual pass/fail decision). The **judgement** is whatever code returns `true|false|undefined` for the violation. Port that one. If the judgement is LLM-only (a Gemini call on a screenshot), the skill cannot faithfully reproduce it in-browser &mdash; document the limit, port the client pre-filter only, and classify as "needs server re-run".
 
 ## axe-core fallback chain (Type A only)
 
-If `<rule-id>` doesn't match anything in a11y-engine-core, check axe-core &mdash; some rules are inherited unchanged from the fork. Per the top-level rules file (`CLAUDE.md`), **never modify axe-core** but you *can* read it to port its algorithm. Terminology note: CLAUDE.md's older taxonomy labels these as "B1 client-side"; this skill uses the worker-based taxonomy above, in which they are **Type A**.
+If `<rule-id>` doesn't match anything in a11y-engine-core, check axe-core &mdash; some rules are inherited unchanged from the fork. Per the top-level rules file (`CLAUDE.md`), **never modify axe-core** but you _can_ read it to port its algorithm. Terminology note: CLAUDE.md's older taxonomy labels these as "B1 client-side"; this skill uses the worker-based taxonomy above, in which they are **Type A**.
 
 ## Commons dependencies
 
@@ -137,12 +138,12 @@ Use the WebFetch tool against that URL. If the page 404s, try the previous minor
 
 The docs give you the "what this rule is supposed to do" axis; the source gives you the "what the algorithm actually does" axis. An FP usually lives in the delta between the two:
 
-| Docs say | Algorithm does | Verdict |
-|---|---|---|
-| "A pattern is valid when X" | Algorithm does not check for X | **FP &mdash; rule is too narrow.** Fix in source. |
-| "A pattern is a violation when X" | Algorithm fires on Y (Y &ne; X) | **FP &mdash; rule is mis-targeting.** Fix in source. |
-| "A pattern is valid when X" | Algorithm checks X correctly | Likely **TP** &mdash; the page is doing something the docs call out as failing. |
-| Docs list this exact case under "Known issues" | &mdash; | **FP &mdash; documented.** Link the docs section in the verdict. |
+| Docs say                                       | Algorithm does                  | Verdict                                                                         |
+| ---------------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------- |
+| "A pattern is valid when X"                    | Algorithm does not check for X  | **FP &mdash; rule is too narrow.** Fix in source.                               |
+| "A pattern is a violation when X"              | Algorithm fires on Y (Y &ne; X) | **FP &mdash; rule is mis-targeting.** Fix in source.                            |
+| "A pattern is valid when X"                    | Algorithm checks X correctly    | Likely **TP** &mdash; the page is doing something the docs call out as failing. |
+| Docs list this exact case under "Known issues" | &mdash;                         | **FP &mdash; documented.** Link the docs section in the verdict.                |
 
 ## Output of this phase
 

@@ -2,7 +2,7 @@
 
 **The author/review skill is chosen up front in Phase 0b** (`skill-selection.md`), not here. This
 file covers (a) the **channel probing** that populates the Phase 0b prompt — where product skills
-live and how to reach them — and (b) the **delegation contract** Phase 3 follows to *execute* the
+live and how to reach them — and (b) the **delegation contract** Phase 3 follows to _execute_ the
 author the operator chose. Phase 4's checker uses the same probe results (one checkout serves both).
 
 ## Two runtime environments
@@ -74,12 +74,12 @@ If no directory matches, the dump channel yields nothing (the dump option is omi
 
 Within `stack-product/<Product>/`, find **every** `SKILL.md` at any depth — layouts vary:
 
-| Product (dump dir) | Author skill path | Review skill path |
-|---|---|---|
-| `AppLive` | `plan/product/SKILL.md` (`build-task-brief`) | `review/product/SKILL.md` (`review-task-brief`) |
-| `Live` | `plan/product/SKILL.md` | `review/product/SKILL.md` |
-| `percy` | `.claude/skills/gen-task-brief/SKILL.md`, `.claude/skills/user-story-doc/SKILL.md` | — |
-| `website-scanner` | top-level `SKILL.md` | — |
+| Product (dump dir) | Author skill path                                                                  | Review skill path                               |
+| ------------------ | ---------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `AppLive`          | `plan/product/SKILL.md` (`build-task-brief`)                                       | `review/product/SKILL.md` (`review-task-brief`) |
+| `Live`             | `plan/product/SKILL.md`                                                            | `review/product/SKILL.md`                       |
+| `percy`            | `.claude/skills/gen-task-brief/SKILL.md`, `.claude/skills/user-story-doc/SKILL.md` | —                                               |
+| `website-scanner`  | top-level `SKILL.md`                                                               | —                                               |
 
 Do not hard-code the table — enumerate `SKILL.md` files and classify each from its frontmatter
 `name` + `description`:
@@ -93,7 +93,7 @@ twice.
 
 ## How the probe results map to the Phase 0b prompt
 
-The operator chooses in Phase 0b (`skill-selection.md`); this probe only *supplies* the choices:
+The operator chooses in Phase 0b (`skill-selection.md`); this probe only _supplies_ the choices:
 
 - **0 product skills found** (channels 1–4 empty, or `git`/network down) → Phase 0b offers only
   **native** + **provide-a-path**.
@@ -103,7 +103,7 @@ The operator chooses in Phase 0b (`skill-selection.md`); this probe only *suppli
 - **`--author-skill` / `--review-skill` / `--native` flags** → skip the corresponding prompt entirely
   (probing for that role can be skipped when the flag names `native` or a path).
 
-Phase 3 then *executes* whatever the operator selected — it does not re-resolve.
+Phase 3 then _executes_ whatever the operator selected — it does not re-resolve.
 
 ## Delegation contract (chained brainstorm)
 
@@ -112,7 +112,7 @@ When delegating:
 1. Phase 1 grounding + Phase 2 **aligned requirements** already exist.
 2. Pass both to the product skill as **priming context**.
 3. The product skill runs its **full** flow — its own research + brainstorm + draft, **no gates
-   skipped** — using the priming context as a starting point so its brainstorm *builds on* the
+   skipped** — using the priming context as a starting point so its brainstorm _builds on_ the
    aligned requirements rather than re-deriving them. (The user brainstorms twice by design: once
    generically in Phase 2, once product-specifically inside the product skill; the second pass is
    additive, not a cold restart.)

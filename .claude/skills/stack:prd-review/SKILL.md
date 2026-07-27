@@ -11,7 +11,7 @@ A structured review process for Product Requirements Documents. Turns a vague "l
 
 **Use when** the user provides an existing PRD, spec, or requirements document and wants it reviewed, audited, or checked for readiness — even if they don't use the word "review" (e.g., "what's missing from this?", "can engineering build from this?", "is this good enough for sprint planning?").
 
-**Do not use when** the user wants to *write* a new PRD from scratch. This skill audits; it does not author.
+**Do not use when** the user wants to _write_ a new PRD from scratch. This skill audits; it does not author.
 
 ## The review workflow
 
@@ -34,6 +34,7 @@ Default to Standard if the user doesn't specify and the PRD looks substantial.
 ### Phase 2 — First read
 
 Read the PRD end to end without grading anything yet. The goal is to understand:
+
 - What is being built and for whom
 - What the success criteria are
 - What is explicitly out of scope
@@ -45,7 +46,7 @@ From this read, draft a short, neutral **PRD Summary** — what's being built, f
 
 #### Sub-step: Resolve visual content
 
-Before scoring, retrieve and read the PRD's load-bearing **images and Figma links** — do not treat them as opaque gaps. **Load `references/visual-content.md`** for the procedure: inventory visual references, read embedded images multimodally (resolve `blob:`/media references to actual pixels), and resolve Figma via the Figma MCP (discover it with ToolSearch `figma`; fall back to a browser, then to flagging). Content found in a visual is scored like prose. Raise a finding only when a visual is unretrievable, exists *only* as a picture with no prose equivalent, or contradicts the text.
+Before scoring, retrieve and read the PRD's load-bearing **images and Figma links** — do not treat them as opaque gaps. **Load `references/visual-content.md`** for the procedure: inventory visual references, read embedded images multimodally (resolve `blob:`/media references to actual pixels), and resolve Figma via the Figma MCP (discover it with ToolSearch `figma`; fall back to a browser, then to flagging). Content found in a visual is scored like prose. Raise a finding only when a visual is unretrievable, exists _only_ as a picture with no prose equivalent, or contradicts the text.
 
 ### Phase 3 — 8-dimension audit
 
@@ -102,6 +103,7 @@ Save the report as a Markdown file named `prd-review_<prd-name>_<YYYY-MM-DD>.md`
 After the report is complete, run the Definition of Ready (DoR) check. **Load `references/readiness-certificate-template.md`** for the checklist and certificate format.
 
 The PRD earns a Readiness Certificate **only if**:
+
 - Zero P0 findings remain
 - All eight dimensions score ≥ 6/10
 - All BRD items (if applicable) are mapped to PRD sections
@@ -119,7 +121,7 @@ If the PRD does not qualify, produce a "Not Ready" certificate listing the block
 ## Anti-patterns to avoid
 
 - **Don't rewrite the PRD.** The job is to surface issues, not to author replacements.
-- **Don't invent missing context.** If something is unclear, that *is* the finding — don't fill the gap with assumptions and review the assumption.
+- **Don't invent missing context.** If something is unclear, that _is_ the finding — don't fill the gap with assumptions and review the assumption.
 - **Read the visuals before calling them a gap.** A spec inside an image or Figma frame is content to retrieve and review (see Phase 2 sub-step), not an automatic omission. "Couldn't be bothered to open the Figma" is not a finding; "the Figma is access-restricted" or "the flow lives only in a screenshot, never in prose" is.
 - **Don't grade harshly to look thorough.** A 50-finding report that flags every minor formatting choice as P2 buries the actual issues. Aim for signal density, not finding count.
 - **Don't skip Phase 2.** Skipping the orientation read leads to flagging things as "missing" that exist three sections later.

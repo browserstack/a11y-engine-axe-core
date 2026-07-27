@@ -154,28 +154,29 @@ For `MAX(Type AI, Headings)` use `GREATEST(type_ai_p90, headings_ai_p90)`. Headi
 
 ### 1c. Apply thresholds
 
-| Metric | Threshold | Apply to | Panel |
-|---|---|---|---|
-| Engine Run Failure % | 3% | All scan types combined | Engine Run Failures |
-| Type A P90 | 5,000ms | Each product track | AUT/CS OnDemand/WA |
-| AUT Asset Capture P90 | 25,000ms | AUT only | AUT |
-| AUT Type B Data Collection P90 | 14,000ms | AUT only | AUT |
-| CS OnDemand Max(B1, C) P90 | 80,000ms | CS OnDemand only | CS OnDemand |
-| CS OnDemand Type B2 P90 | 80,000ms | CS OnDemand only | CS OnDemand |
-| CS OnDemand MAX(Type AI, Headings) P90 | 80,000ms | CS OnDemand only | CS OnDemand |
-| WA Max(B1, C) P90 | 80,000ms | WA only | WA |
-| WA Type B2 P90 | 80,000ms | WA only | WA |
-| WA MAX(Type AI, Headings) P90 | 80,000ms | WA only | WA |
+| Metric                                 | Threshold | Apply to                | Panel               |
+| -------------------------------------- | --------- | ----------------------- | ------------------- |
+| Engine Run Failure %                   | 3%        | All scan types combined | Engine Run Failures |
+| Type A P90                             | 5,000ms   | Each product track      | AUT/CS OnDemand/WA  |
+| AUT Asset Capture P90                  | 25,000ms  | AUT only                | AUT                 |
+| AUT Type B Data Collection P90         | 14,000ms  | AUT only                | AUT                 |
+| CS OnDemand Max(B1, C) P90             | 80,000ms  | CS OnDemand only        | CS OnDemand         |
+| CS OnDemand Type B2 P90                | 80,000ms  | CS OnDemand only        | CS OnDemand         |
+| CS OnDemand MAX(Type AI, Headings) P90 | 80,000ms  | CS OnDemand only        | CS OnDemand         |
+| WA Max(B1, C) P90                      | 80,000ms  | WA only                 | WA                  |
+| WA Type B2 P90                         | 80,000ms  | WA only                 | WA                  |
+| WA MAX(Type AI, Headings) P90          | 80,000ms  | WA only                 | WA                  |
 
 Status is **binary** — each metric is ✅ (within threshold) or 🔴 (over threshold). No 🟡, no watchlist band, anywhere in user-facing output.
 
-| Status | Latency rule | Engine Run Failures rule |
-|---|---|---|
-| ✅ | value ≤ threshold | ≤ 3% |
-| 🔴 | value > threshold | > 3% |
-| — | no formal threshold (cells where the engine doesn't define one — currently none on L0 since all 80,000 ms cells are scored) | — |
+| Status | Latency rule                                                                                                                | Engine Run Failures rule |
+| ------ | --------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| ✅     | value ≤ threshold                                                                                                           | ≤ 3%                     |
+| 🔴     | value > threshold                                                                                                           | > 3%                     |
+| —      | no formal threshold (cells where the engine doesn't define one — currently none on L0 since all 80,000 ms cells are scored) | —                        |
 
 **User-facing rule (revised 2026-05-06):**
+
 - **Slack: ALWAYS render the one-line L0 status** — `✅ **L0 — No breach** ([Looker dashboard](URL))` when clean, or `🔴 **L0 — Breach** ([Looker dashboard](URL))` followed by per-panel breach bullets when not. Do NOT include latency P90 numbers or the failure-rate value when the phase is clean — that context lives in the canvas TL;DR. When breached, list ONLY the breached panels/cells as bullets with value + threshold; never the full panel table.
 - **Canvas L0 section: breach-only — no status table even with ✅ rows.** When clean, render the section as: `✅ **L0 — No breach**` + `### L0 Findings` + `### L0 Actions`. When any panel breaches, render only the 🔴 row(s) with value + threshold + status — never the full panel table.
 - The Looker dashboard link goes on the L0 phase header (`📊 [Looker — L0 dashboard](URL)`), not per panel.
@@ -212,11 +213,12 @@ Take the **worst status across all rows for the same uuid** (FAILURE > PARTIAL >
 **Binary L1 threshold:**
 
 | Status | Success % rule |
-|---|---|
-| ✅ | ≥ 95% |
-| 🔴 | < 95% |
+| ------ | -------------- |
+| ✅     | ≥ 95%          |
+| 🔴     | < 95%          |
 
 **User-facing L1 output rule (revised 2026-05-06):**
+
 - **Slack: ALWAYS render the one-line L1 status** — `✅ **L1 — No breach** ([Looker dashboard](URL))` when clean, or `🔴 **L1 — Breach** ([Looker dashboard](URL))` followed by per-breach bullets when not. Do NOT omit the L1 block on a clean day; the reader needs the explicit ✅ line per phase to scan the day at a glance. (Phase 8 covers exact bullet shape for breaches.)
 - **Canvas L1 section: breach-only — no status table even with ✅ rows.** When clean, render the section as: `✅ **L1 — No breach**` + `### L1 Findings` + `### L1 Actions`. When breached, render only 🔴 rows as bullets (no full 15-row grid). Each 🔴 row carries: track, scan type, success %, failures/partials/total, plus the one-line attribution and the JIRA action linked from `### L1 Actions`.
 - **CS is one combined row per scan type** (OnDemand + Background folded together). Computed as `SUM(success across both subsets) / SUM(total across both subsets)`. CS Background is no longer hidden — it is folded into CS.
@@ -322,11 +324,13 @@ LIMIT 15
 The Failure % column is mandatory in user-facing output (canvas + Slack) — readers want to know whether the absolute failure count represents 100% of a tiny fleet or 1% of a huge one. A 100% rate on a 14-scan group is a different shape from a 12% rate on a 2,742-scan group.
 
 ### 5b. Top groups driving latency tail
+
 For each breached latency metric, compute the P90 threshold value. Then `SELECT group_id, COUNT(*) AS tail_events, AVG(latency) FROM ... WHERE latency >= threshold GROUP BY group_id ORDER BY tail_events DESC LIMIT 15`.
 
 ### 5c. Per-breach concentration sub-tables
 
 When an L1 breach concentrates in a small number of groups (e.g. > 50% of the breach driven by ≤ 3 groups), add a dedicated sub-table for that breach showing per-group total scans, fails (or partials, depending on what's driving the breach), and rate. Example shapes already in use:
+
 - "AUT AI scan-timeout — 100% failure-rate concentration" (when groups go 100% on a tiny fleet)
 - "CS AI partial concentration" (when partials, not failures, drive a success-% breach)
 
@@ -414,10 +418,10 @@ Confirmed against 2026-04-23 data: the `.error` field IS populated for B1 runtim
 
 Each remaining fix item gets a row. **Excluded from this table:** "watch X tomorrow" notes — those are internal monitoring, not fixes.
 
-| # | Fix | JIRA | Status | Priority | Assignee |
-|---|---|---|---|---|---|
-| 1 | <one-line description with code reference> | [PROJ-NNN](https://browserstack.atlassian.net/browse/PROJ-NNN) — <ticket title> | Open / In Progress / Done | P0 / P1 / P2 | <name> |
-| 2 | <description> | TBD — create new JIRA, assign to OPS | — | — | OPS |
+| #   | Fix                                        | JIRA                                                                            | Status                    | Priority     | Assignee |
+| --- | ------------------------------------------ | ------------------------------------------------------------------------------- | ------------------------- | ------------ | -------- |
+| 1   | <one-line description with code reference> | [PROJ-NNN](https://browserstack.atlassian.net/browse/PROJ-NNN) — <ticket title> | Open / In Progress / Done | P0 / P1 / P2 | <name>   |
+| 2   | <description>                              | TBD — create new JIRA, assign to OPS                                            | —                         | —            | OPS      |
 
 Workflow: for each fix, search JIRA (`searchJiraIssuesUsingJql` with `text ~ "<keyword>" AND project in (AXE, OPS)`) before creating new tickets. If no ticket exists, create one in the appropriate project (default OPS for ops/infra, AXE for engine) and assign to OPS unless told otherwise. Always cite the JIRA URL in the table.
 

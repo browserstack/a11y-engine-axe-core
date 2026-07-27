@@ -1,6 +1,6 @@
 # BRD Coverage Check
 
-The BRD (Business Requirements Document) describes *what the business needs*. The PRD describes *how the product will deliver it*. The coverage check verifies that every business requirement is addressed.
+The BRD (Business Requirements Document) describes _what the business needs_. The PRD describes _how the product will deliver it_. The coverage check verifies that every business requirement is addressed.
 
 This check runs only when the user provides a BRD alongside the PRD. Skip it otherwise.
 
@@ -20,12 +20,12 @@ If the BRD is poorly structured and items are hard to extract, that's itself a f
 
 For each BRD item, scan the PRD and identify the section(s) that address it. Record the mapping:
 
-| BRD Item | PRD Section | Status |
-|----------|-------------|--------|
-| BRD-1 | §2.3, §4.1 | ✅ Mapped |
-| BRD-2 | §3.1 | ⚠️ Partial |
-| BRD-3 | — | ❌ Unmapped |
-| BRD-4 | §5.2 | ✅ Mapped |
+| BRD Item | PRD Section | Status      |
+| -------- | ----------- | ----------- |
+| BRD-1    | §2.3, §4.1  | ✅ Mapped   |
+| BRD-2    | §3.1        | ⚠️ Partial  |
+| BRD-3    | —           | ❌ Unmapped |
+| BRD-4    | §5.2        | ✅ Mapped   |
 
 ### Step 3 — Classify each mapping
 
@@ -40,17 +40,17 @@ For each BRD item, scan the PRD and identify the section(s) that address it. Rec
 - Each **❌ Unmapped** item is a **P0** finding. Title: "BRD-N not covered by PRD".
 - Each **⚠️ Partial** item is a **P1** finding by default. Upgrade to P0 if the partial coverage involves a compliance, security, or contractual requirement.
 
-The finding's "Recommended fix" should point to the PRD section that *should* address the gap, or recommend adding a new section.
+The finding's "Recommended fix" should point to the PRD section that _should_ address the gap, or recommend adding a new section.
 
 ### Step 5 — Reverse check (optional but recommended)
 
-After mapping BRD → PRD, do the reverse: scan the PRD for major requirements that *don't* trace to any BRD item. These are "PRD-only" requirements.
+After mapping BRD → PRD, do the reverse: scan the PRD for major requirements that _don't_ trace to any BRD item. These are "PRD-only" requirements.
 
 PRD-only requirements aren't automatically wrong — the PM may have legitimately added scope based on user research or technical necessity. But they should have a clear rationale.
 
 - PRD-only requirement with clear stated rationale → not a finding
 - PRD-only requirement with no stated rationale → **P1** finding under Traceability dimension
-- PRD-only requirement that *contradicts* a BRD item → **P0** under Logic & Consistency
+- PRD-only requirement that _contradicts_ a BRD item → **P0** under Logic & Consistency
 
 ---
 
@@ -59,11 +59,13 @@ PRD-only requirements aren't automatically wrong — the PM may have legitimatel
 Include the full coverage table in the Review Report's BRD Coverage Map section. Show all rows including the ✅ ones — completeness is part of the value.
 
 Coverage percentage formula:
+
 ```
 Coverage % = (Mapped items / Total BRD items) × 100
 ```
 
 Partial counts as half:
+
 ```
 Effective coverage = (Mapped + 0.5 × Partial) / Total × 100
 ```

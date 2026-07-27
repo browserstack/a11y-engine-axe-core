@@ -19,11 +19,11 @@ Where is this code running?
 
 ## Entry points
 
-| Context | File | Example |
-|---|---|---|
-| Browser | `a11y-engine-core/lib/core/utils/eds-utils.js` (class `EDSUtils`) | `EDSUtils.createEDSEvent({eventType, payload})` |
-| Server — standard | `ip-protection/utils/logger.js` (winston + chitragupta wrapper) | `logger.log({kind: 'WORKER_TYPE_B1_SCAN_TIMEOUT', action: 'ERROR', f0: userId, f1: scanId}).error('...')` |
-| Server — metrics | `ip-protection/utils/eds-utils.js` (class `EDSUtils`) | `new EDSUtils(debugEventTypes.B1_WORKER, scanId).sendATRuleLatency(rule, ms)` |
+| Context           | File                                                              | Example                                                                                                   |
+| ----------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Browser           | `a11y-engine-core/lib/core/utils/eds-utils.js` (class `EDSUtils`) | `EDSUtils.createEDSEvent({eventType, payload})`                                                           |
+| Server — standard | `ip-protection/utils/logger.js` (winston + chitragupta wrapper)   | `logger.log({kind: 'WORKER_TYPE_B1_SCAN_TIMEOUT', action: 'ERROR', f0: userId, f1: scanId}).error('...')` |
+| Server — metrics  | `ip-protection/utils/eds-utils.js` (class `EDSUtils`)             | `new EDSUtils(debugEventTypes.B1_WORKER, scanId).sendATRuleLatency(rule, ms)`                             |
 
 ## Log-kind namespace
 
@@ -53,6 +53,7 @@ EDS events are silently rejected when the payload doesn't match the expected sch
 ## EDS latency events (Type C lane)
 
 `workerC.js` emits in its `finally` block:
+
 - `a11y_engine_scan`
 - `percy_exec_latency`
 - `a11y_api_latency`
@@ -61,6 +62,7 @@ EDS events are silently rejected when the payload doesn't match the expected sch
 - `type_c_worker_queue_size`
 
 Plus from client `performanceData`:
+
 - `domCaptureTime`
 - `resourceCaptureTime`
 - `totalTimeWithAssetUploading`

@@ -27,7 +27,7 @@ You are a senior engineer on the BrowserStack a11y-engine (Spectra) team. You im
 
 ## Capabilities
 
-You declare *what* you can do here; the *how* lives in skill files. Delegate to skills rather than inlining their workflows.
+You declare _what_ you can do here; the _how_ lives in skill files. Delegate to skills rather than inlining their workflows.
 
 - Read and understand any package in this repo. Routinely cross-reference `a11y-engine-core/lib/core/base/constants.js`, `ip-protection/utils/middleware.js`, `ip-protection/utils/bullmq.js`, `ip-protection/config/constants.js`, and `ip-protection/controllers/apiClient.js`.
 - Trace a scan from extension → `ip-protection` → Percy → AI webhook → consolidation without consulting external docs.
@@ -78,13 +78,13 @@ When given a task:
 
 ## Source-of-truth references
 
-| Topic | File |
-|---|---|
-| Worker-based rule taxonomy + AI fan-out | `knowledge/docs/flows/rule-types.md` |
-| End-to-end scan lifecycle | `knowledge/docs/flows/scan-lifecycle.md` |
-| Type C pipeline (Percy + dom-forge-core) | `knowledge/docs/flows/dom-capture.md` |
-| Queues, dispatch, lock durations | `knowledge/docs/flows/workers.md` |
-| Redis keys, TTLs, S3 paths | `knowledge/docs/flows/storage.md` |
-| Auth middlewares | `knowledge/docs/flows/auth.md` |
-| In-repo versioning patterns | `rules/database-migrations.md` |
-| Per-package rules | `rules/api-design.md`, `rules/frontend-components.md` |
+| Topic                                    | File                                                  |
+| ---------------------------------------- | ----------------------------------------------------- |
+| Worker-based rule taxonomy + AI fan-out  | `knowledge/docs/flows/rule-types.md`                  |
+| End-to-end scan lifecycle                | `knowledge/docs/flows/scan-lifecycle.md`              |
+| Type C pipeline (Percy + dom-forge-core) | `knowledge/docs/flows/dom-capture.md`                 |
+| Queues, dispatch, lock durations         | `knowledge/docs/flows/workers.md`                     |
+| Redis keys, TTLs, S3 paths               | `knowledge/docs/flows/storage.md`                     |
+| Auth middlewares                         | `knowledge/docs/flows/auth.md`                        |
+| In-repo versioning patterns              | `rules/database-migrations.md`                        |
+| Per-package rules                        | `rules/api-design.md`, `rules/frontend-components.md` |

@@ -9,16 +9,16 @@ expected (e.g. AI never enabled) write "not enabled / expected absence" rather t
 
 🕒 **Timeline** — <first event ts> → <last event ts> UTC (<duration>; <n> EDS events + <m> CG log lines), found in the <N>-day window. <One-line context note if relevant: internal group, test pages, window auto-widened, etc.>
 
-| Lane | Seen | Status | Notes |
-|---|---|---|---|
-| A (`SCAN_RUN`) | ✅/⚠️/— <count> | <status> | <latency / per-page detail> |
-| Asset capture | ✅/⚠️ <count> | <status — flag "SUCCESS with buried runtime error" explicitly> | <which page failed, if any> |
-| B1 (`ADVANCE_SCAN_RUN`) | ✅/⚠️ <count> | <status> | <latency range> |
-| B2 (`ADVANCE_SCAN_RUN_WORKER`) | ✅/⚠️ | <status> | <CG kinds + timestamps: WORKER_TYPE_B2_EXECUTION_COMPLETE, merge pass> |
-| C (`ADVANCE_SCAN_RUN_DOMFORGE`) | ✅/⚠️ <n> events, <k> of <total> pages | <status per batch> | <which pages/batches missing or failed> |
-| AI dispatch | <PREPROCESS_AND_SEND_AI_REQUEST_CONTROLLER seen? + ts> | — | <webhooks returned? lost-webhook?> |
-| AI (`ADVANCE_SCAN_RUN_AI`) | <count or — > | <statuses> | <PARTIAL_SUCCESS noted explicitly> |
-| AI HTML / custom elements | <seen or — > | <status> | |
+| Lane                            | Seen                                                   | Status                                                         | Notes                                                                  |
+| ------------------------------- | ------------------------------------------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| A (`SCAN_RUN`)                  | ✅/⚠️/— <count>                                        | <status>                                                       | <latency / per-page detail>                                            |
+| Asset capture                   | ✅/⚠️ <count>                                          | <status — flag "SUCCESS with buried runtime error" explicitly> | <which page failed, if any>                                            |
+| B1 (`ADVANCE_SCAN_RUN`)         | ✅/⚠️ <count>                                          | <status>                                                       | <latency range>                                                        |
+| B2 (`ADVANCE_SCAN_RUN_WORKER`)  | ✅/⚠️                                                  | <status>                                                       | <CG kinds + timestamps: WORKER_TYPE_B2_EXECUTION_COMPLETE, merge pass> |
+| C (`ADVANCE_SCAN_RUN_DOMFORGE`) | ✅/⚠️ <n> events, <k> of <total> pages                 | <status per batch>                                             | <which pages/batches missing or failed>                                |
+| AI dispatch                     | <PREPROCESS_AND_SEND_AI_REQUEST_CONTROLLER seen? + ts> | —                                                              | <webhooks returned? lost-webhook?>                                     |
+| AI (`ADVANCE_SCAN_RUN_AI`)      | <count or — >                                          | <statuses>                                                     | <PARTIAL_SUCCESS noted explicitly>                                     |
+| AI HTML / custom elements       | <seen or — >                                           | <status>                                                       |                                                                        |
 
 🚧 **Blocked gate (inferred)** — **<gate name / "none — all lanes reported">**. <2–3 sentences of evidence: which CG kinds present/absent (API_SCAN_COMPLETE, REDIS_SCAN_COMPLETE), what the silence after <ts> means, "failed" vs "stuck" distinction.>
 
@@ -33,8 +33,10 @@ expected (e.g. AI never enabled) write "not enabled / expected absence" rather t
 
 🔎 **CG follow-up** — <what was already queried: index pattern, time range, line count, "all info-level" or quoted warn/error lines>. UI signatures if digging further:
 ```
-log.custom.f1: <scopeKey>*
+
+log.custom.f1: <scopeKey>\*
 log.kind: <kinds tailored to the blocked gate>
+
 ```
 
 ✅ **Next steps for the human**

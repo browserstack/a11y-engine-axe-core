@@ -1,9 +1,10 @@
 <!-- Version: 2026-07-07 | Source: @browserstack/ai-harness | Do not remove this header -->
+
 # Tech Spec review report template
 
 The reviewer writes this exact structure to `docs/prd/<slug>-tech-spec-review.md`. Fill every placeholder; never emit the literal angle-bracket text.
 
-````markdown
+```markdown
 # Tech Spec Review: <feature name, from the Tech Spec title>
 
 **Tech Spec:** <TECH_SPEC_PATH> | **PRD:** <PRD_PATH> | **Date:** <YYYY-MM-DD>
@@ -35,16 +36,16 @@ The reviewer writes this exact structure to `docs/prd/<slug>-tech-spec-review.md
 
 ## Scorecard
 
-| Dimension | Verdict |
-|---|---|
-| Altitude | <pass / findings> |
+| Dimension                        | Verdict           |
+| -------------------------------- | ----------------- |
+| Altitude                         | <pass / findings> |
 | Grounding and precedent validity | <pass / findings> |
-| Contract integrity | <pass / findings> |
-| Failure and Edge Cases | <pass / findings> |
-| Key decisions | <pass / findings> |
-| Requirement fidelity | <pass / findings> |
-| Open items | <pass / findings> |
-````
+| Contract integrity               | <pass / findings> |
+| Failure and Edge Cases           | <pass / findings> |
+| Key decisions                    | <pass / findings> |
+| Requirement fidelity             | <pass / findings> |
+| Open items                       | <pass / findings> |
+```
 
 ## Output principles
 

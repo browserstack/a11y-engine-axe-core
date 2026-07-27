@@ -4,18 +4,18 @@
 
 ## Roles and defaults
 
-| Role | Stage | Kind | Default provider |
-|---|---|---|---|
-| `prd_author` | 2 Author PRD | skill | `stack:prd-create` |
-| `prd_review` | 3 Review PRD | skill | `stack:prd-review` |
-| `tech_spec` | 4 Tech Spec | skill | `stack:tech-spec` |
-| `tech_spec_review` | 4 Tech Spec (review sub-step) | skill | `stack:tech-spec-review` |
-| `backend` | 5 Implement (backend) | agent | `stack:backend-builder` |
-| `frontend` | 5 Implement (frontend) | skill | `stack:intake` (Plumb) |
-| `qa` | 5 Implement (QA tests) | agent | `stack:qa-test-author` |
-| `design_review` | 7 Design review | skill | `stack:design-review` |
-| `open_pr` | 7 Open PR (backend/general) | skill | `stack:open-pr` |
-| `code_review` | 7 Code review of opened PR(s) | skill | `stack:pr-review` (single-repo) / `stack:workspace-pr-review` (workspace-root) |
+| Role               | Stage                         | Kind  | Default provider                                                               |
+| ------------------ | ----------------------------- | ----- | ------------------------------------------------------------------------------ |
+| `prd_author`       | 2 Author PRD                  | skill | `stack:prd-create`                                                             |
+| `prd_review`       | 3 Review PRD                  | skill | `stack:prd-review`                                                             |
+| `tech_spec`        | 4 Tech Spec                   | skill | `stack:tech-spec`                                                              |
+| `tech_spec_review` | 4 Tech Spec (review sub-step) | skill | `stack:tech-spec-review`                                                       |
+| `backend`          | 5 Implement (backend)         | agent | `stack:backend-builder`                                                        |
+| `frontend`         | 5 Implement (frontend)        | skill | `stack:intake` (Plumb)                                                         |
+| `qa`               | 5 Implement (QA tests)        | agent | `stack:qa-test-author`                                                         |
+| `design_review`    | 7 Design review               | skill | `stack:design-review`                                                          |
+| `open_pr`          | 7 Open PR (backend/general)   | skill | `stack:open-pr`                                                                |
+| `code_review`      | 7 Code review of opened PR(s) | skill | `stack:pr-review` (single-repo) / `stack:workspace-pr-review` (workspace-root) |
 
 `code_review` is the one mode-dependent default: in workspace-root mode (the common case for harness users) it defaults to `stack:workspace-pr-review` (one root run that orchestrates the member-repo reviews); in single-repo mode it defaults to `stack:pr-review` (run per PR). An explicit `dev.providers.code_review` value overrides both.
 
@@ -26,9 +26,9 @@ Set any subset under a `dev.providers` map in the repo's `bstack-ai-harness.yml`
 ```yaml
 dev:
   providers:
-    prd_review: [team:my-prd-reviewer, stack:prd-review]  # list: first installed wins; gated mode offers the choice
-    qa: team:contract-test-author                          # single provider
-    design_review: off                                     # disable this stage
+    prd_review: [team:my-prd-reviewer, stack:prd-review] # list: first installed wins; gated mode offers the choice
+    qa: team:contract-test-author # single provider
+    design_review: off # disable this stage
 ```
 
 A provider value may be:
@@ -56,13 +56,13 @@ Providers swap the built-in stages. Two further keys make the pipeline extendabl
 
 ```yaml
 dev:
-  providers: { ... }                    # per-stage swaps (above)
-  defaults:                             # team defaults seeded into the stage_plan
-    review_depth: standard              # none | scan | standard | full
+  providers: { ... } # per-stage swaps (above)
+  defaults: # team defaults seeded into the stage_plan
+    review_depth: standard # none | scan | standard | full
     mode_per_track: { backend: full, frontend: quick }
-    needs_qa_tests: true                # pin instead of classifying
+    needs_qa_tests: true # pin instead of classifying
     needs_design_review: false
-  hooks:                                # extra providers at stage boundaries
+  hooks: # extra providers at stage boundaries
     pre-author-prd: [team:requirements-interview]
     post-prs: [team:ticket-sync, { name: team:staging-deploy, gating: true }]
 ```

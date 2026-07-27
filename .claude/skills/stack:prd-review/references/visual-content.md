@@ -1,6 +1,6 @@
 # Reading visual content (images & Figma)
 
-PRDs frequently put load-bearing detail — UI layouts, user flows, state machines, error states, even acceptance criteria — inside **embedded images** or **Figma frames** rather than prose. Treating those as opaque gaps under-reviews the PRD. This procedure tells you to *retrieve and read* that content before scoring, and to flag a gap only when retrieval genuinely fails or the spec exists *only* in the visual.
+PRDs frequently put load-bearing detail — UI layouts, user flows, state machines, error states, even acceptance criteria — inside **embedded images** or **Figma frames** rather than prose. Treating those as opaque gaps under-reviews the PRD. This procedure tells you to _retrieve and read_ that content before scoring, and to flag a gap only when retrieval genuinely fails or the spec exists _only_ in the visual.
 
 Run this during **Phase 2 (first read)**, after the text pass and before scoring.
 
@@ -38,11 +38,11 @@ Do **not** guess what an image "probably" shows. If you retrieved it, review wha
 Reading the visual does **not** dissolve every concern. Raise a finding when:
 
 - **Unretrievable** — the image/Figma can't be fetched (permission, link rot, auth, unreadable). Severity scales with how core the content is: a blocked design for a core flow is **P0/P1**; a missing decorative asset is not a finding.
-- **Spec lives *only* in the visual** — the requirement is shown in the image/Figma but never stated in text. This is a real defect: a developer or QA reading the document cannot act on a picture alone, and Figma frames drift from the written spec. Flag as **P1** (Clarity/Completeness) with the fix "restate the behavior in prose; keep the visual as the reference, not the source of truth."
+- **Spec lives _only_ in the visual** — the requirement is shown in the image/Figma but never stated in text. This is a real defect: a developer or QA reading the document cannot act on a picture alone, and Figma frames drift from the written spec. Flag as **P1** (Clarity/Completeness) with the fix "restate the behavior in prose; keep the visual as the reference, not the source of truth."
 - **Visual contradicts the text** — e.g. the prose says 3 states, the mockup shows 4. Flag as **P0/P1** (Logic & Consistency).
 
 ## Output hygiene
 
-- **Cite what you saw.** When a finding rests on a visual, say so: "the Figma flow (frame *Checkout-error*) shows a retry state the text never mentions."
+- **Cite what you saw.** When a finding rests on a visual, say so: "the Figma flow (frame _Checkout-error_) shows a retry state the text never mentions."
 - **Don't over-read low-fidelity images.** If an image is too small/blurry to read confidently, say that and treat it as unretrievable rather than inventing detail.
 - **Note coverage in the report.** In the executive summary, state which visuals were read and which couldn't be, so the author knows the review actually accounted for the design.

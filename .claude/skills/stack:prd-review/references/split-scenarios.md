@@ -36,20 +36,22 @@ Read the flow and list every dimension along which behavior varies. Example: "Th
 For a flow with N splitting dimensions, build the matrix of all combinations. For the example above:
 
 | Variant | Tier | Platform | Specified? |
-|---------|------|----------|------------|
-| V1 | Free | Mobile | ? |
-| V2 | Free | Desktop | ? |
-| V3 | Pro | Mobile | ? |
-| V4 | Pro | Desktop | ? |
+| ------- | ---- | -------- | ---------- |
+| V1      | Free | Mobile   | ?          |
+| V2      | Free | Desktop  | ?          |
+| V3      | Pro  | Mobile   | ?          |
+| V4      | Pro  | Desktop  | ?          |
 
 ### Step 3 — Check each variant
 
 For each variant, verify the PRD specifies:
+
 - What the user sees
 - What they can do
 - What happens on the key actions (success and failure)
 
 Mark each cell:
+
 - ✅ Fully specified
 - ⚠️ Partially specified (mentioned but missing details)
 - ❌ Not specified
@@ -57,6 +59,7 @@ Mark each cell:
 ### Step 4 — Generate findings
 
 For each ❌ or ⚠️:
+
 - **Core flow** (login, checkout, primary use case): **P0**
 - **Important but secondary flow**: **P1**
 - **Edge or rare flow** (e.g., suspended-user behavior on a marketing page): **P2**
@@ -65,7 +68,7 @@ For each ❌ or ⚠️:
 
 ## Common omissions to watch for
 
-These variants are *frequently* missed in PRDs. Always check them explicitly:
+These variants are _frequently_ missed in PRDs. Always check them explicitly:
 
 - **The empty state** — what does a brand-new account see before any data exists?
 - **The "almost full" state** — what happens near a quota limit (e.g., 9 of 10 items used)?
@@ -81,7 +84,7 @@ These variants are *frequently* missed in PRDs. Always check them explicitly:
 
 If the PRD says "behavior is identical across all variants" for some dimension, that's fine — note it as explicitly addressed.
 
-If the PRD is silent on a dimension that *clearly* matters (e.g., a billing feature with no mention of free-tier behavior), don't try to guess what the author meant. File the finding and let them answer.
+If the PRD is silent on a dimension that _clearly_ matters (e.g., a billing feature with no mention of free-tier behavior), don't try to guess what the author meant. File the finding and let them answer.
 
 ---
 

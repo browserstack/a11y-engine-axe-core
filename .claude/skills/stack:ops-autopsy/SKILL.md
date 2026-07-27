@@ -1,25 +1,35 @@
 ---
 name: stack:ops-autopsy
 description: "Read-only per-scan ops autopsy for a11y-engine (Spectra). Resolves any handle on a scan — scopeKey, report-id, run-id, or user/group/url/error-signature pivots — into a lifecycle verdict: lane timeline (A/B1/B2/C/AI/asset-capture) from EDS in BigQuery, inferred blocked EOF gate, error buckets, and exact CG (Chitragupta) log signatures. Diagnostic only; the one optional write is a Slack reply. Boundary: aggregate dashboards / L0-L1-L2 trends → stack:a11y-metrics; Zenduty alert triage + deploy correlation → stack:debug-alert. Triggers: 'ops autopsy', 'check scopeKey', 'why is this scan stuck', 'eof not received', 'snapshots missing for scan', '0 issues scan', 'check scans for user/group/site X', 'how frequent is this error', 'resolve report-id', 'resolve run-id'."
-argument-hint: "<scopeKey> [<scopeKey>...] | --report-id <id> | --run-id <uuid> | --user <userId> | --group <groupId> | --url <host> | --error <signature> [--days N] [--post <slack-thread-url>]"
-allowed-tools: [Read, Glob, Grep, Bash(bq:*), Bash(date:*), mcp__elasticsearch__search, mcp__claude_ai_Slack__slack_read_thread, mcp__claude_ai_Slack__slack_send_message]
+argument-hint: '<scopeKey> [<scopeKey>...] | --report-id <id> | --run-id <uuid> | --user <userId> | --group <groupId> | --url <host> | --error <signature> [--days N] [--post <slack-thread-url>]'
+allowed-tools:
+  [
+    Read,
+    Glob,
+    Grep,
+    Bash(bq:*),
+    Bash(date:*),
+    mcp__elasticsearch__search,
+    mcp__claude_ai_Slack__slack_read_thread,
+    mcp__claude_ai_Slack__slack_send_message
+  ]
 ---
 
 # stack:ops-autopsy — per-scan ops query desk for a11y-engine (Spectra)
 
 Turn any handle on a scan into a verdict: reconstruct the lane timeline from **EDS events in
 BigQuery** (every lane emits a distinct `kind`), infer which EOF gate stalled — gate state is
-*inferred* from which lanes reported, no prod Redis needed — and hand the on-call exact
+_inferred_ from which lanes reported, no prod Redis needed — and hand the on-call exact
 **CG (Chitragupta) log signatures** (2-week server-log retention). Every entry point funnels
 into that per-scan autopsy.
 
 **Scope — hand off, don't widen:**
 
-| Query | Skill |
-|---|---|
-| "check scopeKey X", stuck/EOF-delayed build, 0-issue scan, missing snapshots, "scans for user/group/site X", "how often is this error" | **this skill** |
-| p90/p99, failure-rate trend, L0/L1/L2 breach, "who's driving latency" | `stack:a11y-metrics` |
-| a Zenduty alert fired, "is this a deploy regression" | `stack:debug-alert` |
+| Query                                                                                                                                  | Skill                |
+| -------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| "check scopeKey X", stuck/EOF-delayed build, 0-issue scan, missing snapshots, "scans for user/group/site X", "how often is this error" | **this skill**       |
+| p90/p99, failure-rate trend, L0/L1/L2 breach, "who's driving latency"                                                                  | `stack:a11y-metrics` |
+| a Zenduty alert fired, "is this a deploy regression"                                                                                   | `stack:debug-alert`  |
 
 All SQL lives in `references/queries.sql`; the output skeleton in `references/output-card.md`;
 the BQ column map in `stack:a11y-metrics/references/schema.md` (read it before writing any query —
@@ -46,7 +56,7 @@ it owns the `$.arr` wrapper, lane↔`kind` aliases, error buckets, and internal 
 Run the `TIMELINE` query — **one job** carrying timeline + error detail + asset-capture rows
 (each BQ job is ~10–20s; do not split). Invocation command is at the top of `queries.sql`.
 
-- **Zero rows → auto-widen ONCE** to `INTERVAL 14 DAY` (matches CG retention) before concluding "no data". Still zero → that *is* the verdict (Step 3).
+- **Zero rows → auto-widen ONCE** to `INTERVAL 14 DAY` (matches CG retention) before concluding "no data". Still zero → that _is_ the verdict (Step 3).
 - **Error detail** comes from `errors_raw` on `has_errors` rows — no second query.
 - Watch for `ASSET_CAPTURE` with `status = SUCCESS` but a populated error bucket (failure buried in `runtime_errors`).
 - If a JSON path errors, re-check schema.md and show the user the failing SQL + your fix — don't guess silently.
@@ -58,37 +68,37 @@ Expected lanes for an advanced scan: `SCAN_RUN` (A), `ADVANCE_SCAN_RUN` (B1),
 `ADVANCE_SCAN_RUN_AI` / `POSTPROCESS_AI_HTML_WORKER`. Map each to the EOF gate it drains
 (`redis-utils.js` getEOFStatus ~L1069):
 
-| Lane | EOF gate |
-|---|---|
-| B1 | `<scopeKey>@typeB1` (drains to empty) |
-| B2 | emits final `eof` batch to WebA11y |
-| C | `<scopeKey>@typeC` (drains to single 'null') |
-| AI | `eof_ai@<scopeKey>`, `eof@run@ai@<scopeKey>` |
-| AI HTML | `aihtml_eof@<scopeKey>` |
-| Custom elements | `eof_ai@ce@<scopeKey>`, `eof@run@ce@<scopeKey>` |
-| Asset capture | gates C indirectly (no proxy map → no Percy run) |
+| Lane            | EOF gate                                         |
+| --------------- | ------------------------------------------------ |
+| B1              | `<scopeKey>@typeB1` (drains to empty)            |
+| B2              | emits final `eof` batch to WebA11y               |
+| C               | `<scopeKey>@typeC` (drains to single 'null')     |
+| AI              | `eof_ai@<scopeKey>`, `eof@run@ai@<scopeKey>`     |
+| AI HTML         | `aihtml_eof@<scopeKey>`                          |
+| Custom elements | `eof_ai@ce@<scopeKey>`, `eof@run@ce@<scopeKey>`  |
+| Asset capture   | gates C indirectly (no proxy map → no Percy run) |
 
 Core inference: a lane **absent** with its upstream present → that lane's gate is the stall.
 Then map signals to named causes, ranked High/Med/Low. Check
 `.claude/knowledge/docs/errors/ERROR-CATALOG.md` and `.claude/knowledge/domain/learnings.md`
 for a documented match and cite the section.
 
-| Signal | Inference / named cause |
-|---|---|
-| `ASSET_CAPTURE` FAILURE — 413 / `zipSize=` | Oversized asset zip; 413 not retried (a11y-engine-core devtools/helper.js). Proxy map never built ⇒ missing snapshots AND missing Type C at once. |
-| `script timeout` during asset capture | Asset capture exceeded injected-script budget; proxy map skipped (same downstream as above) |
-| B2 FAILURE then silence | sendFailedResponse (`worker/workerB2.js`) skips `markTaskCompleted` → EOF stall |
-| `PERCY_RENDERER_ERROR` `"Timeout: execution expired"` | Percy render timeout (heavy page / gradients) |
-| B1 `"Cannot read properties of null (reading 'outerHTML')"` | AXE-3491 family null-node bug |
-| `instrumentation_errors` `websocket error` + B1 lane absent | socket.io ingress dropped; B1 silently lost (no DOM chunks) while HTTP `/build-proxy-map` completes A/C/B2 and the scan finalises — partial report, not a stall |
-| AI lanes done, no EOF at WebA11y | `consolidation_source@<scopeKey>` orphan — cleanup only runs for altText (`helpers/preprocessAndIntegrateAiImageApi.js`) |
-| `PREPROCESS_AND_SEND_AI_REQUEST_CONTROLLER` seen but AI lane silent | Lost AI webhook |
-| All lanes SUCCESS but WebA11y reports no `eof=true` | Batching desync or send failure → CG logs (Step 4) |
-| No rows even after 14-day auto-widen | Wrong scopeKey / scan never reached ip-protection / older than retention |
+| Signal                                                              | Inference / named cause                                                                                                                                         |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ASSET_CAPTURE` FAILURE — 413 / `zipSize=`                          | Oversized asset zip; 413 not retried (a11y-engine-core devtools/helper.js). Proxy map never built ⇒ missing snapshots AND missing Type C at once.               |
+| `script timeout` during asset capture                               | Asset capture exceeded injected-script budget; proxy map skipped (same downstream as above)                                                                     |
+| B2 FAILURE then silence                                             | sendFailedResponse (`worker/workerB2.js`) skips `markTaskCompleted` → EOF stall                                                                                 |
+| `PERCY_RENDERER_ERROR` `"Timeout: execution expired"`               | Percy render timeout (heavy page / gradients)                                                                                                                   |
+| B1 `"Cannot read properties of null (reading 'outerHTML')"`         | AXE-3491 family null-node bug                                                                                                                                   |
+| `instrumentation_errors` `websocket error` + B1 lane absent         | socket.io ingress dropped; B1 silently lost (no DOM chunks) while HTTP `/build-proxy-map` completes A/C/B2 and the scan finalises — partial report, not a stall |
+| AI lanes done, no EOF at WebA11y                                    | `consolidation_source@<scopeKey>` orphan — cleanup only runs for altText (`helpers/preprocessAndIntegrateAiImageApi.js`)                                        |
+| `PREPROCESS_AND_SEND_AI_REQUEST_CONTROLLER` seen but AI lane silent | Lost AI webhook                                                                                                                                                 |
+| All lanes SUCCESS but WebA11y reports no `eof=true`                 | Batching desync or send failure → CG logs (Step 4)                                                                                                              |
+| No rows even after 14-day auto-widen                                | Wrong scopeKey / scan never reached ip-protection / older than retention                                                                                        |
 
 ## Step 4 — CG (Chitragupta) logs: query directly, fall back to signatures
 
-EDS shows *what* reported; CG logs show *why*. Field conventions (`ip-protection/utils/logger.js`
+EDS shows _what_ reported; CG logs show _why_. Field conventions (`ip-protection/utils/logger.js`
 customLogFormatter): `log.kind` = event kind, `log.custom.f0` = userId, `log.custom.f1` = scopeKey
 — sometimes bare (number OR string), sometimes `<scopeKey>@<runId>`. **Match on the scopeKey
 alone; never rely on the `@runId` suffix.**
@@ -99,7 +109,7 @@ alone; never rely on the `@runId` suffix.**
    ```
    chitragupta-a11y-engine*-serverv*,chitragupta_*:chitragupta-a11y-engine*-serverv*
    ```
-   The `chitragupta_*:` half is remote-cluster (CCS) syntax — CG migrates indices to remote clusters within ~a day, so a local-only wildcard returns 0 hits for older windows *even though the data exists* (verified 2026-06-10: local-only 0 vs CCS 57). **A 0-hit here is NOT a retention gap — never flag infra from a local-only search.** No dedicated worker index — worker lines land in `server` too.
+   The `chitragupta_*:` half is remote-cluster (CCS) syntax — CG migrates indices to remote clusters within ~a day, so a local-only wildcard returns 0 hits for older windows _even though the data exists_ (verified 2026-06-10: local-only 0 vs CCS 57). **A 0-hit here is NOT a retention gap — never flag infra from a local-only search.** No dedicated worker index — worker lines land in `server` too.
 2. **Never list indices or pick a single dated index by name** — rollover dates in index names don't match log timestamps. Always search the full pattern with an `@timestamp` range bound to scan start/end **± 1 hour** (Step 2 gave you the time).
 3. **One search:** `size: 100`, sort `@timestamp` asc, bool with `query_string: "<scopeKey>"` + range filter; `_source` = `@timestamp, log.kind, log.message, log.custom.f0, log.custom.f1, log.level`. Scan `log.level` client-side for warn/error — no separate `must_not level:info` query. `track_total_hits: true` for counts.
    - `log.kind` is **text** — use `match`, never `term` (term → 0 hits).

@@ -60,6 +60,7 @@ Apply the bump, matching how the dependency is declared:
   // package.json
   "overrides": { "<PKG>": "<TARGET>" }
   ```
+
   ```bash
   npm install
   ```
@@ -108,7 +109,7 @@ gh pr create --repo browserstack/a11y-engine-axe-core --base "$AXE_DEFAULT" \
 AXE_CORE_BULK_SHA=$(git rev-parse HEAD)   # PRE-MERGE branch head — used for review only; re-point after merge (Phase 8)
 ```
 
-> **`AXE_CORE_BULK_SHA` is the unmerged branch tip.** It is fine for the a11y-engine PR's *review* pass, but
+> **`AXE_CORE_BULK_SHA` is the unmerged branch tip.** It is fine for the a11y-engine PR's _review_ pass, but
 > if the axe-core PR later squash/rebase-merges, its default branch gets a **different** commit. So the
 > submodule must be **re-pointed at the merged commit before the a11y-engine bulk PR merges** — see Phase 8
 > ordering in SKILL.md. Never leave a11y-engine pointing at a commit that isn't on axe-core's default branch.
@@ -126,7 +127,7 @@ done
 ```
 
 If Phase 4a ran, point the submodule at the axe-core bulk commit **for the review pass** (Phase 8 re-points it
-to the *merged* commit before this PR merges — see the 4a caveat above):
+to the _merged_ commit before this PR merges — see the 4a caveat above):
 
 ```bash
 git -C axe-core fetch origin
@@ -165,7 +166,7 @@ EOF
 ## resolve_lockfile_conflict
 
 Merging multiple Dependabot branches conflicts almost only in lockfiles. **Never blanket `--ours` a
-`package.json`** — that silently discards the incoming branch's version bump. Resolve by keeping *both* deps'
+`package.json`** — that silently discards the incoming branch's version bump. Resolve by keeping _both_ deps'
 intent in `package.json`, then regenerate the lock:
 
 ```bash

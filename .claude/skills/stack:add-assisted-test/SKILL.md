@@ -1,7 +1,7 @@
 ---
 name: stack:add-assisted-test
 description: Add or modify an Assisted Test (semi-automated WCAG check via browser extension).
-argument-hint: "<category> <test-name> [version]"
+argument-hint: '<category> <test-name> [version]'
 ---
 
 # Add Assisted Test
@@ -29,6 +29,7 @@ ip-protection/assistedTests/<category>/views/<view-name>.js
 ```
 
 Each view exports:
+
 - `render(context, params)` — returns UI data for devtools
 - `onNext(context, payload, params)` — processes user response, returns next view
 
@@ -43,6 +44,7 @@ Register in `views-v<N>.js` map file.
 ### 4. Define Rule Info
 
 Each rule needs in constants:
+
 - `title`, `description`
 - `tags` (WCAG success criteria)
 - `howToFix`

@@ -6,7 +6,7 @@
 - Don't generate commented-out code, unused imports, or placeholder TODOs
 - Handle errors explicitly — don't swallow exceptions or use empty catch blocks
 - Avoid N+1 queries, unnecessary loops, unbounded data fetching
-- Prefer meaningful names over comments. Add comments only when they explain *why*, not *what*: don't narrate obvious code, restate the line above, or add banner/section-divider comments, and keep the ones you write short
+- Prefer meaningful names over comments. Add comments only when they explain _why_, not _what_: don't narrate obvious code, restate the line above, or add banner/section-divider comments, and keep the ones you write short
 - Keep functions focused — single responsibility, minimal side effects
 
 ## Code Review

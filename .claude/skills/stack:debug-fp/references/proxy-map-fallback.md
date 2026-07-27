@@ -30,7 +30,7 @@ Otherwise stay on path A (live URL via Claude-in-Chrome).
 
 Ask the user to drop their `proxy_map.json` at `mini-percy-renderer/proxy_map.json`. Don't overwrite it with a placeholder; if one is already there from a previous investigation, check with the user before replacing.
 
-**Never read `proxy_map.json` in full.** It's an origin&rarr;S3 URL map &mdash; typically hundreds to low-thousands of entries, each a long signed CloudFront URL. Reading it whole can easily burn 10&ndash;50k tokens for zero FP-analysis value; the file's *content* is irrelevant to the rule being debugged. If inspection is needed (verifying the map covers the target host, sanity-checking asset freshness), use `Read` with `limit: 20` or `Grep` for a specific origin. Rely on jackproxy's startup log (which prints resolved proxymap-domains on one line) as the primary sanity check that the map parsed and covers the target host.
+**Never read `proxy_map.json` in full.** It's an origin&rarr;S3 URL map &mdash; typically hundreds to low-thousands of entries, each a long signed CloudFront URL. Reading it whole can easily burn 10&ndash;50k tokens for zero FP-analysis value; the file's _content_ is irrelevant to the rule being debugged. If inspection is needed (verifying the map covers the target host, sanity-checking asset freshness), use `Read` with `limit: 20` or `Grep` for a specific origin. Rely on jackproxy's startup log (which prints resolved proxymap-domains on one line) as the primary sanity check that the map parsed and covers the target host.
 
 ### Step 2 &mdash; start jackproxy (background)
 
@@ -75,7 +75,7 @@ kill $(lsof -ti:9222)   # chrome-launcher Chrome
 kill $(lsof -ti:8080)   # jackproxy
 ```
 
-**Expected exit codes after `kill`:** both processes exit with **143** (128 + SIGTERM 15). If you launched `jackproxy` via `Bash(run_in_background: true)`, the completion notification will read *"failed with exit code 143"* &mdash; that is the normal shutdown, **not** a failure. Only treat exits as errors if the code is something else (e.g. 1 = jackproxy startup error, 2 = launcher bad args), or if the process died *before* you issued the `kill`.
+**Expected exit codes after `kill`:** both processes exit with **143** (128 + SIGTERM 15). If you launched `jackproxy` via `Bash(run_in_background: true)`, the completion notification will read _"failed with exit code 143"_ &mdash; that is the normal shutdown, **not** a failure. Only treat exits as errors if the code is something else (e.g. 1 = jackproxy startup error, 2 = launcher bad args), or if the process died _before_ you issued the `kill`.
 
 When starting `jackproxy` and `launch-proxy-chrome.js` as background tasks, give each a descriptive `description` (e.g. `"jackproxy :8080"`, `"proxy-chrome :9222"`) so the expected 143 notification at teardown is traceable to the right process.
 
@@ -83,17 +83,17 @@ Leave `mini-percy-renderer/proxy_map.json` in place if the user may re-run; othe
 
 ## What works / what doesn't
 
-| Capability | Path A (live) | Path B (proxyMap) |
-|---|---|---|
-| Axe injection + `Runtime.evaluate` port | ✓ | ✓ |
-| B1/B2 rule ports | ✓ | ✓ |
-| Type C nodeData reconstruction | ✓ | ✓ (closer to scan-time input) |
+| Capability                                      | Path A (live)                        | Path B (proxyMap)                                                                   |
+| ----------------------------------------------- | ------------------------------------ | ----------------------------------------------------------------------------------- |
+| Axe injection + `Runtime.evaluate` port         | ✓                                    | ✓                                                                                   |
+| B1/B2 rule ports                                | ✓                                    | ✓                                                                                   |
+| Type C nodeData reconstruction                  | ✓                                    | ✓ (closer to scan-time input)                                                       |
 | Manual steps (click dropdowns, dismiss banners) | ✓ (user does it in Claude-in-Chrome) | ✗ if page JS is disabled; partial if enabled (events may reference missing origins) |
-| Auth-gated pages | user logs in | ✓ (snapshot already captured it) |
-| Geo-blocked pages | ✗ | ✓ |
-| Removed / deleted pages | ✗ | ✓ |
-| Scan-time drift repro | ✗ (shows live state) | ✓ (exact snapshot) |
-| Non-darwin-arm64 hosts | ✓ | ✗ (no binary) |
+| Auth-gated pages                                | user logs in                         | ✓ (snapshot already captured it)                                                    |
+| Geo-blocked pages                               | ✗                                    | ✓                                                                                   |
+| Removed / deleted pages                         | ✗                                    | ✓                                                                                   |
+| Scan-time drift repro                           | ✗ (shows live state)                 | ✓ (exact snapshot)                                                                  |
+| Non-darwin-arm64 hosts                          | ✓                                    | ✗ (no binary)                                                                       |
 
 ## Caveats
 

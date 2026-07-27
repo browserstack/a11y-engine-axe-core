@@ -132,13 +132,13 @@ POST /accept_percy_result         POST /accept_rules_data_percy
 
 ## Non-AI vs AI output endpoints — distinction
 
-| Aspect | `/accept_percy_result` | `/accept_rules_data_percy` |
-|---|---|---|
-| Controller | `acceptResult.js` | `acceptRulesDataPercy.js` |
-| Carries | Already-evaluated Type C rule results (violations, passes, incomplete) | Candidate data needing AI adjudication |
-| Auth | `verifyAPIAuthToken` | `verifyAPIAuthToken` |
-| Idempotency | Via queue semantics | Redis `acceptRules_${type}_${runId}` (optionally per-batch for apiVersion 2) |
-| Downstream | `percyResultsQueue → workerC.js` (sink, not runner) | Calls AI API → async webhook `/ai/webhook*` → appropriate AI queue |
+| Aspect      | `/accept_percy_result`                                                 | `/accept_rules_data_percy`                                                   |
+| ----------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Controller  | `acceptResult.js`                                                      | `acceptRulesDataPercy.js`                                                    |
+| Carries     | Already-evaluated Type C rule results (violations, passes, incomplete) | Candidate data needing AI adjudication                                       |
+| Auth        | `verifyAPIAuthToken`                                                   | `verifyAPIAuthToken`                                                         |
+| Idempotency | Via queue semantics                                                    | Redis `acceptRules_${type}_${runId}` (optionally per-batch for apiVersion 2) |
+| Downstream  | `percyResultsQueue → workerC.js` (sink, not runner)                    | Calls AI API → async webhook `/ai/webhook*` → appropriate AI queue           |
 
 ## What `workerC.js` actually does
 
@@ -155,6 +155,7 @@ Ordering note: Percy can split one scan into multiple Type C response posts (`re
 ## Automation product (preprod only)
 
 Separate route pair lives under `controllers/automation/`:
+
 - `POST /automation/push-proxy-map-to-percy` → `pushProxyMapToPercy.js` — Percy call with a different script bundle (`rule-automation-type-c/developer-scripts/${branchName}/...`); stores `scanId` in Redis (`TYPE_C_AUTOMATION_TTL = 2 d`).
 - `POST /automation/accept_percy_rules_result` → `acceptPercyRulesResult.js` — result ingestion for automation flow.
 
@@ -163,6 +164,7 @@ Preprod-only: both fail with 400 in other environments.
 ## Performance constraints
 
 From `rules/frontend-components.md`:
+
 - No full-tree DOM walks.
 - No nested DOM loops.
 - No repeated `querySelectorAll`.

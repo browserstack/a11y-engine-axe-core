@@ -45,8 +45,8 @@ export updates in place:
 ```yaml
 ---
 title: <feature title>
-confluence_page_id: <id>        # present only after a successful export
-confluence_url: <url>           # present only after a successful export
+confluence_page_id: <id> # present only after a successful export
+confluence_url: <url> # present only after a successful export
 ---
 ```
 

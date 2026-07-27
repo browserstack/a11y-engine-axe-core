@@ -1,6 +1,6 @@
 ---
 paths:
-  - "**"
+  - '**'
 ---
 
 # Versioning Rules
@@ -27,14 +27,14 @@ class CombinedRulesAllV14 extends CombinedRulesAllV13 {
   getRuleFunctionMapping() {
     return {
       ...super.getRuleFunctionMapping(),
-      input_label_name_mismatch: { matcher, check },
+      input_label_name_mismatch: { matcher, check }
     };
   }
 
   getShortenedRuleKey() {
     return {
       ...super.getShortenedRuleKey(),
-      label_content_name_mismatch: 'r45',
+      label_content_name_mismatch: 'r45'
     };
   }
 }

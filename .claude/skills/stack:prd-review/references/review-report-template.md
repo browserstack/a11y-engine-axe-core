@@ -16,7 +16,7 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 
 ## PRD Summary
 
-> A neutral, faithful summary of what this PRD describes — written *before* grading, so the reader understands the document under review. This is orientation, not evaluation: do not pass judgment here, just restate what the PRD says. Keep it to 4-8 lines.
+> A neutral, faithful summary of what this PRD describes — written _before_ grading, so the reader understands the document under review. This is orientation, not evaluation: do not pass judgment here, just restate what the PRD says. Keep it to 4-8 lines.
 
 - **What's being built:** <one or two sentences>
 - **Target users / audience:** <who this is for>
@@ -34,6 +34,7 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 <3-5 sentences. Lead with the verdict. State the single biggest issue. Note what's strong. Be direct — no hedging.>
 
 **At a glance:**
+
 - **P0 findings:** <count>
 - **P1 findings:** <count>
 - **P2 findings:** <count>
@@ -44,17 +45,17 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 
 ## Dimension Scorecard
 
-| # | Dimension | Score | Notes |
-|---|-----------|-------|-------|
-| 1 | Completeness | X/10 | <one-line justification> |
-| 2 | Clarity | X/10 | <one-line justification> |
-| 3 | Logic & Consistency | X/10 | <one-line justification> |
-| 4 | Testability | X/10 | <one-line justification> |
-| 5 | Scope Discipline | X/10 | <one-line justification> |
-| 6 | Edge Cases & Exceptions | X/10 | <one-line justification> |
-| 7 | Dependencies & Risks | X/10 | <one-line justification> |
-| 8 | Traceability | X/10 | <one-line justification> |
-| | **Average** | **X.X/10** | |
+| #   | Dimension               | Score      | Notes                    |
+| --- | ----------------------- | ---------- | ------------------------ |
+| 1   | Completeness            | X/10       | <one-line justification> |
+| 2   | Clarity                 | X/10       | <one-line justification> |
+| 3   | Logic & Consistency     | X/10       | <one-line justification> |
+| 4   | Testability             | X/10       | <one-line justification> |
+| 5   | Scope Discipline        | X/10       | <one-line justification> |
+| 6   | Edge Cases & Exceptions | X/10       | <one-line justification> |
+| 7   | Dependencies & Risks    | X/10       | <one-line justification> |
+| 8   | Traceability            | X/10       | <one-line justification> |
+|     | **Average**             | **X.X/10** |                          |
 
 ---
 
@@ -111,11 +112,11 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 
 > Full audit only. Skip this section otherwise.
 
-| BRD Item | PRD Section | Status | Notes |
-|----------|-------------|--------|-------|
-| BRD-1: <requirement> | §<X.X> | ✅ Mapped | <optional note> |
-| BRD-2: <requirement> | — | ❌ Unmapped | <P0 finding F-XXX> |
-| BRD-3: <requirement> | §<X.X> | ⚠️ Partial | <P1 finding F-XXX> |
+| BRD Item             | PRD Section | Status      | Notes              |
+| -------------------- | ----------- | ----------- | ------------------ |
+| BRD-1: <requirement> | §<X.X>      | ✅ Mapped   | <optional note>    |
+| BRD-2: <requirement> | —           | ❌ Unmapped | <P0 finding F-XXX> |
+| BRD-3: <requirement> | §<X.X>      | ⚠️ Partial  | <P1 finding F-XXX> |
 
 **Coverage:** <X> of <Y> BRD items mapped (<percent>%)
 
@@ -136,6 +137,7 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 **Verdict:** <Ready | Conditionally Ready | Not Ready>
 
 **To reach Ready, the author must:**
+
 1. <required action 1 — typically resolving a specific P0>
 2. <required action 2>
 3. <required action 3>
@@ -146,7 +148,7 @@ Use this template verbatim for the Review Report. Save as `prd-review_<prd-name>
 
 ---
 
-*End of report*
+_End of report_
 ```
 
 ---

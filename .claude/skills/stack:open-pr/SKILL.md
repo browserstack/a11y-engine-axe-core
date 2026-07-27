@@ -3,6 +3,7 @@ name: stack:open-pr
 description: "Open a Draft pull request for the current repo. Use when backend or general (non-frontend) work is ready for a PR; frontend work uses Plumb's stack:ship-pr instead. Fills the repo's PR template when one exists and links the Jira issue when provided."
 allowed-tools: Read, Glob, Bash(git*), Bash(gh*)
 ---
+
 <!-- Version: 2026-06-22 | Source: @browserstack/ai-harness | Do not remove this header -->
 
 # Open a Draft PR

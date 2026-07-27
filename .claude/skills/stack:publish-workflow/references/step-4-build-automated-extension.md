@@ -23,6 +23,7 @@ git merge master
 ```
 
 **Handling merge conflicts** — same rules as Step 3:
+
 - `pnpm-lock.yaml` conflict → `git checkout --theirs pnpm-lock.yaml && git add pnpm-lock.yaml`
 - `apps/accessibility-toolkit-headless/package.json` conflict on `@browserstack/a11y-engine-core` version → resolve by setting it to `<ENGINE_VERSION>`.
 - Any other file → stop and ask user.
@@ -64,19 +65,19 @@ git push origin <AUTOMATED_BRANCH>
 1. Open: <https://minion.browserstack.com/job/QA/job/AccessibilityTeam/job/A11yUploadExtension/build?delay=0sec>
 2. Fill in the form:
 
-| Field | Value | Notes |
-|-------|-------|-------|
-| `ENVIRONMENT` | `preprod` / `regression` / etc. | Default is `regression` — change if needed. One per build. |
-| `ENGINE_VERSION` | `<ENGINE_VERSION>` | Type in |
-| `CREATE_EXTENSION` | **checked** | |
-| `BRANCH_NAME` | `<AUTOMATED_BRANCH>` | Default is `master` — **must change** |
-| `BUILD_PRODUCT_TOOLS_JOB` | leave empty | |
-| `SET_LATEST` | `no` | Default — leave as-is |
-| `SET_INTERNAL` | `no` | Default — leave as-is |
-| `PRODUCT` | `automated_tests` | Default — leave as-is |
-| `UPDATE_SUFFIX` | **checked** | |
-| `FULL_SUFFIX` | unchecked | |
-| `CUSTOM_SUFFIX` | leave empty | |
+| Field                     | Value                           | Notes                                                      |
+| ------------------------- | ------------------------------- | ---------------------------------------------------------- |
+| `ENVIRONMENT`             | `preprod` / `regression` / etc. | Default is `regression` — change if needed. One per build. |
+| `ENGINE_VERSION`          | `<ENGINE_VERSION>`              | Type in                                                    |
+| `CREATE_EXTENSION`        | **checked**                     |                                                            |
+| `BRANCH_NAME`             | `<AUTOMATED_BRANCH>`            | Default is `master` — **must change**                      |
+| `BUILD_PRODUCT_TOOLS_JOB` | leave empty                     |                                                            |
+| `SET_LATEST`              | `no`                            | Default — leave as-is                                      |
+| `SET_INTERNAL`            | `no`                            | Default — leave as-is                                      |
+| `PRODUCT`                 | `automated_tests`               | Default — leave as-is                                      |
+| `UPDATE_SUFFIX`           | **checked**                     |                                                            |
+| `FULL_SUFFIX`             | unchecked                       |                                                            |
+| `CUSTOM_SUFFIX`           | leave empty                     |                                                            |
 
 3. Click **Build**. Note the build number and share the link.
 4. Repeat for each environment.

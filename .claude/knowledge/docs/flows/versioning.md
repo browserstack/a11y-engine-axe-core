@@ -20,14 +20,14 @@ class CombinedRulesAllV14 extends CombinedRulesAllV13 {
       ...super.getRuleFunctionMapping(),
       input_label_name_mismatch: { matcher, check },
       label_content_name_mismatch: { matcher, check },
-      unnecessary_list: { matcher, check },
+      unnecessary_list: { matcher, check }
     };
   }
 
   getShortenedRuleKey() {
     return {
       ...super.getShortenedRuleKey(),
-      label_content_name_mismatch: 'r45',
+      label_content_name_mismatch: 'r45'
     };
   }
 }

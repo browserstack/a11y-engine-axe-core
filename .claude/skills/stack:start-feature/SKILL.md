@@ -1,7 +1,7 @@
 ---
 name: stack:start-feature
 description: Create a feature branch and optionally a Jira ticket for new work.
-argument-hint: "<feature-description>"
+argument-hint: '<feature-description>'
 ---
 
 # Start Feature
@@ -9,6 +9,7 @@ argument-hint: "<feature-description>"
 ## Steps
 
 1. **Branch from main:**
+
    ```bash
    git checkout main
    git pull origin main

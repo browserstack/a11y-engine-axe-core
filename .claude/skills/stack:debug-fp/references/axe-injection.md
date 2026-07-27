@@ -14,10 +14,18 @@ Fall back to native-DOM porting (`script-conversion.md` Path B) only when inject
 - **Path A (Claude-in-Chrome)**: read the bundle via `Read`, pass as the `text` param to one `javascript_tool` call wrapping:
   ```js
   (() => {
-    if (window.axe) return { injected: false, reason: 'already present', version: axe.version };
-    try { /* pasted bundle */ return { injected: true, version: axe.version }; }
-    catch (e) { return { injected: false, error: String(e?.message || e) }; }
-  })()
+    if (window.axe)
+      return {
+        injected: false,
+        reason: 'already present',
+        version: axe.version
+      };
+    try {
+      /* pasted bundle */ return { injected: true, version: axe.version };
+    } catch (e) {
+      return { injected: false, error: String(e?.message || e) };
+    }
+  })();
   ```
   Then a separate call: `axe.setup(document)`.
   Bundle is ~600KB &mdash; one-time per investigation.
@@ -26,9 +34,9 @@ Fall back to native-DOM porting (`script-conversion.md` Path B) only when inject
 ## Lifecycle
 
 ```js
-axe.setup(document);  // builds virtualTree
+axe.setup(document); // builds virtualTree
 // ... port runs here ...
-axe.teardown();        // clears virtualTree
+axe.teardown(); // clears virtualTree
 ```
 
 - `axe.setup(document)` is idempotent per page load but re-walks; call once.
@@ -39,6 +47,7 @@ axe.teardown();        // clears virtualTree
 ## Mapping rule-source calls to in-page APIs
 
 **Type A** rules (evaluate signature `(node, virtualNode)`): port verbatim after `axe.setup()`.
+
 ```js
 const vn = axe.utils.getNodeFromTree(node);
 const role = axe.commons.aria.getRole(vn);

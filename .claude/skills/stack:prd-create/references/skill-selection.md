@@ -13,15 +13,15 @@ ranked options.
 
 Ranked best-first; pre-select the highest-ranked **found** option:
 
-The **menu rows** are the *found* skills plus native (ranked below). A **custom path** is normally
+The **menu rows** are the _found_ skills plus native (ranked below). A **custom path** is normally
 typed in the prompt's built-in free-text field, not a menu row — but a "Provide a path" row is added
 in the one case where native would otherwise be the sole row (see "The 2-option floor" below):
 
-| # | Menu row | Where it comes from | Executes as |
-|---|---|---|---|
-| 1 | **Product-module skill** | An authoring/review `SKILL.md` shipped inside the installed `stack-module-product-<product>` stack (registered/invocable, or located within that stack dir). | Registered → Skill tool; on-disk → read + follow inline. |
-| 2 | **`stack-product` dump skill** | The product's skill in the harness `stack-product/<Product>/` dump — local in the harness repo, or a sparse checkout (`/tmp`) from a consumer repo. | Read its `SKILL.md` from the checkout + follow inline. |
-| 3 | **Native** | The built-in engine — 14-section author / `stack:prd-reviewer` reviewer. | prd-create's own engine (see `section-library.md`, `quality-bar.md`). |
+| #   | Menu row                       | Where it comes from                                                                                                                                          | Executes as                                                           |
+| --- | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| 1   | **Product-module skill**       | An authoring/review `SKILL.md` shipped inside the installed `stack-module-product-<product>` stack (registered/invocable, or located within that stack dir). | Registered → Skill tool; on-disk → read + follow inline.              |
+| 2   | **`stack-product` dump skill** | The product's skill in the harness `stack-product/<Product>/` dump — local in the harness repo, or a sparse checkout (`/tmp`) from a consumer repo.          | Read its `SKILL.md` from the checkout + follow inline.                |
+| 3   | **Native**                     | The built-in engine — 14-section author / `stack:prd-reviewer` reviewer.                                                                                     | prd-create's own engine (see `section-library.md`, `quality-bar.md`). |
 
 **Probe channels 1 and 2 for the primary product** using the discovery mechanics in
 `orchestration.md` (registered-skill check → local `stack-product/<Product>/` → sparse checkout →
@@ -44,12 +44,12 @@ Phase 3 and Phase 4 later reuse — **do not fetch again downstream.**
 
 `AskUserQuestion` requires **2–4 explicit options per question**, and its auto-appended free-text
 field ("Other" / "Type something") **does not count** toward that floor — a single-option prompt
-fails with *Invalid tool parameters*. So:
+fails with _Invalid tool parameters_. So:
 
 - **≥2 rows already** (any found skill + native, or 2+ found skills) → do **not** add a "Provide a
   path" row; it would duplicate the free-text field. A custom path is typed in the free-text field.
 - **Only 1 row** (native alone — neither channel found a skill) → add **"Provide a path"** as the
-  second row so the prompt is valid. This is the *one* case where that row appears.
+  second row so the prompt is valid. This is the _one_ case where that row appears.
 
 Either way, **word the question so the free-text field reads as path entry** (its label isn't
 customizable), e.g.:
@@ -65,13 +65,13 @@ free-text answer (or selecting "Provide a path" then giving one) as a provided p
 
 A flag present on invocation **skips its own prompt** (the other is still asked):
 
-| Flag | Effect |
-|---|---|
-| `--author-skill native` | Author = native. |
+| Flag                    | Effect                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------- |
+| `--author-skill native` | Author = native.                                                                      |
 | `--author-skill <path>` | Author = the `SKILL.md` at `<path>` (same as typing the path in the free-text field). |
-| `--review-skill native` | Reviewer = `stack:prd-reviewer`. |
-| `--review-skill <path>` | Reviewer = the `SKILL.md` at `<path>`. |
-| `--native` | Both author and reviewer = native (shorthand for the two `native` flags). |
+| `--review-skill native` | Reviewer = `stack:prd-reviewer`.                                                      |
+| `--review-skill <path>` | Reviewer = the `SKILL.md` at `<path>`.                                                |
+| `--native`              | Both author and reviewer = native (shorthand for the two `native` flags).             |
 
 ## Path validation (free-text path and the `<path>` flags)
 

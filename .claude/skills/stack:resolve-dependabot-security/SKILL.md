@@ -1,8 +1,8 @@
 ---
 name: stack:resolve-dependabot-security
-description: "Use when resolving open Dependabot dependency-security tickets for a11y-engine. Targets AXE Jira stories with Source=Security that carry a Dependabot signature (children of the SC-1097 Dependabot Alerts Tracker, or any Source=Security ticket whose description has a Package + Package File). Lists and lets you curate the tickets, finds or creates each dependency-bump PR, combines them into one a11y-engine bulk PR plus a separate a11y-engine-axe-core submodule bulk PR, runs checks + code review, classifies per-dependency product-impact/risk for manual review, then on your sign-off publishes and moves tickets to In Review. Triggers - resolve dependabot tickets, fix security dependencies, patch vulnerable deps, dependabot security, clear the dependabot alerts tracker."
+description: 'Use when resolving open Dependabot dependency-security tickets for a11y-engine. Targets AXE Jira stories with Source=Security that carry a Dependabot signature (children of the SC-1097 Dependabot Alerts Tracker, or any Source=Security ticket whose description has a Package + Package File). Lists and lets you curate the tickets, finds or creates each dependency-bump PR, combines them into one a11y-engine bulk PR plus a separate a11y-engine-axe-core submodule bulk PR, runs checks + code review, classifies per-dependency product-impact/risk for manual review, then on your sign-off publishes and moves tickets to In Review. Triggers - resolve dependabot tickets, fix security dependencies, patch vulnerable deps, dependabot security, clear the dependabot alerts tracker.'
 disable-model-invocation: true
-argument-hint: "[TICKET-KEY...] [dry-run]   (no args = auto-discover the open set)"
+argument-hint: '[TICKET-KEY...] [dry-run]   (no args = auto-discover the open set)'
 ---
 
 # Resolve Dependabot Security Tickets (a11y-engine)
@@ -18,18 +18,18 @@ and `stack:publish-workflow` rather than reimplementing them. It writes to Jira 
 
 ## Verified facts (do not re-derive)
 
-| Thing | Value |
-|---|---|
-| Jira site (`cloudId`) | `browserstack.atlassian.net` |
-| Jira project | `AXE` (name "AXE++") |
-| "Source" field | `customfield_10104`; JQL `cf[10104] = "Security"` |
-| Dependabot tracker (common parent) | `SC-1097` — "[Security] Dependabot Alerts Tracker" |
-| Main repo | `browserstack/a11y-engine` |
-| axe-core submodule repo | `browserstack/a11y-engine-axe-core` (mounted at `axe-core/`) |
-| Dependabot PR author | `app/dependabot` |
-| Node | `18.20.4` (`nvm use 18.20.4`) |
-| Product-impact folders | `axe-core/` (submodule), `dom-forge-core/`, `a11y-engine-core/` (excl. `test/examples/**`), `ip-protection/` |
-| Review status | "In Review" **exists** but is **not** a one-hop from "New Item" — walk transitions to reach it |
+| Thing                              | Value                                                                                                        |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| Jira site (`cloudId`)              | `browserstack.atlassian.net`                                                                                 |
+| Jira project                       | `AXE` (name "AXE++")                                                                                         |
+| "Source" field                     | `customfield_10104`; JQL `cf[10104] = "Security"`                                                            |
+| Dependabot tracker (common parent) | `SC-1097` — "[Security] Dependabot Alerts Tracker"                                                           |
+| Main repo                          | `browserstack/a11y-engine`                                                                                   |
+| axe-core submodule repo            | `browserstack/a11y-engine-axe-core` (mounted at `axe-core/`)                                                 |
+| Dependabot PR author               | `app/dependabot`                                                                                             |
+| Node                               | `18.20.4` (`nvm use 18.20.4`)                                                                                |
+| Product-impact folders             | `axe-core/` (submodule), `dom-forge-core/`, `a11y-engine-core/` (excl. `test/examples/**`), `ip-protection/` |
+| Review status                      | "In Review" **exists** but is **not** a one-hop from "New Item" — walk transitions to reach it               |
 
 ## When to use
 
@@ -67,16 +67,16 @@ Parse args: collect any `AXE-\d+` tokens as the seed set; set `DRYRUN=1` if `dry
 
 ## Phases
 
-| # | Phase | Writes? | Detail |
-|---|---|---|---|
-| 1 | **Discover** the open Dependabot security tickets | read | `references/jira.md` |
-| 2 | **Curate gate** — you add/remove tickets | — | inline below |
-| 3 | **Ensure a fix PR** exists per ticket (find or create) | GitHub | `references/bulk-pr.md` |
-| 4 | **Build the bulk PR(s)** — a11y-engine + axe-core submodule | GitHub | `references/bulk-pr.md` |
-| 5 | **Sync + checks + code review** on the bulk PR(s) | GitHub | inline below |
-| 6 | **Risk report** — per-dependency product impact | — | `references/risk-classification.md` |
-| 7 | **Human gate** — present PRs + risk, STOP for sign-off | — | inline below |
-| 8 | **Merge + publish + Jira** — merge PR(s), `stack:publish-workflow`, → In Review | GitHub + Jira | inline + `references/jira.md` |
+| #   | Phase                                                                           | Writes?       | Detail                              |
+| --- | ------------------------------------------------------------------------------- | ------------- | ----------------------------------- |
+| 1   | **Discover** the open Dependabot security tickets                               | read          | `references/jira.md`                |
+| 2   | **Curate gate** — you add/remove tickets                                        | —             | inline below                        |
+| 3   | **Ensure a fix PR** exists per ticket (find or create)                          | GitHub        | `references/bulk-pr.md`             |
+| 4   | **Build the bulk PR(s)** — a11y-engine + axe-core submodule                     | GitHub        | `references/bulk-pr.md`             |
+| 5   | **Sync + checks + code review** on the bulk PR(s)                               | GitHub        | inline below                        |
+| 6   | **Risk report** — per-dependency product impact                                 | —             | `references/risk-classification.md` |
+| 7   | **Human gate** — present PRs + risk, STOP for sign-off                          | —             | inline below                        |
+| 8   | **Merge + publish + Jira** — merge PR(s), `stack:publish-workflow`, → In Review | GitHub + Jira | inline + `references/jira.md`       |
 
 ### Execution flow
 
@@ -139,15 +139,17 @@ build only the a11y-engine bulk PR.
 ### Phase 5 — Sync + checks + code review
 
 Run this **per bulk PR, from that repo's checked-out bulk branch** — `stack:code-review` reviews the local
-`git diff` and `stack:trigger-pr-checks` reads the repo from cwd, so you must be *in* the right checkout.
+`git diff` and `stack:trigger-pr-checks` reads the repo from cwd, so you must be _in_ the right checkout.
 
 Sync with the repo's default branch:
+
 ```bash
 git fetch origin && git merge --no-edit origin/<default>   # main for a11y-engine; resolve conflicts per references/bulk-pr.md
 git push
 ```
 
 **CI triggers differ by repo:**
+
 - **a11y-engine bulk PR** — its Jenkins jobs are comment-only, so trigger them (skip in `dry-run`):
   ```
   /stack:trigger-pr-checks <a11y-engine-bulk-pr>     # posts RUN_CHECKS + RUN_UNIT_TESTS, deduped per commit
@@ -158,6 +160,7 @@ git push
   `stack:trigger-pr-checks`. If it too uses comment-triggered jobs, post the appropriate comment manually.
 
 **Read the results** (both repos) — don't trigger-and-assume-green:
+
 ```bash
 gh pr checks <pr> --repo <repo>                                                  # check-run summary
 gh api "repos/<repo>/commits/<head-sha>/statuses" \
@@ -165,6 +168,7 @@ gh api "repos/<repo>/commits/<head-sha>/statuses" \
 ```
 
 Then review each bulk branch (skip in `dry-run`):
+
 ```
 /stack:code-review                            # run from the checked-out bulk branch — reviews its diff
 ```
@@ -181,11 +185,12 @@ semver jump, runtime-vs-dev, CVSS, and any check/review failures from Phase 5.
 ### Phase 7 — Human gate (required)
 
 Present, then **STOP**:
+
 - Bulk PR link(s) + check states (RUN_CHECKS/RUN_UNIT_TESTS, or the axe-core repo's own CI) + `stack:code-review` verdict.
 - The risk report, **manual-review items first**.
 - The tickets that will move to In Review on sign-off.
 
-Approval here authorizes Phase 8 **in full** — merging the bulk PR(s) *and* running the heavy publish. Do
+Approval here authorizes Phase 8 **in full** — merging the bulk PR(s) _and_ running the heavy publish. Do
 **not** proceed until the user explicitly approves (e.g. `publish`). In `dry-run`, end here — nothing after
 this point runs.
 
@@ -220,7 +225,7 @@ Jira transition results (which tickets moved to In Review, which were left and w
 - **Running `stack:trigger-pr-checks` on the axe-core PR.** It's a11y-engine-only (hard repo guard, cwd-based)
   — use the axe-core repo's own CI there, and read every PR's checks rather than assuming they went green.
 - **Merging the a11y-engine PR while the submodule points at an unmerged axe-core commit.** Merge axe-core
-  first, re-point to its *merged* commit, then merge a11y-engine (Phase 8).
+  first, re-point to its _merged_ commit, then merge a11y-engine (Phase 8).
 - **Skipping the curation gate or the sign-off gate.** Both are required, every run, including when args
   seeded the set.
 - **Forgetting `frontend-*` tickets live under SC-1097 too.** Scope to the a11y-engine family only.

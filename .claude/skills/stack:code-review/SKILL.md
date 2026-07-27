@@ -17,6 +17,7 @@ Use this skill when the user asks to: review a PR, review a diff, or look over a
 ## Pre-flight
 
 State up front:
+
 - **Lanes touched** — A / B1 / B2 / C / AI / infra (workers, routes, sockets) / submodule.
 - **Sub-projects touched.**
 - **Risk vector** — does the change affect scan correctness, retry semantics, version compatibility for in-flight scans, or only inert paths (tests, docs, lint config)?

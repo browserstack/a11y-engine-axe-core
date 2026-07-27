@@ -3,7 +3,7 @@
 For a BrowserStack-product PRD, the primary grounding is the **source-of-truth hierarchy** in
 `references/source-of-truth.md` (docs → stack-product → Confluence), consulted proactively.
 The user also supplies free-form context — a folder, loose files, URLs, pasted notes, an
-optional BRD — which is reconciled *against* that hierarchy, never discarded. There is **no
+optional BRD — which is reconciled _against_ that hierarchy, never discarded. There is **no
 required folder schema and no config file.** This file covers the parts that aren't the
 hierarchy itself: extraction, gaps, and the never-invent rule.
 
@@ -61,12 +61,14 @@ is a **bare, un-pinned line number** (`foo.rb:120` with no permalink) and a **fa
 number** — build the link only from a real, resolvable commit.
 
 **Resolve the SHA** (cheapest source first — no full clone needed):
+
 - Grounded via a `stack-domain-<repo>` KB → use `source.repo` + `source.commit` from that stack's
   `stack-harness.yml`.
 - Grounded via a read-only clone → the clone's HEAD: `git -C <clone> rev-parse HEAD`.
 - Otherwise pin the current state remotely → `gh api repos/<owner>/<repo>/commits/<branch> --jq '.sha'`.
 
 **Build / verify with `gh`** (so the link is never invented):
+
 - `gh browse -R <owner>/<repo> -n -c <sha> <path>:<startLine>` prints the canonical permalink, or
 - construct `https://github.com/<owner>/<repo>/blob/<sha>/<path>#L<a>-L<b>` and confirm it resolves
   with `gh api repos/<owner>/<repo>/contents/<path>?ref=<sha>`.

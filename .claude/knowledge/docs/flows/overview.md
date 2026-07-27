@@ -2,11 +2,11 @@
 
 ## The packages
 
-| Package | Runtime | Job |
-|---|---|---|
-| `a11y-engine-core` | Browser (extension, Website Scanner, A11y Automate SDK) | Runs Type A rules in-page; serializes DOM for B1/B2/C |
-| `ip-protection` | Node.js server + BullMQ workers | Ingests DOM, runs B1/B2/C/AI rules, consolidates results, sends response |
-| `dom-forge-core` | Browser (Percy-driven headless) | Captures DOM + assets for async rule execution in a controlled render |
+| Package            | Runtime                                                 | Job                                                                      |
+| ------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `a11y-engine-core` | Browser (extension, Website Scanner, A11y Automate SDK) | Runs Type A rules in-page; serializes DOM for B1/B2/C                    |
+| `ip-protection`    | Node.js server + BullMQ workers                         | Ingests DOM, runs B1/B2/C/AI rules, consolidates results, sends response |
+| `dom-forge-core`   | Browser (Percy-driven headless)                         | Captures DOM + assets for async rule execution in a controlled render    |
 
 `axe-core/` (submodule) is wrapped — never modified directly. `mini-percy-renderer/` is a local debugging tool, not part of production scan flow.
 
@@ -39,15 +39,15 @@ One egress: socket-backed `sendResponse()` from `controllers/apiClient.js` POSTs
 
 ## Vocabulary (load-bearing only — see `knowledge/GLOSSARY.md` for the full list)
 
-| Term | Meaning |
-|---|---|
-| Run | One end-to-end run for a page. Has a `scanId` (a.k.a. `runId` downstream). |
-| Scan | Complete end to end scan which can include multiple runs for a product. |
-| Scope key | `product@userId@scanId` — the UUID for each scan. `getScopeKey()` in `utils/helpers.js`. |
-| B1 / B2 / C / AI | Rule execution lane — **determined by worker dispatch, not rule JSON location**. See `rule-types.md`. |
-| Proxy map | Map of original asset URL → S3-hosted proxy URL. Required for Type C to render without phoning home. |
-| Combined rules | B1/B2 rule batch runner — see `versioning.md` for the `combined-rules-class-v*` inheritance chain. |
-| EOF | End-of-file marker in Redis — signals a chunked payload is complete and ready for a worker to dispatch. |
+| Term             | Meaning                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| Run              | One end-to-end run for a page. Has a `scanId` (a.k.a. `runId` downstream).                              |
+| Scan             | Complete end to end scan which can include multiple runs for a product.                                 |
+| Scope key        | `product@userId@scanId` — the UUID for each scan. `getScopeKey()` in `utils/helpers.js`.                |
+| B1 / B2 / C / AI | Rule execution lane — **determined by worker dispatch, not rule JSON location**. See `rule-types.md`.   |
+| Proxy map        | Map of original asset URL → S3-hosted proxy URL. Required for Type C to render without phoning home.    |
+| Combined rules   | B1/B2 rule batch runner — see `versioning.md` for the `combined-rules-class-v*` inheritance chain.      |
+| EOF              | End-of-file marker in Redis — signals a chunked payload is complete and ready for a worker to dispatch. |
 
 ## See also
 

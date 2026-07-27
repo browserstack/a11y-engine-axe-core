@@ -7,6 +7,7 @@ Spectra-specific terminology. When code and docs conflict, **code wins**.
 One end-to-end run of the engine for a single page. Has a `scanId` (also called `runId` downstream). Lifecycle: extension `scan_started` → DOM chunks → B1/B2/C/AI lanes → consolidation → `sendResponse` to WebA11y.
 
 ## Scan
+
 Contains multiple runs. Runs can be full page or mutation. Mutations are only for Workflow Analyser.
 
 ## scanId / runId
@@ -36,12 +37,14 @@ End-of-file marker in Redis. Signals a chunked payload is complete and ready for
 ## kill switch
 
 Two distinct things:
+
 - **Rules cache + kill-switch cache** — initialized at server startup via `refreshAllKillSwitchCaches()`. Stores per-customer rule disablements.
 - **`isKillSwitchActive(userId, groupId, scanId)`** — used in `controllers/buildProxyMap.js`. When true, marks **all six** `COMPLETION_TASK_TYPES.*` as already-done and returns 200 immediately, no Percy call.
 
 ## `COMPLETION_TASK_TYPES.*`
 
 Six markers in `ip-protection/config/enum.js`:
+
 - `TYPE_C`
 - `TEXT_IN_IMAGES`
 - `AI_STANDARD`

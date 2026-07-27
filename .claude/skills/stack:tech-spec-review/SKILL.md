@@ -3,6 +3,7 @@ name: stack:tech-spec-review
 description: "Audits an existing Tech Spec (the docs/prd/<slug>-tech-spec.md produced by stack:tech-spec) for correctness across seven dimensions: altitude, grounding and precedent validity, contract integrity, failure and edge cases, key decisions, requirement fidelity, and open items. Discovers each touched module's own tech-spec reviewer and routes that module's Contract slice to it, with a generic fallback and one always-on cross-cutting pass over the module seams. Produces severity-graded findings and a Ready / Conditionally Ready / Not Ready verdict. Use to review, audit, or sanity-check a Tech Spec, standalone or as stack:dev's Stage 4 review sub-step. Use ONLY to review a Tech Spec; to author one, use stack:tech-spec."
 allowed-tools: Read, Write, Glob, Grep, Bash, Agent, Skill
 ---
+
 <!-- Version: 2026-07-07 | Source: @browserstack/ai-harness | Do not remove this header -->
 
 You audit a Tech Spec for correctness and return findings plus a verdict. You are a **pure checker**: you read the Tech Spec, produce severity-graded findings, and write one report. You never re-author, fix, or edit the spec (that is `stack:tech-spec`'s job, triggered by `stack:dev`'s Stage 4 loop). You have no side effects beyond writing your own report.

@@ -5,32 +5,32 @@ a human must review it before it ships. Output a table sorted by risk, manual-re
 
 ## Inputs per bump
 
-| Input | Where from |
-|---|---|
-| Lockfile directory | ticket `Package File` path (`references/jira.md`) |
-| Semver jump | Dependabot PR title `bump <pkg> from X to Y` |
-| Runtime vs dev | PR title prefix — `chore(deps):` = runtime, `chore(deps-dev):` = devDependency; confirm via `dependencies` vs `devDependencies` in that `package.json` |
-| CVSS | ticket `**CVSS Score:**` |
-| Direct vs transitive | is `<pkg>` listed in that `package.json`, or lock-only? |
-| Check/review result | Phase 5 — `RUN_UNIT_TESTS`, `RUN_CHECKS`, `stack:code-review` |
+| Input                | Where from                                                                                                                                             |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Lockfile directory   | ticket `Package File` path (`references/jira.md`)                                                                                                      |
+| Semver jump          | Dependabot PR title `bump <pkg> from X to Y`                                                                                                           |
+| Runtime vs dev       | PR title prefix — `chore(deps):` = runtime, `chore(deps-dev):` = devDependency; confirm via `dependencies` vs `devDependencies` in that `package.json` |
+| CVSS                 | ticket `**CVSS Score:**`                                                                                                                               |
+| Direct vs transitive | is `<pkg>` listed in that `package.json`, or lock-only?                                                                                                |
+| Check/review result  | Phase 5 — `RUN_UNIT_TESTS`, `RUN_CHECKS`, `stack:code-review`                                                                                          |
 
 ## 1. Blast radius (from the lockfile directory)
 
-| Radius | Directory matches | Weight |
-|---|---|---|
-| **Product-critical** | `axe-core/` (the submodule repo), `dom-forge-core/`, `a11y-engine-core/` **excluding** `**/test/**` and `**/examples/**`, `ip-protection/` | High |
-| **Low** | `**/test/**`, `**/examples/**`, `mini-percy-renderer/`, `scripts/`, `fml/`, root dev tooling | Low |
+| Radius               | Directory matches                                                                                                                          | Weight |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------ |
+| **Product-critical** | `axe-core/` (the submodule repo), `dom-forge-core/`, `a11y-engine-core/` **excluding** `**/test/**` and `**/examples/**`, `ip-protection/` | High   |
+| **Low**              | `**/test/**`, `**/examples/**`, `mini-percy-renderer/`, `scripts/`, `fml/`, root dev tooling                                               | Low    |
 
 Product-critical dirs run in the browser/extension or the ip-protection server — they ship. Test/example/tooling
 lockfiles do not affect the shipped product.
 
 ## 2. Semver jump (from → to)
 
-| Jump | Weight |
-|---|---|
-| **major** (`X.y.z` → `≥(X+1).0.0`), or any `0.x` **minor** (pre-1.0 minors are breaking) | High |
-| **minor** (`1.2.x` → `1.3.0`) | Medium |
-| **patch** (`1.2.3` → `1.2.4`) | Low |
+| Jump                                                                                     | Weight |
+| ---------------------------------------------------------------------------------------- | ------ |
+| **major** (`X.y.z` → `≥(X+1).0.0`), or any `0.x` **minor** (pre-1.0 minors are breaking) | High   |
+| **minor** (`1.2.x` → `1.3.0`)                                                            | Medium |
+| **patch** (`1.2.3` → `1.2.4`)                                                            | Low    |
 
 ## 3. Runtime vs dev
 

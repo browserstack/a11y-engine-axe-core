@@ -13,9 +13,9 @@ A cloud routine runs in an isolated Anthropic sandbox. It does **not** have the 
 - `npx @browserstack/ai-harness init` pulls a **private** GitHub Packages package (`@browserstack` scope on `npm.pkg.github.com`) that needs a GitHub PAT with `read:packages`.
 - That PAT **must never be placed in the routine prompt** — the prompt is stored in the routine body and echoed in every run transcript (secret-in-plaintext leak). There is no supported per-routine secret/env injection for it.
 
-Therefore the routine prompt must be **self-contained**: the agent that *creates* the routine (you, running locally with this skill installed) reads the canonical query files in this directory and **pastes the SQL verbatim** into the routine's event message. The created routine then matches local execution without ever needing the skill or a PAT.
+Therefore the routine prompt must be **self-contained**: the agent that _creates_ the routine (you, running locally with this skill installed) reads the canonical query files in this directory and **pastes the SQL verbatim** into the routine's event message. The created routine then matches local execution without ever needing the skill or a PAT.
 
-> **Single source of truth:** do not maintain a second copy of the queries here. Always inline the *current* SQL from the sibling reference files at creation time. When those files change, re-create (or update) the routine to pick up the new SQL — see "Keeping the routine in sync".
+> **Single source of truth:** do not maintain a second copy of the queries here. Always inline the _current_ SQL from the sibling reference files at creation time. When those files change, re-create (or update) the routine to pick up the new SQL — see "Keeping the routine in sync".
 
 ## Execution-surface deltas vs. running locally
 
@@ -34,32 +34,32 @@ Everything else — windows, internal-group exclusion lists, thresholds, `COUNT(
 
 Ask (or confirm) before creating:
 
-| Input | Default / note |
-|---|---|
-| **Slack destination** | Channel ID (e.g. `C07BHSNDDCG`). Ask whether to **reply in the thread** of a recurring workflow message (give the workflow/bot post pattern + its approx time) or **post top-level**. |
+| Input                    | Default / note                                                                                                                                                                                             |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Slack destination**    | Channel ID (e.g. `C07BHSNDDCG`). Ask whether to **reply in the thread** of a recurring workflow message (give the workflow/bot post pattern + its approx time) or **post top-level**.                      |
 | **Schedule (cron, UTC)** | Min interval 1h. The user's times are local — convert and confirm (e.g. 10:45 IST = `15 5 * * *`). If replying in a workflow thread, fire a few minutes **after** the workflow posts so the thread exists. |
-| **Model** | `claude-sonnet-4-6` default. |
-| **Connectors** | Google Cloud BigQuery + Slack (both required, per-account). If either isn't connected on the caller's account, stop and point them to https://claude.ai/customize/connectors. |
-| **Environment** | The CCR environment id (e.g. the default `anthropic_cloud` environment). |
+| **Model**                | `claude-sonnet-4-6` default.                                                                                                                                                                               |
+| **Connectors**           | Google Cloud BigQuery + Slack (both required, per-account). If either isn't connected on the caller's account, stop and point them to https://claude.ai/customize/connectors.                              |
+| **Environment**          | The CCR environment id (e.g. the default `anthropic_cloud` environment).                                                                                                                                   |
 
 ## Step 2 — Assemble the routine prompt
 
-Build the event `message.content` by concatenating the blocks below **in order**. Where a slot says *INLINE*, open the named file and paste the SQL/rules verbatim (fenced) into the routine prompt:
+Build the event `message.content` by concatenating the blocks below **in order**. Where a slot says _INLINE_, open the named file and paste the SQL/rules verbatim (fenced) into the routine prompt:
 
 1. **Header** — identity + autonomy + the four execution-surface deltas above. Template:
    > You are the daily L0 health-check agent for BrowserStack's a11y-engine (Spectra). Work fully autonomously — never pause to ask. Report date = previous full UTC day; title `a11y-engine L0 Health Check — YYYY-MM-DD`. Run ALL SQL through the Google Cloud BigQuery MCP tool (prefer execute_sql_readonly) — there is no `bq` CLI here; ignore any `bq query` phrasing below. Post via the Slack MCP tools. You have no Atlassian connector — on any breach write `Ticket needed: <desc>` instead of creating a JIRA ticket.
-2. **Phase 1a — Engine Run Failures** — *INLINE* the `### 1a` query from `l0_full_workflow.md`, plus the `> 3%` daily threshold.
-3. **Phase 1b — Latency P90 per track (week-to-date)** — *INLINE* the `### 1b` query from `l0_full_workflow.md`, plus the Phase 1c threshold table. Note: CS thresholds = OnDemand only; never show CS Background.
-4. **Phase 2 — L1 success-% + E2E latency** — *INLINE* both queries (status distribution + E2E P90) from `l1_queries.md`. Breach = success < 95% (binary), `COUNT(DISTINCT uuid)`, worst-status-per-uuid; CS folded into one row per scan type for the success table.
-5. **Phase AT errors** — *INLINE* the 7-day series query + breach formula + status-resolution table from `at_l0_queries.md`. Label "AT errors" (never "AT L0").
-6. **Phase 3/4 — L2 error overview** *(run only when L0 or L1 breached; L2 is never pass/fail)* — *INLINE* the Error Summary query, the two JS UDFs (`extractErrorArray`, `normalize_error_message`), the detailed bucket template + the `{KIND_FILTER}` list from `l2_error_queries.md`. Plus the check_errors JS-UDF pattern and the Phase 4c inner-error drill-down from `l0_full_workflow.md`. Carry the bucket exclusions (ASSET_CAPTURE + B1 `debug_errors` out of the main table).
-7. **Phase 5 — Group attribution** — *INLINE* the Phase 5a/5b patterns from `l0_full_workflow.md` (per `(group_id, product, scan_type)`: Failures, Total Scans, Failure %; same DISTINCT-uuid dedupe).
-8. **Signature awareness** — *INLINE* a condensed list of the current signatures from `signatures.md` so the agent can dismiss/recognise known noise (never expose signature IDs in output).
-9. **Output protocol** — *INLINE* the Slack + canvas rules from `l0_full_workflow.md` Phase 6 & 8 and the Output rules in `SKILL.md`: fresh canvas per run; breach-only phase blocks; binary ✅/🔴 (no 🟡); L2 never pass/fail; one combined Slack message (L0 + L1 + AT-errors one-liners + canvas link); `Ticket needed:` instead of JIRA; Slack gotchas (no `---`, < 5000 chars, fenced code for tables). Add the destination specifics from Step 1 (channel id; reply-in-workflow-thread vs top-level, with the "if the workflow message isn't found, post top-level with a note" fallback).
+2. **Phase 1a — Engine Run Failures** — _INLINE_ the `### 1a` query from `l0_full_workflow.md`, plus the `> 3%` daily threshold.
+3. **Phase 1b — Latency P90 per track (week-to-date)** — _INLINE_ the `### 1b` query from `l0_full_workflow.md`, plus the Phase 1c threshold table. Note: CS thresholds = OnDemand only; never show CS Background.
+4. **Phase 2 — L1 success-% + E2E latency** — _INLINE_ both queries (status distribution + E2E P90) from `l1_queries.md`. Breach = success < 95% (binary), `COUNT(DISTINCT uuid)`, worst-status-per-uuid; CS folded into one row per scan type for the success table.
+5. **Phase AT errors** — _INLINE_ the 7-day series query + breach formula + status-resolution table from `at_l0_queries.md`. Label "AT errors" (never "AT L0").
+6. **Phase 3/4 — L2 error overview** _(run only when L0 or L1 breached; L2 is never pass/fail)_ — _INLINE_ the Error Summary query, the two JS UDFs (`extractErrorArray`, `normalize_error_message`), the detailed bucket template + the `{KIND_FILTER}` list from `l2_error_queries.md`. Plus the check_errors JS-UDF pattern and the Phase 4c inner-error drill-down from `l0_full_workflow.md`. Carry the bucket exclusions (ASSET_CAPTURE + B1 `debug_errors` out of the main table).
+7. **Phase 5 — Group attribution** — _INLINE_ the Phase 5a/5b patterns from `l0_full_workflow.md` (per `(group_id, product, scan_type)`: Failures, Total Scans, Failure %; same DISTINCT-uuid dedupe).
+8. **Signature awareness** — _INLINE_ a condensed list of the current signatures from `signatures.md` so the agent can dismiss/recognise known noise (never expose signature IDs in output).
+9. **Output protocol** — _INLINE_ the Slack + canvas rules from `l0_full_workflow.md` Phase 6 & 8 and the Output rules in `SKILL.md`: fresh canvas per run; breach-only phase blocks; binary ✅/🔴 (no 🟡); L2 never pass/fail; one combined Slack message (L0 + L1 + AT-errors one-liners + canvas link); `Ticket needed:` instead of JIRA; Slack gotchas (no `---`, < 5000 chars, fenced code for tables). Add the destination specifics from Step 1 (channel id; reply-in-workflow-thread vs top-level, with the "if the workflow message isn't found, post top-level with a note" fallback).
 
 Keep each inlined SQL block fenced and unaltered — the only edits allowed are the four execution-surface deltas, never the query logic, windows, or exclusion lists.
 
-10. **Manifest marker** *(required — enables the drift check in Step 5)* — append, as the **last line** of the prompt, an HTML comment listing the source files inlined above with their current blob SHAs:
+10. **Manifest marker** _(required — enables the drift check in Step 5)_ — append, as the **last line** of the prompt, an HTML comment listing the source files inlined above with their current blob SHAs:
 
     ```
     <!-- l0-routine-manifest: l0_full_workflow.md@<sha>, l1_queries.md@<sha>, at_l0_queries.md@<sha>, l2_error_queries.md@<sha>, breach_thresholds.md@<sha>, signatures.md@<sha> -->
@@ -77,24 +77,45 @@ Use the `RemoteTrigger` tool, `action: "create"`, `enabled: true`. Generate a fr
   "cron_expression": "<from Step 1>",
   "enabled": true,
   "mcp_connections": [
-    {"connector_uuid": "<BigQuery connector uuid>", "name": "Google-Cloud-BigQuery", "url": "https://bigquery.googleapis.com/mcp"},
-    {"connector_uuid": "<Slack connector uuid>", "name": "Slack", "url": "https://mcp.slack.com/mcp"}
+    {
+      "connector_uuid": "<BigQuery connector uuid>",
+      "name": "Google-Cloud-BigQuery",
+      "url": "https://bigquery.googleapis.com/mcp"
+    },
+    {
+      "connector_uuid": "<Slack connector uuid>",
+      "name": "Slack",
+      "url": "https://mcp.slack.com/mcp"
+    }
   ],
   "job_config": {
     "ccr": {
       "environment_id": "<environment id>",
       "session_context": {
         "model": "claude-sonnet-4-6",
-        "allowed_tools": ["Bash", "Read", "Write", "Edit", "Glob", "Grep", "ToolSearch"]
+        "allowed_tools": [
+          "Bash",
+          "Read",
+          "Write",
+          "Edit",
+          "Glob",
+          "Grep",
+          "ToolSearch"
+        ]
       },
       "events": [
-        {"data": {
-          "uuid": "<fresh lowercase v4 uuid>",
-          "session_id": "",
-          "type": "user",
-          "parent_tool_use_id": null,
-          "message": {"role": "user", "content": "<assembled prompt from Step 2>"}
-        }}
+        {
+          "data": {
+            "uuid": "<fresh lowercase v4 uuid>",
+            "session_id": "",
+            "type": "user",
+            "parent_tool_use_id": null,
+            "message": {
+              "role": "user",
+              "content": "<assembled prompt from Step 2>"
+            }
+          }
+        }
       ]
     }
   }

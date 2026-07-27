@@ -6,14 +6,14 @@ One full trace: **extension click → consolidated response pushed back to clien
 
 All scans enter `ip-protection` through one of:
 
-| Path | From | Entry | Auth |
-|---|---|---|---|
-| Socket events | Extension / SDK (browser) | `io.on('connection')` in `ip-protection/app.js` | `io.use(verifySocketAuthToken)` (~app.js line 127) |
-| HTTP `/build-proxy-map` | Extension after asset upload | `routes/scanRoutes.js → controllers/buildProxyMap.js` | `verifyAPIAuthToken` |
-| HTTP `/accept_percy_result` | Percy (after dom-forge runs non-AI Type C) | `controllers/acceptResult.js` | `verifyAPIAuthToken` |
-| HTTP `/accept_rules_data_percy` | Percy (after dom-forge collects AI candidates) | `controllers/acceptRulesDataPercy.js` | `verifyAPIAuthToken` |
-| HTTP AI webhooks (`/ai/webhook*`) | External AI service | `controllers/acceptAIResult.js` | `verifyBasicAuth` |
-| HTTP `/timeout` | weba11y (60-min timeout) | `controllers/timeout.js` | `verifyAPIAuthToken` |
+| Path                              | From                                           | Entry                                                 | Auth                                               |
+| --------------------------------- | ---------------------------------------------- | ----------------------------------------------------- | -------------------------------------------------- |
+| Socket events                     | Extension / SDK (browser)                      | `io.on('connection')` in `ip-protection/app.js`       | `io.use(verifySocketAuthToken)` (~app.js line 127) |
+| HTTP `/build-proxy-map`           | Extension after asset upload                   | `routes/scanRoutes.js → controllers/buildProxyMap.js` | `verifyAPIAuthToken`                               |
+| HTTP `/accept_percy_result`       | Percy (after dom-forge runs non-AI Type C)     | `controllers/acceptResult.js`                         | `verifyAPIAuthToken`                               |
+| HTTP `/accept_rules_data_percy`   | Percy (after dom-forge collects AI candidates) | `controllers/acceptRulesDataPercy.js`                 | `verifyAPIAuthToken`                               |
+| HTTP AI webhooks (`/ai/webhook*`) | External AI service                            | `controllers/acceptAIResult.js`                       | `verifyBasicAuth`                                  |
+| HTTP `/timeout`                   | weba11y (60-min timeout)                       | `controllers/timeout.js`                              | `verifyAPIAuthToken`                               |
 
 ## Full flow (B1 + Type C + AI, happy path)
 
@@ -125,18 +125,18 @@ POST /accept_percy_result                  POST /accept_rules_data_percy
 
 ## Routes registered in `ip-protection/routes/scanRoutes.js`
 
-| Route | Controller | Auth | Purpose |
-|---|---|---|---|
-| `POST /fetch_presigned_urls` | `presignedUrlGenerator.js` | API | Hands out signed S3 PUT URLs (optionally via CloudFront) for asset upload |
-| `POST /scan-complete` | `scanComplete.js` | API | Signals B1 done (→ B2 via `handleB2Processing → scanCompleteQueue`) OR C done (records null entry for completeness tracking) |
-| `POST /build-proxy-map` | `buildProxyMap.js` | API | Start the Type C pipeline after client uploaded asset zip |
-| `POST /accept_percy_result` | `acceptResult.js` | API | Non-AI Type C result ingestion from Percy |
-| `POST /get_proxy_map` | `getProxyMap.js:getProxyMapController` | API | Same Percy trigger path but invoked externally (not from proxyMapWorker) |
-| `POST /accept_rules_data_percy` | `acceptRulesDataPercy.js` | API | Percy-originated AI-candidate data (routes to `preprocessAndIntegrateAiImageApi` by `body.type`) |
-| `POST /ai/webhook` | `acceptAIResult.js → acceptAIResult` | Basic | Alt-text / color-contrast AI response |
-| `POST /ai/webhook/heading` | `acceptAIResult.js → acceptHeadingsAIResult` | Basic | Heading AI response |
-| `POST /ai/webhook/custom-elements` | `acceptAIResult.js → acceptCustomElementsAIResult` | Basic | Custom-elements AI response |
-| `POST /timeout` | `timeout.js` | API | 60-min timeout hook from weba11y: cancel-scan via AI, force consolidation if source data exists, cleanup pending runIds |
+| Route                              | Controller                                         | Auth  | Purpose                                                                                                                      |
+| ---------------------------------- | -------------------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `POST /fetch_presigned_urls`       | `presignedUrlGenerator.js`                         | API   | Hands out signed S3 PUT URLs (optionally via CloudFront) for asset upload                                                    |
+| `POST /scan-complete`              | `scanComplete.js`                                  | API   | Signals B1 done (→ B2 via `handleB2Processing → scanCompleteQueue`) OR C done (records null entry for completeness tracking) |
+| `POST /build-proxy-map`            | `buildProxyMap.js`                                 | API   | Start the Type C pipeline after client uploaded asset zip                                                                    |
+| `POST /accept_percy_result`        | `acceptResult.js`                                  | API   | Non-AI Type C result ingestion from Percy                                                                                    |
+| `POST /get_proxy_map`              | `getProxyMap.js:getProxyMapController`             | API   | Same Percy trigger path but invoked externally (not from proxyMapWorker)                                                     |
+| `POST /accept_rules_data_percy`    | `acceptRulesDataPercy.js`                          | API   | Percy-originated AI-candidate data (routes to `preprocessAndIntegrateAiImageApi` by `body.type`)                             |
+| `POST /ai/webhook`                 | `acceptAIResult.js → acceptAIResult`               | Basic | Alt-text / color-contrast AI response                                                                                        |
+| `POST /ai/webhook/heading`         | `acceptAIResult.js → acceptHeadingsAIResult`       | Basic | Heading AI response                                                                                                          |
+| `POST /ai/webhook/custom-elements` | `acceptAIResult.js → acceptCustomElementsAIResult` | Basic | Custom-elements AI response                                                                                                  |
+| `POST /timeout`                    | `timeout.js`                                       | API   | 60-min timeout hook from weba11y: cancel-scan via AI, force consolidation if source data exists, cleanup pending runIds      |
 
 ## Kill-switch path (in `buildProxyMap.js`)
 
@@ -156,6 +156,7 @@ Returns 200 immediately. No Percy call, no downstream work.
 ## Response path
 
 `ip-protection/controllers/apiClient.js` exports:
+
 - `sendResponse(payload, jobData, type, task?, isComplete?, retries?)` — terminal emitter. POSTs to `a11y_engine_jobs` on the weba11y host (`a11y[host_{region}]` or default). Calls `markTaskCompleted` first when `task` is supplied and `isComplete === true`.
 - `getAIResponse(payload, requestId, scanId, retries?, endpoint?)` — outbound AI API call.
 
@@ -166,6 +167,7 @@ Both use `BASIC_AUTHTOKEN` (weba11y) and `BASIC_AI_AUTHTOKEN` (AI) from `config/
 ## Kill switches & caches
 
 On server startup (`app.js`), three caches initialize in parallel:
+
 - **Rules cache** — `initializeRulesCache()` (`utils/ruleFilter.js`). Which rules run per scan.
 - **Kill-switch cache** — `refreshAllKillSwitchCaches()` (`utils/killswitch-utils.js`). Per-customer rule disablements.
 - **Timeout cache** — `initializeTimeoutCache()` (`utils/timeout-cache.js`). Per-group B-type + Type C scan timeouts.

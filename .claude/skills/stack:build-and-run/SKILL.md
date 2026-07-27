@@ -15,6 +15,7 @@ nvm use 18.20.4
 ## Package Commands
 
 ### a11y-engine-core
+
 ```bash
 cd a11y-engine-core
 ./build/scripts/build_axe.sh   # Must run first (builds axe-core dependency)
@@ -24,6 +25,7 @@ npm test                        # Karma + Mocha + Chai
 ```
 
 ### ip-protection
+
 ```bash
 cd ip-protection
 npm install
@@ -33,6 +35,7 @@ npm test         # Jest
 ```
 
 ### dom-forge-core
+
 ```bash
 cd dom-forge-core
 npm install
@@ -41,6 +44,7 @@ npm test        # Mocha
 ```
 
 ### Root (linting)
+
 ```bash
 npm run lint:check
 npm run lint:fix

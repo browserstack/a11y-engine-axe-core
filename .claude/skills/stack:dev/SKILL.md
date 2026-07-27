@@ -1,8 +1,9 @@
 ---
 name: stack:dev
-description: "Idea-to-PR orchestrator. Takes a one-liner, Jira issue, or PRD and drives it to opened PRs: auto-classifies into a stage plan, authors and reviews a PRD, implements backend via superpowers and frontend via Plumb in parallel, runs relevant tests, opens PRs from the repo template, runs design-review on frontend and stack:pr-review on every opened PR (stack:workspace-pr-review in a workspace), and feeds learnings back to the harness. Use when asked to build, implement, or ship a feature end to end. Gated by default; pass --auto to run unattended. Auto-detects workspace-root vs single-repo."
+description: 'Idea-to-PR orchestrator. Takes a one-liner, Jira issue, or PRD and drives it to opened PRs: auto-classifies into a stage plan, authors and reviews a PRD, implements backend via superpowers and frontend via Plumb in parallel, runs relevant tests, opens PRs from the repo template, runs design-review on frontend and stack:pr-review on every opened PR (stack:workspace-pr-review in a workspace), and feeds learnings back to the harness. Use when asked to build, implement, or ship a feature end to end. Gated by default; pass --auto to run unattended. Auto-detects workspace-root vs single-repo.'
 allowed-tools: Read, Write, Glob, Grep, Bash, Agent, Skill
 ---
+
 <!-- Version: 2026-06-22 | Source: @browserstack/ai-harness | Do not remove this header -->
 
 # stack:dev Orchestrator
@@ -17,11 +18,11 @@ Parse the following flags from the start of `$ARGUMENTS`. The remainder (after s
 INPUT="$(echo "$ARGUMENTS" | sed -E 's/--auto[[:space:]]*//g; s/--workspace[[:space:]]*//g; s/--repo[[:space:]]*//g' | xargs)"
 ```
 
-| Flag | Meaning |
-|---|---|
-| `--auto` | Unattended mode. Proceed through every checkpoint without waiting for human confirmation. At blocker decisions (P0 findings, design-review "Request Changes"), open a Draft PR with a findings checklist and stop rather than blocking forever. |
-| `--workspace` | Boolean mode-force flag (takes no value). Forces workspace-root mode, even if auto-detection would choose single-repo. |
-| `--repo` | Boolean mode-force flag (takes no value). Forces single-repo mode, overriding auto-detection. |
+| Flag          | Meaning                                                                                                                                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `--auto`      | Unattended mode. Proceed through every checkpoint without waiting for human confirmation. At blocker decisions (P0 findings, design-review "Request Changes"), open a Draft PR with a findings checklist and stop rather than blocking forever. |
+| `--workspace` | Boolean mode-force flag (takes no value). Forces workspace-root mode, even if auto-detection would choose single-repo.                                                                                                                          |
+| `--repo`      | Boolean mode-force flag (takes no value). Forces single-repo mode, overriding auto-detection.                                                                                                                                                   |
 
 When neither `--workspace` nor `--repo` is given, run the detection snippet below.
 
@@ -62,13 +63,14 @@ Feedback about an early stage often arrives late: a QA failure at Stage 6, a des
 
 **1. Classify the finding.** Whenever late feedback arrives, classify it before acting, and say the classification out loud:
 
-| Level | Meaning | Rework target |
-|---|---|---|
-| Implementation | Code does not match the approved PRD/Tech Spec | Fix in place (the existing stage behavior) |
-| Spec (PRD) | A requirement is wrong, ambiguous, or missing | Stage 2 (`providers.prd_author`) |
-| Architecture (Tech Spec) | The approach, module boundary, or Contract is wrong | Stage 4 (`providers.tech_spec`) |
+| Level                    | Meaning                                             | Rework target                              |
+| ------------------------ | --------------------------------------------------- | ------------------------------------------ |
+| Implementation           | Code does not match the approved PRD/Tech Spec      | Fix in place (the existing stage behavior) |
+| Spec (PRD)               | A requirement is wrong, ambiguous, or missing       | Stage 2 (`providers.prd_author`)           |
+| Architecture (Tech Spec) | The approach, module boundary, or Contract is wrong | Stage 4 (`providers.tech_spec`)            |
 
 **2. Consult before any rework (gated mode).** Present the classification and a rework plan: which artifact changes, which stages reopen, which tracks re-run. The human picks one of:
+
 - **Rework:** amend the artifact, cascade (step 3).
 - **Fix in place, artifact amended to match:** when the code behavior is actually the desired one, update the PRD/Tech Spec to say so (a scan-depth re-review of the changed section), then fix or keep the code accordingly. The artifact and code must agree either way.
 - **Accept as-is:** record the finding and the acceptance in the PR body; no rework.
@@ -279,7 +281,7 @@ If `needs_prd` is true, run `providers.tech_spec` (default: `stack:tech-spec`). 
 
 Capture the `TECH_SPEC_PATH=<path>` line and the `MODULES=<json array of {path, contributor}>` line from its output. Store `tech_spec_path` and `modules` in the session file (per `references/stage-plan-and-session.md`) **immediately**, before any Checkpoint 4 prose. Write `tech-spec` to `completed_stages`.
 
-This stage does not replace per-track implementation planning: `stack:backend-builder`'s own `writing-plans`/TDD flow and Plumb's own design→build chain still run at Stage 5, now starting from this grounded Tech Spec instead of a bare PRD. Frontend module *design* is owned entirely by Plumb at Stage 5; the Tech Spec captures only the frontend's cross-module boundary (what it consumes), not its internals.
+This stage does not replace per-track implementation planning: `stack:backend-builder`'s own `writing-plans`/TDD flow and Plumb's own design→build chain still run at Stage 5, now starting from this grounded Tech Spec instead of a bare PRD. Frontend module _design_ is owned entirely by Plumb at Stage 5; the Tech Spec captures only the frontend's cross-module boundary (what it consumes), not its internals.
 
 ### Review sub-step
 
@@ -334,7 +336,7 @@ If `needs_qa_tests` is true, dispatch `stack:qa-test-author` in the **same paral
 Agent(providers.qa, prompt: "PRD_PATH=<prd_path>\nTECH_SPEC_PATH=<tech_spec_path, or omit if Stage 4 was skipped>\n\nTest location summary: <one-paragraph summary of the repo's test directories, framework, and naming conventions>\n\nAuthor QA tests from the PRD (authoritative for expected behavior) and the Tech Spec (its Architecture and Contract, for the surface and interface the behavior manifests at). Do not read any implementation files added for this feature.")   # default: stack:qa-test-author
 ```
 
-**Isolation contract (hard rule):** pass `PRD_PATH`, the one-paragraph test-location summary, and `TECH_SPEC_PATH` (when Stage 4 produced one). Do NOT pass implementation diffs, backend builder output, or frontend scaffold output - QA must never see the built code, so its tests stay an independent check that the *implementation* matches the design. The PRD stays authoritative for *expected behavior*; the Tech Spec (architecture + interface Contract, never line-by-line implementation - that is out of its altitude) tells QA which surface and interface to target. Tradeoff to note: because QA and the builders now share the Contract, QA no longer independently catches a Contract that diverges from the PRD - that check lives at Checkpoint 4 (human Tech Spec approval), not here.
+**Isolation contract (hard rule):** pass `PRD_PATH`, the one-paragraph test-location summary, and `TECH_SPEC_PATH` (when Stage 4 produced one). Do NOT pass implementation diffs, backend builder output, or frontend scaffold output - QA must never see the built code, so its tests stay an independent check that the _implementation_ matches the design. The PRD stays authoritative for _expected behavior_; the Tech Spec (architecture + interface Contract, never line-by-line implementation - that is out of its altitude) tells QA which surface and interface to target. Tradeoff to note: because QA and the builders now share the Contract, QA no longer independently catches a Contract that diverges from the PRD - that check lives at Checkpoint 4 (human Tech Spec approval), not here.
 
 ### After all tracks complete
 
@@ -390,6 +392,7 @@ Add this URL to the same set of PR URLs that Stage 8 iterates with `gh pr ready 
    ```
 
    Record the returned verdict. If a `request-changes` / `critical` design-review finding traces back to a requirement or the approach rather than the built UI (for example the PRD specified the wrong flow), route it through "Late feedback and rework" instead of treating it as a UI fix.
+
 3. Legitimate skips, recorded as an explicit verdict (never left blank):
    - The change is logic-only (no rendered surfaces touched) -> `design_review_verdict = skipped-logic-only`.
    - `stack:design-review` is not installed AND the Stage 1 module install failed (`npx @browserstack/ai-harness add design --scope local --yes`) -> `design_review_verdict = skipped-not-installed`. Log: "stack:design-review not available (design module install failed); skipping visual review." Absence alone is not a skip: Stage 1 installs the design module machine-locally, so this verdict is only valid with a recorded install failure.
@@ -437,12 +440,12 @@ Write `prs` to `completed_stages`.
 
 Evaluate readiness:
 
-| Check | Pass condition |
-|---|---|
-| Tests | All scoped and QA tests green |
+| Check         | Pass condition                                                                                                                                                                                                                                                                                                     |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tests         | All scoped and QA tests green                                                                                                                                                                                                                                                                                      |
 | Design review | Passes when `needs_design_review` is false (N/A), OR `design_review_verdict` is `approve` or `comment`, OR a recorded legitimate skip (`skipped-logic-only`, `skipped-not-installed`). Fails when `needs_design_review` is true and `design_review_verdict` is `request-changes`, `critical`, `not-run`, or unset. |
-| Code review | No unresolved blocking findings: fixed or explicitly accepted by the user (or skipped/not-applicable) |
-| P0 findings | None remaining |
+| Code review   | No unresolved blocking findings: fixed or explicitly accepted by the user (or skipped/not-applicable)                                                                                                                                                                                                              |
+| P0 findings   | None remaining                                                                                                                                                                                                                                                                                                     |
 
 **Gated mode:** present the readiness summary. Wait for human confirmation to mark PR(s) ready (convert Draft to Ready for Review). Once confirmed, run for each PR URL collected in Stage 7:
 
@@ -479,6 +482,7 @@ Collect the `learnings[]` array from the session file. Each learning has `text`,
 **Skip condition:** if `learnings` is empty or all entries are low-signal noise (duplicate of existing rules, trivially obvious, not actionable), skip this stage entirely and report "No harness learnings to contribute."
 
 Otherwise, synthesize the learnings into concrete candidate edits:
+
 - Target: CLAUDE.md, rules files, or knowledge files in the relevant stacks.
 - Each candidate is tagged with a `target_stack` and a one-line `rationale`.
 - Drop noise: skip any learning that is already documented, is too narrow to be reusable, or cannot be expressed as a durable rule.
@@ -513,23 +517,23 @@ Write `learnings` to `completed_stages`.
 
 The table below lists recoverable error conditions and the gated vs `--auto` behavior for each.
 
-| Error | Gated behavior | `--auto` behavior |
-|---|---|---|
-| Missing or empty input | Stop immediately; ask the user to provide a feature description, Jira key, or PRD path. | Stop immediately; print: "Input required. Pass a description, Jira key, or PRD path." |
-| PRD review P0 unresolved after fix loop | Stop at Checkpoint 3; present P0s; wait for direction. | Stop after one fix loop; report unresolved P0s; do not open PRs. |
-| QA test failure: code-vs-spec divergence | Pause; present the failing tests and divergence; wait for fix confirmation. | Fix up to 2 iterations; if still failing, open Draft PR with a failing-tests checklist. |
-| QA test failure: spec ambiguity or spec defect | Route through "Late feedback and rework": classify, consult, amend the PRD first, cascade. | Open Draft PR with the finding on the checklist at its level; do not auto-resolve spec intent. |
-| Upstream-level finding after implementation (from any review or checkpoint) | Classify (spec vs architecture vs implementation); present the rework plan; on approval amend the PRD/Tech Spec and cascade to affected tracks (max 2 rework loops per run). | Never rewrite approved artifacts unattended: label the finding on the PR checklist, leave the PR a Draft. |
-| superpowers absent | Stage 0 preflight installs it, then pauses for a mandatory restart. Resume sets `engine=superpowers`; self-contained only if the user declines. | Stage 0 sets `engine=self-contained`; note the absence in the PR description. |
-| No PR template found | Use the default `## What / ## Why / ## Testing / ## Sibling PRs` body. | Same. |
-| `gh` not authenticated | Stop; print: "Run 'gh auth login' and retry." | Stop; print the same message. |
-| Design-review browser-gate failure | Log the failure; skip `stack:design-review`; note it in the PR checklist. | Same. |
-| `stack:design-review` absent | Install the design module machine-locally: `npx @browserstack/ai-harness add design --scope local --yes` (one-time per machine; auto-updates via the SessionStart hook). Only if the install fails: log "stack:design-review not available (design module install failed); skipping visual review" and record `skipped-not-installed`. | Same. |
-| `needs_design_review` true but no verdict collected (FE PR opened; design-review fired by neither Plumb nor the orchestrator's invoke) | Set `design_review_verdict = not-run`; pause and surface it as a Stage 7 blocker. | Set `design_review_verdict = not-run`; leave the PR a Draft; add it to the findings checklist; surface it in the final "What's expected from you" block. |
-| Code-review findings on an opened PR | Present the findings; consult the user on which to address; fix, push, re-run the review. Remaining findings the user accepts are recorded in the PR body. | Append findings as a PR checklist; leave the PR a Draft; never self-apply judgment fixes without a user. |
-| Code reviewer absent (`stack:pr-review` / `stack:workspace-pr-review`) | Log: "code reviewer not available; skipping code review." Proceed. | Same. |
-| Frontend work in a non-Plumb repo | Log: "Frontend track requires Plumb (stack:intake). This repo does not appear to be a Plumb-managed frontend. Treating as backend-only." Adjust `tracks` and proceed. | Same. |
-| Ambiguous workspace routing (change could land in two members) | Pause; present the routing ambiguity; wait for human to assign the target member. | Pause (exception to `--auto`): routing is never auto-resolved. Present the ambiguity; require a human decision even under `--auto`. |
+| Error                                                                                                                                  | Gated behavior                                                                                                                                                                                                                                                                                                                         | `--auto` behavior                                                                                                                                        |
+| -------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Missing or empty input                                                                                                                 | Stop immediately; ask the user to provide a feature description, Jira key, or PRD path.                                                                                                                                                                                                                                                | Stop immediately; print: "Input required. Pass a description, Jira key, or PRD path."                                                                    |
+| PRD review P0 unresolved after fix loop                                                                                                | Stop at Checkpoint 3; present P0s; wait for direction.                                                                                                                                                                                                                                                                                 | Stop after one fix loop; report unresolved P0s; do not open PRs.                                                                                         |
+| QA test failure: code-vs-spec divergence                                                                                               | Pause; present the failing tests and divergence; wait for fix confirmation.                                                                                                                                                                                                                                                            | Fix up to 2 iterations; if still failing, open Draft PR with a failing-tests checklist.                                                                  |
+| QA test failure: spec ambiguity or spec defect                                                                                         | Route through "Late feedback and rework": classify, consult, amend the PRD first, cascade.                                                                                                                                                                                                                                             | Open Draft PR with the finding on the checklist at its level; do not auto-resolve spec intent.                                                           |
+| Upstream-level finding after implementation (from any review or checkpoint)                                                            | Classify (spec vs architecture vs implementation); present the rework plan; on approval amend the PRD/Tech Spec and cascade to affected tracks (max 2 rework loops per run).                                                                                                                                                           | Never rewrite approved artifacts unattended: label the finding on the PR checklist, leave the PR a Draft.                                                |
+| superpowers absent                                                                                                                     | Stage 0 preflight installs it, then pauses for a mandatory restart. Resume sets `engine=superpowers`; self-contained only if the user declines.                                                                                                                                                                                        | Stage 0 sets `engine=self-contained`; note the absence in the PR description.                                                                            |
+| No PR template found                                                                                                                   | Use the default `## What / ## Why / ## Testing / ## Sibling PRs` body.                                                                                                                                                                                                                                                                 | Same.                                                                                                                                                    |
+| `gh` not authenticated                                                                                                                 | Stop; print: "Run 'gh auth login' and retry."                                                                                                                                                                                                                                                                                          | Stop; print the same message.                                                                                                                            |
+| Design-review browser-gate failure                                                                                                     | Log the failure; skip `stack:design-review`; note it in the PR checklist.                                                                                                                                                                                                                                                              | Same.                                                                                                                                                    |
+| `stack:design-review` absent                                                                                                           | Install the design module machine-locally: `npx @browserstack/ai-harness add design --scope local --yes` (one-time per machine; auto-updates via the SessionStart hook). Only if the install fails: log "stack:design-review not available (design module install failed); skipping visual review" and record `skipped-not-installed`. | Same.                                                                                                                                                    |
+| `needs_design_review` true but no verdict collected (FE PR opened; design-review fired by neither Plumb nor the orchestrator's invoke) | Set `design_review_verdict = not-run`; pause and surface it as a Stage 7 blocker.                                                                                                                                                                                                                                                      | Set `design_review_verdict = not-run`; leave the PR a Draft; add it to the findings checklist; surface it in the final "What's expected from you" block. |
+| Code-review findings on an opened PR                                                                                                   | Present the findings; consult the user on which to address; fix, push, re-run the review. Remaining findings the user accepts are recorded in the PR body.                                                                                                                                                                             | Append findings as a PR checklist; leave the PR a Draft; never self-apply judgment fixes without a user.                                                 |
+| Code reviewer absent (`stack:pr-review` / `stack:workspace-pr-review`)                                                                 | Log: "code reviewer not available; skipping code review." Proceed.                                                                                                                                                                                                                                                                     | Same.                                                                                                                                                    |
+| Frontend work in a non-Plumb repo                                                                                                      | Log: "Frontend track requires Plumb (stack:intake). This repo does not appear to be a Plumb-managed frontend. Treating as backend-only." Adjust `tracks` and proceed.                                                                                                                                                                  | Same.                                                                                                                                                    |
+| Ambiguous workspace routing (change could land in two members)                                                                         | Pause; present the routing ambiguity; wait for human to assign the target member.                                                                                                                                                                                                                                                      | Pause (exception to `--auto`): routing is never auto-resolved. Present the ambiguity; require a human decision even under `--auto`.                      |
 
 ---
 
