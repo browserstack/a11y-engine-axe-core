@@ -3,7 +3,8 @@
   "rules": {
     "accesskeys": {
       "description": "Ensure every accesskey attribute value is unique",
-      "help": "accesskey attribute value should be unique"
+      "help": "accesskey attribute value should be unique",
+      "violationConfidence": 99
     },
     "area-alt": {
       "description": "Ensure <area> elements of image maps have alternative text",
@@ -11,15 +12,19 @@
     },
     "aria-allowed-attr": {
       "description": "Ensure an element's role supports its ARIA attributes",
-      "help": "Elements must only use supported ARIA attributes"
+      "help": "Elements must only use supported ARIA attributes",
+      "needsReviewConfidence": 49.99
     },
     "aria-allowed-role": {
       "description": "Ensure role attribute has an appropriate value for the element",
-      "help": "ARIA role should be appropriate for the element"
+      "help": "ARIA role should be appropriate for the element",
+      "needsReviewConfidence": 49.99
     },
     "aria-braille-equivalent": {
       "description": "Ensure aria-braillelabel and aria-brailleroledescription have a non-braille equivalent",
-      "help": "aria-braille attributes must have a non-braille equivalent"
+      "help": "aria-braille attributes must have a non-braille equivalent",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "aria-command-name": {
       "description": "Ensure every ARIA button, link and menuitem has an accessible name",
@@ -42,16 +47,20 @@
       "help": "aria-hidden=\"true\" must not be present on the document body"
     },
     "aria-hidden-focus": {
+      "defaultCategory": "aria-hidden",
       "description": "Ensure aria-hidden elements are not focusable nor contain focusable elements",
-      "help": "ARIA hidden element must not be focusable or contain focusable elements"
+      "help": "ARIA hidden element must not be focusable or contain focusable elements",
+      "needsReviewConfidence": 49.99
     },
     "aria-input-field-name": {
       "description": "Ensure every ARIA input field has an accessible name",
-      "help": "ARIA input fields must have an accessible name"
+      "help": "ARIA input fields must have an accessible name",
+      "needsReviewConfidence": 49.99
     },
     "aria-meter-name": {
       "description": "Ensure every ARIA meter node has an accessible name",
-      "help": "ARIA meter nodes must have an accessible name"
+      "help": "ARIA meter nodes must have an accessible name",
+      "violationConfidence": 99
     },
     "aria-progressbar-name": {
       "description": "Ensure every ARIA progressbar node has an accessible name",
@@ -59,7 +68,9 @@
     },
     "aria-prohibited-attr": {
       "description": "Ensure ARIA attributes are not prohibited for an element's role",
-      "help": "Elements must only use permitted ARIA attributes"
+      "help": "Elements must only use permitted ARIA attributes",
+      "defaultCategory": "names-and-labels",
+      "needsReviewConfidence": 49.99
     },
     "aria-required-attr": {
       "description": "Ensure elements with ARIA roles have all required ARIA attributes",
@@ -67,7 +78,8 @@
     },
     "aria-required-children": {
       "description": "Ensure elements with an ARIA role that require child roles contain them",
-      "help": "Certain ARIA roles must contain particular children"
+      "help": "Certain ARIA roles must contain particular children",
+      "needsReviewConfidence": 49.99
     },
     "aria-required-parent": {
       "description": "Ensure elements with an ARIA role that require parent roles are contained by them",
@@ -75,7 +87,9 @@
     },
     "aria-roledescription": {
       "description": "Ensure aria-roledescription is only used on elements with an implicit or explicit role",
-      "help": "aria-roledescription must be on elements with a semantic role"
+      "help": "aria-roledescription must be on elements with a semantic role",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "aria-roles": {
       "description": "Ensure all elements with a role attribute use a valid value",
@@ -87,7 +101,8 @@
     },
     "aria-toggle-field-name": {
       "description": "Ensure every ARIA toggle field has an accessible name",
-      "help": "ARIA toggle fields must have an accessible name"
+      "help": "ARIA toggle fields must have an accessible name",
+      "needsReviewConfidence": 49.99
     },
     "aria-tooltip-name": {
       "description": "Ensure every ARIA tooltip node has an accessible name",
@@ -95,11 +110,14 @@
     },
     "aria-treeitem-name": {
       "description": "Ensure every ARIA treeitem node has an accessible name",
-      "help": "ARIA treeitem nodes should have an accessible name"
+      "help": "ARIA treeitem nodes should have an accessible name",
+      "violationConfidence": 99
     },
     "aria-valid-attr-value": {
+      "defaultCategory": "aria-attributes",
       "description": "Ensure all ARIA attributes have valid values",
-      "help": "ARIA attributes must conform to valid values"
+      "help": "ARIA attributes must conform to valid values",
+      "needsReviewConfidence": 49.99
     },
     "aria-valid-attr": {
       "description": "Ensure attributes that begin with aria- are valid ARIA attributes",
@@ -107,11 +125,13 @@
     },
     "audio-caption": {
       "description": "Ensure <audio> elements have captions",
-      "help": "<audio> elements must have a captions track"
+      "help": "<audio> elements must have a captions track",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "autocomplete-valid": {
-      "description": "Ensure the autocomplete attribute is correct and suitable for the form field",
-      "help": "autocomplete attribute must be used correctly"
+      "description": "Ensure that the necessary form fields use the autocomplete attribute with a valid input.",
+      "help": "Autocomplete attribute must have a valid value"
     },
     "avoid-inline-spacing": {
       "description": "Ensure that text spacing set through style attributes can be adjusted with custom stylesheets",
@@ -119,27 +139,38 @@
     },
     "blink": {
       "description": "Ensure <blink> elements are not used",
-      "help": "<blink> elements are deprecated and must not be used"
+      "help": "<blink> elements are deprecated and must not be used",
+      "violationConfidence": 99
     },
     "button-name": {
       "description": "Ensure buttons have discernible text",
-      "help": "Buttons must have discernible text"
+      "help": "Buttons must have discernible text",
+      "needsReviewConfidence": 49.99
     },
     "bypass": {
+      "defaultCategory": "bypass-blocks",
       "description": "Ensure each page has at least one mechanism for a user to bypass navigation and jump straight to the content",
-      "help": "Page must have means to bypass repeated blocks"
+      "help": "Page must have means to bypass repeated blocks",
+      "needsReviewConfidence": 49.99
     },
     "color-contrast-enhanced": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AAA enhanced contrast ratio thresholds",
-      "help": "Elements must meet enhanced color contrast ratio thresholds"
+      "help": "Elements must meet enhanced color contrast ratio thresholds",
+      "needsReviewConfidence": 49.99,
+      "defaultCategory": "text-contrast-enhanced"
     },
     "color-contrast": {
       "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-      "help": "Elements must meet minimum color contrast ratio thresholds"
+      "help": "Elements must meet minimum color contrast ratio thresholds",
+      "needsReviewConfidence": 49.99,
+      "defaultCategory": "text-contrast"
     },
     "css-orientation-lock": {
+      "defaultCategory": "orientation",
       "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
-      "help": "CSS Media queries must not lock display orientation"
+      "help": "CSS Media queries must not lock display orientation",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 49.99
     },
     "definition-list": {
       "description": "Ensure <dl> elements are structured correctly",
@@ -155,15 +186,21 @@
     },
     "duplicate-id-active": {
       "description": "Ensure every id attribute value of active elements is unique",
-      "help": "IDs of active elements must be unique"
+      "help": "IDs of active elements must be unique",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "duplicate-id-aria": {
+      "defaultCategory": "duplicate-ids",
       "description": "Ensure every id attribute value used in ARIA and in labels is unique",
-      "help": "IDs used in ARIA and labels must be unique"
+      "help": "IDs used in ARIA and labels must be unique",
+      "needsReviewConfidence": 49.99
     },
     "duplicate-id": {
       "description": "Ensure every id attribute value is unique",
-      "help": "id attribute value must be unique"
+      "help": "id attribute value must be unique",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "empty-heading": {
       "description": "Ensure headings have discernible text",
@@ -171,15 +208,19 @@
     },
     "empty-table-header": {
       "description": "Ensure table headers have discernible text",
-      "help": "Table header text should not be empty"
+      "help": "Table header text should not be empty",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "focus-order-semantics": {
       "description": "Ensure elements in the focus order have a role appropriate for interactive content",
-      "help": "Elements in the focus order should have an appropriate role"
+      "help": "Elements in the focus order should have an appropriate role",
+      "violationConfidence": 90
     },
     "form-field-multiple-labels": {
       "description": "Ensure form field does not have multiple label elements",
-      "help": "Form field must not have multiple label elements"
+      "help": "Form field must not have multiple label elements",
+      "needsReviewConfidence": 49.99
     },
     "frame-focusable-content": {
       "description": "Ensure <frame> and <iframe> elements with focusable content do not have tabindex=-1",
@@ -187,23 +228,33 @@
     },
     "frame-tested": {
       "description": "Ensure <iframe> and <frame> elements contain the axe-core script",
-      "help": "Frames should be tested with axe-core"
+      "help": "Frames should be tested with axe-core",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "frame-title-unique": {
       "description": "Ensure <iframe> and <frame> elements contain a unique title attribute",
-      "help": "Frames must have a unique title attribute"
+      "help": "Frames must have a unique title attribute",
+      "needsReviewConfidence": 49.99
     },
     "frame-title": {
       "description": "Ensure <iframe> and <frame> elements have an accessible name",
       "help": "Frames must have an accessible name"
     },
+    "heading-order-bp": {
+      "description": "Ensure the order of headings is semantically correct",
+      "help": "Heading levels should only increase by one",
+      "needsReviewConfidence": 49.99
+    },
     "heading-order": {
       "description": "Ensure the order of headings is semantically correct",
-      "help": "Heading levels should only increase by one"
+      "help": "Heading levels must only increase by one",
+      "needsReviewConfidence": 49.99
     },
     "hidden-content": {
       "description": "Inform users about hidden content.",
-      "help": "Hidden content on the page should be analyzed"
+      "help": "Hidden content on the page should be analyzed",
+      "needsReviewConfidence": 49.99
     },
     "html-has-lang": {
       "description": "Ensure every HTML document has a lang attribute",
@@ -218,8 +269,10 @@
       "help": "HTML elements with lang and xml:lang must have the same base language"
     },
     "identical-links-same-purpose": {
+      "defaultCategory": "link-consistency",
       "description": "Ensure that links with the same accessible name serve a similar purpose",
-      "help": "Links with the same name must have a similar purpose"
+      "help": "Links with the same name must have a similar purpose",
+      "needsReviewConfidence": 49.99
     },
     "image-alt": {
       "description": "Ensure <img> elements have alternative text or a role of none or presentation",
@@ -239,7 +292,10 @@
     },
     "label-content-name-mismatch": {
       "description": "Ensure that elements labelled through their content must have their visible text as part of their accessible name",
-      "help": "Elements must have their visible text as part of their accessible name"
+      "help": "Elements must have their visible text as part of their accessible name",
+      "violationConfidence": 80,
+      "needsReviewConfidence": 49.99,
+      "defaultCategory": "names-and-labels"
     },
     "label-title-only": {
       "description": "Ensure that every form element has a visible label and is not solely labeled using hidden labels, or the title or aria-describedby attributes",
@@ -287,7 +343,9 @@
     },
     "link-in-text-block": {
       "description": "Ensure links are distinguished from surrounding text in a way that does not rely on color",
-      "help": "Links must be distinguishable without relying on color"
+      "help": "Links must be distinguishable without relying on color",
+      "needsReviewConfidence": 49.99,
+      "defaultCategory": "links"
     },
     "link-name": {
       "description": "Ensure links have discernible text",
@@ -323,11 +381,13 @@
     },
     "nested-interactive": {
       "description": "Ensure interactive controls are not nested as they are not always announced by screen readers or can cause focus problems for assistive technologies",
-      "help": "Interactive controls must not be nested"
+      "help": "Interactive controls must not be nested",
+      "needsReviewConfidence": 49.99
     },
     "no-autoplay-audio": {
       "description": "Ensure <video> or <audio> elements do not autoplay audio for more than 3 seconds without a control mechanism to stop or mute the audio",
-      "help": "<video> or <audio> elements must not play automatically"
+      "help": "<video> or <audio> elements must not play automatically",
+      "needsReviewConfidence": 49.99
     },
     "object-alt": {
       "description": "Ensure <object> elements have alternative text",
@@ -335,7 +395,9 @@
     },
     "p-as-heading": {
       "description": "Ensure bold, italic text and font-size is not used to style <p> elements as a heading",
-      "help": "Styled <p> elements must not be used as headings"
+      "help": "Styled <p> elements must not be used as headings",
+      "violationConfidence": 85,
+      "needsReviewConfidence": 49.99
     },
     "page-has-heading-one": {
       "description": "Ensure that the page, or at least one of its frames contains a level-one heading",
@@ -367,11 +429,14 @@
     },
     "server-side-image-map": {
       "description": "Ensure that server-side image maps are not used",
-      "help": "Server-side image maps must not be used"
+      "help": "Server-side image maps must not be used",
+      "violationConfidence": 99,
+      "needsReviewConfidence": 49.99
     },
     "skip-link": {
       "description": "Ensure all skip links have a focusable target",
-      "help": "The skip-link target should exist and be focusable"
+      "help": "The skip-link target should exist and be focusable",
+      "needsReviewConfidence": 49.99
     },
     "summary-name": {
       "description": "Ensure summary elements have discernible text",
@@ -387,19 +452,24 @@
     },
     "table-duplicate-name": {
       "description": "Ensure the <caption> element does not contain the same text as the summary attribute",
-      "help": "Tables should not have the same summary and caption"
+      "help": "Tables should not have the same summary and caption",
+      "violationConfidence": 99
     },
     "table-fake-caption": {
       "description": "Ensure that tables with a caption use the <caption> element.",
-      "help": "Data or header cells must not be used to give caption to a data table."
+      "help": "Data or header cells must not be used to give caption to a data table.",
+      "violationConfidence": 90
     },
     "target-size": {
       "description": "Ensure touch targets have sufficient size and space",
-      "help": "All touch targets must be 24px large, or leave sufficient space"
+      "help": "All touch targets must be 24px large, or leave sufficient space",
+      "needsReviewConfidence": 49.99
     },
     "td-has-header": {
       "description": "Ensure that each non-empty data cell in a <table> larger than 3 by 3  has one or more table headers",
-      "help": "Non-empty <td> elements in larger <table> must have an associated table header"
+      "help": "Non-empty <td> elements in larger <table> must have an associated table header",
+      "violationConfidence": 90,
+      "needsReviewConfidence": 49.99
     },
     "td-headers-attr": {
       "description": "Ensure that each cell in a table that uses the headers attribute refers only to other <th> elements in that table",
@@ -407,15 +477,18 @@
     },
     "th-has-data-cells": {
       "description": "Ensure that <th> elements and elements with role=columnheader/rowheader have data cells they describe",
-      "help": "Table headers in a data table must refer to data cells"
+      "help": "Table headers in a data table must refer to data cells",
+      "needsReviewConfidence": 49.99
     },
     "valid-lang": {
       "description": "Ensure lang attributes have valid values",
       "help": "lang attribute must have a valid value"
     },
     "video-caption": {
+      "defaultCategory": "media-captions",
       "description": "Ensure <video> elements have captions",
-      "help": "<video> elements must have captions"
+      "help": "<video> elements must have captions",
+      "needsReviewConfidence": 49.99
     }
   },
   "checks": {
@@ -698,7 +771,7 @@
     },
     "autocomplete-valid": {
       "pass": "the autocomplete attribute is correctly formatted",
-      "fail": "the autocomplete attribute is incorrectly formatted",
+      "fail": "Add autocomplete attribute to form fields with a valid value as per HTML specification : https://html.spec.whatwg.org/#autofill-detail-tokens. In \"name\" attribute of field, prefer to use standard autocomplete value since browsers use \"name\" to suggest autofill. For field with no standard autocomplete value (eg: College ID), prefer to use autocomplete=\"off\".",
       "incomplete": "the autocomplete attribute has a non-standard value. Check whether any standard value could be used instead."
     },
     "accesskeys": {
@@ -802,7 +875,8 @@
     },
     "label-content-name-mismatch": {
       "pass": "Element contains visible text as part of it's accessible name",
-      "fail": "Text inside the element is not included in the accessible name"
+      "fail": "Ensure that the visible label of the element and the accessible name (provided by `aria-label`, etc.) match exactly. Ensure that the visible label of the element is part of the accessible name of the element. It is advisable that the visible label comes in the beginning of the accessible name",
+      "incomplete": "Check if the visible text is part of the accessible name (provided by `aria-label`, etc.) for the element. Check the accessibility tree to get the accessible name of the element."
     },
     "multiple-label": {
       "pass": "Form field does not have multiple label elements",
@@ -917,7 +991,7 @@
     },
     "heading-order": {
       "pass": "Heading order valid",
-      "fail": "Heading order invalid",
+      "fail": "Fix the order of headings. Headings should be in descending order of size without skipping levels. For example, <h2> should be followed by <h3>, not <h4> or <h5>.",
       "incomplete": "Unable to determine previous heading"
     },
     "identical-links-same-purpose": {
@@ -964,7 +1038,7 @@
     },
     "duplicate-id-aria": {
       "pass": "Document has no elements referenced with ARIA or labels that share the same id attribute",
-      "fail": "Document has multiple elements referenced with ARIA with the same id attribute: ${data}"
+      "fail": "Document has multiple elements referenced with ARIA with the same id attribute: ${data.id}"
     },
     "duplicate-id": {
       "pass": "Document has no static elements that share the same id attribute",
