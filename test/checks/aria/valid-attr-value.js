@@ -123,7 +123,10 @@ describe('aria-valid-attr-value', () => {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'controlsWithinPopup',
-      needsReview: 'aria-controls="test"'
+      needsReview: 'aria-controls="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-controls="test"' }
+      }
     });
   });
 
@@ -164,21 +167,30 @@ describe('aria-valid-attr-value', () => {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'noId',
-      needsReview: 'aria-describedby="test"'
+      needsReview: 'aria-describedby="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-describedby="test"' }
+      }
     });
   });
 
-  it('should return undefined on aria-describedby when the element is in a different shadow tree', () => {
-    const params = shadowCheckSetup(
-      '<div></div>',
-      '<button id="target" aria-describedby="test">Button</button>'
-    );
-    assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
-    assert.deepEqual(checkContext._data, {
-      messageKey: 'noIdShadow',
-      needsReview: 'aria-describedby="test"'
-    });
-  });
+  (shadowSupported ? it : xit)(
+    'should return undefined on aria-describedby when the element is in a different shadow tree',
+    function () {
+      var params = shadowCheckSetup(
+        '<div></div>',
+        '<button id="target" aria-describedby="test">Button</button>'
+      );
+      assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
+      assert.deepEqual(checkContext._data, {
+        messageKey: 'noIdShadow',
+        needsReview: 'aria-describedby="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-describedby="test"' }
+        }
+      });
+    }
+  );
 
   it('should return undefined on aria-labelledby when the element is not in the DOM', () => {
     const vNode = queryFixture(
@@ -189,21 +201,30 @@ describe('aria-valid-attr-value', () => {
     );
     assert.deepEqual(checkContext._data, {
       messageKey: 'noId',
-      needsReview: 'aria-labelledby="test"'
+      needsReview: 'aria-labelledby="test"',
+      reviewPayload: {
+        visualHelperData: { ariaAttribute: 'aria-labelledby="test"' }
+      }
     });
   });
 
-  it('should return undefined on aria-labelledby when the element is in a different shadow tree', () => {
-    const params = shadowCheckSetup(
-      '<div></div>',
-      '<button id="target" aria-labelledby="test">Button</button>'
-    );
-    assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
-    assert.deepEqual(checkContext._data, {
-      messageKey: 'noIdShadow',
-      needsReview: 'aria-labelledby="test"'
-    });
-  });
+  (shadowSupported ? it : xit)(
+    'should return undefined on aria-labelledby when the element is in a different shadow tree',
+    function () {
+      var params = shadowCheckSetup(
+        '<div></div>',
+        '<button id="target" aria-labelledby="test">Button</button>'
+      );
+      assert.isUndefined(validAttrValueCheck.apply(checkContext, params));
+      assert.deepEqual(checkContext._data, {
+        messageKey: 'noIdShadow',
+        needsReview: 'aria-labelledby="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-labelledby="test"' }
+        }
+      });
+    }
+  );
 
   it('should return undefined on aria-current with invalid value', () => {
     const vNode = queryFixture(
@@ -246,7 +267,8 @@ describe('aria-valid-attr-value', () => {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'empty',
-        needsReview: 'aria-checked'
+        needsReview: 'aria-checked',
+        reviewPayload: { visualHelperData: { ariaAttribute: 'aria-checked' } }
       });
     });
 
@@ -259,7 +281,8 @@ describe('aria-valid-attr-value', () => {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'empty',
-        needsReview: 'aria-checked'
+        needsReview: 'aria-checked',
+        reviewPayload: { visualHelperData: { ariaAttribute: 'aria-checked' } }
       });
     });
 
@@ -318,7 +341,10 @@ describe('aria-valid-attr-value', () => {
       );
       assert.deepEqual(checkContext._data, {
         messageKey: 'idrefs',
-        needsReview: 'aria-owns="test"'
+        needsReview: 'aria-owns="test"',
+        reviewPayload: {
+          visualHelperData: { ariaAttribute: 'aria-owns="test"' }
+        }
       });
     });
 

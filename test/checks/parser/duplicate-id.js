@@ -30,7 +30,19 @@ describe('duplicate-id', () => {
     assert.deepEqual(checkContext._relatedNodes, [node.nextSibling]);
   });
 
-  it('should return remove duplicates', () => {
+  it('keeps data a plain id string and emits no reviewPayload when the reviewPayload option is off', function () {
+    // static/active checks share this evaluate but never set the option.
+    fixture.innerHTML = '<div id="target"></div><div id="target"></div>';
+    var node = fixture.querySelector('#target');
+    assert.isFalse(
+      axe.testUtils.getCheckEvaluate('duplicate-id').call(checkContext, node)
+    );
+    assert.isString(checkContext._data);
+    assert.equal(checkContext._data, 'target');
+    assert.isUndefined(checkContext._data.reviewPayload);
+  });
+
+  it('should return remove duplicates', function () {
     assert.deepEqual(
       checks['duplicate-id'].after([
         { data: 'a' },
@@ -41,7 +53,19 @@ describe('duplicate-id', () => {
     );
   });
 
-  it('should ignore empty ids', () => {
+  it('removes duplicates for object-shaped data (shared after with the aria variant)', function () {
+    // shared after dedupes object data by data.id (aria variant shape).
+    assert.deepEqual(
+      checks['duplicate-id'].after([
+        { data: { id: 'a' } },
+        { data: { id: 'b' } },
+        { data: { id: 'b' } }
+      ]),
+      [{ data: { id: 'a' } }, { data: { id: 'b' } }]
+    );
+  });
+
+  it('should ignore empty ids', function () {
     fixture.innerHTML =
       '<div data-testelm="1" id=""></div><div data-testelm="2"  id=""></div>';
     const node = fixture.querySelector('[data-testelm="1"]');

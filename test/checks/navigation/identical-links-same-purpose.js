@@ -60,8 +60,13 @@ describe('identical-links-same-purpose tests', () => {
       vNode
     );
     assert.isTrue(actual);
-    assert.hasAllKeys(checkContext._data, ['name', 'urlProps']);
+    assert.hasAllKeys(checkContext._data, [
+      'name',
+      'accessibleText',
+      'urlProps'
+    ]);
     assert.equal(checkContext._data.name, 'Pass 1'.toLowerCase());
+    assert.equal(checkContext._data.accessibleText, 'Pass 1');
     assert.equal(checkContext._data.urlProps.hash, '#/foo');
     assert.equal(checkContext._data.urlProps.pathname, '/home/');
   });
@@ -86,8 +91,13 @@ describe('identical-links-same-purpose tests', () => {
       vNode
     );
     assert.isTrue(actual);
-    assert.hasAllKeys(checkContext._data, ['name', 'urlProps']);
+    assert.hasAllKeys(checkContext._data, [
+      'name',
+      'accessibleText',
+      'urlProps'
+    ]);
     assert.equal(checkContext._data.name, 'MDN'.toLowerCase());
+    assert.equal(checkContext._data.accessibleText, 'MDN');
     assert.isFalse(!!checkContext._data.resource);
   });
 
@@ -102,10 +112,18 @@ describe('identical-links-same-purpose tests', () => {
       vNode
     );
     assert.isTrue(actual);
-    assert.hasAllKeys(checkContext._data, ['name', 'urlProps']);
+    assert.hasAllKeys(checkContext._data, [
+      'name',
+      'accessibleText',
+      'urlProps'
+    ]);
     assert.equal(
       checkContext._data.name,
       'The is orange the is white'.toLowerCase()
+    );
+    assert.equal(
+      checkContext._data.accessibleText,
+      'The ☀️ is orange, the ◓ is white.'
     );
     assert.equal(checkContext._data.urlProps.filename, 'foo.html');
   });

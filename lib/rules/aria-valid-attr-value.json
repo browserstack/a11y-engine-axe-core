@@ -13,6 +13,7 @@
   ],
   "actIds": ["6a7281"],
   "metadata": {
+    "defaultCategory": "aria-attributes",
     "description": "Ensure all ARIA attributes have valid values",
     "help": "ARIA attributes must conform to valid values",
     "needsReviewConfidence": 49.99
