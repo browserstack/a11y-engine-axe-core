@@ -187,6 +187,49 @@ Share with the user at the end of each phase.
 - [ ] Scanner version extracted from Slack: `<SCANNER_VERSION>`
 - [ ] Pipeline build link(s) — one per pipeline per environment
 
+## Additional guidance
+
+### `environmentConstants.js` patching
+
+When building extensions (Steps 3 & 4), the frontend's `apps/<extension>/env/environmentConstants.js` controls which backend the extension talks to. For non-prod builds, verify the `a11yEngineHost` value in the target env's `createEnvConfig` block points to the correct backend:
+
+| Environment | Expected `a11yEngineHost` |
+|---|---|
+| regression | `'a11y-engine-regression.bsstag.com'` |
+| preprod | `'a11y-engine-preprod.bsstag.com'` |
+| prod | `'accessibility.browserstack.com'` |
+
+If the value is stale or wrong, patch it before building. Restore after (`git checkout -- apps/<extension>/env/environmentConstants.js`). See `stack:create-wa-crx` Step 2 for the full procedure.
+
+### `SET_LATEST` / `SET_INTERNAL` flags
+
+These flags appear in some Jenkins jobs and control package distribution scope:
+
+| Flag | Value `yes` | Value `no` | When to use |
+|---|---|---|---|
+| `SET_LATEST` | Tags the published version as `latest` on npm | Published version is NOT tagged `latest` | **yes** for staging/preprod validation builds that should become the default. **no** for experimental or hotfix builds you don't want consumers to auto-pull. |
+| `SET_INTERNAL` | Marks the build as internal-only (not visible to external consumers) | Build is publicly visible | **yes** for internal testing builds. **no** for release candidates and production builds. |
+
+Default to `SET_LATEST=no` and `SET_INTERNAL=yes` for first-time staging publishes. Switch to `SET_LATEST=yes` only when promoting to preprod/prod.
+
+### `BuildProductTools` as explicit AUT step
+
+Step 4 (automated extension) uses `A11yUploadExtension`, but `BuildProductTools` can also build the AUT extension. When building AUT via `BuildProductTools` instead of `A11yUploadExtension`:
+
+- Set `PRODUCT` = `accessibility-toolkit-headless`
+- Set `BUILD_TYPE` = `CHROME_EXT`
+- All other fields same as Step 3
+
+Use `BuildProductTools` for AUT when you need a build artifact without the upload step (e.g., local CRX creation, debugging build issues).
+
+### TapScanner registration
+
+After the automated extension is uploaded (Step 4), the new scanner version must be registered with TapScanner for Automate to pick it up. This is typically handled automatically by `A11yUploadExtension`. If the scanner version doesn't appear in Automate after upload, check:
+
+1. `#accessibility-qa-staging-deploys` for the upload confirmation message
+2. TapScanner registration logs in the Jenkins build console
+3. If registration failed, re-trigger `A11yUploadExtension` — it is idempotent
+
 ## See also
 
 - `references/step-1-publish-engine.md` — version bump + package publish
@@ -195,3 +238,4 @@ Share with the user at the end of each phase.
 - `references/step-4-build-automated-extension.md` — `accessibility-toolkit-headless` build + cleanup
 - `references/step-6-pipelines.md` — Jenkins pipeline parameters
 - `references/troubleshooting.md` — failure modes and fixes per step
+- `stack:create-wa-crx` — build a WA CRX for automation testing

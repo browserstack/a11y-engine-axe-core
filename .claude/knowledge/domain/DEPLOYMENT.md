@@ -129,6 +129,58 @@ All three reference a `Deployment` via `workloadRef` — the rollout controls th
 
 Helm chart that produces all of the above: `kubernetes-resources/charts/a11y-engine-service/` (`a11y-engine-infra-ops` repo). Templates of interest: `deployment.yaml`, `workerDeployment.yaml`, `aiWorkerDeployment.yaml`, `service.yaml`, `serviceCanary.yaml`, `ingress.yaml`, `externalSecret.yaml`, `customMetricsAutoscaler.yaml`, `cronAutoscaler.yaml`, `pdb.yaml`.
 
+### ContainerImageBuilder (manual image builds)
+
+When you need to build and push a Docker image outside the normal CI flow (e.g., hotfix, custom branch, specific environment), use the `ReleaseEngineering/ContainerImageBuilder` Jenkins job:
+
+```
+https://minion.browserstack.com/job/ReleaseEngineering/job/ContainerImageBuilder/build?delay=0sec
+```
+
+| Parameter | Description | Example |
+|---|---|---|
+| `REPO_NAME` | GitHub repo name | `a11y-engine` |
+| `BRANCH_NAME` | Branch to build from | `main`, `hotfix/AXE-1234` |
+| `IMAGE_ENV` | Environment tag prefix | `regression`, `preprod`, `prod` |
+| `DOCKERFILE_PATH` | Path to Dockerfile in repo | `ip-protection/Dockerfile` |
+| `BUILD_ARGS` | Additional Docker build args | (usually empty) |
+
+**CRITICAL: `IMAGE_ENV` naming distinction:**
+
+| `IMAGE_ENV` value | Behavior |
+|---|---|
+| `regression` | Image is auto-deployed by FluxCD (tag matches the `^regression-` ImagePolicy pattern) |
+| `reg` | Image is pushed to ECR but **NOT auto-deployed** (tag `reg-*` does NOT match any ImagePolicy) |
+| `preprod` | Auto-deployed to preprod |
+| `prod` | Auto-deployed to prod |
+
+Use `reg` when you want to push an image for manual testing without triggering auto-deployment. Use `regression` when you want FluxCD to pick it up automatically.
+
+### Verification after image build
+
+```bash
+# Check pod is running the new image
+kubectl get pods -n a11y-engine -o jsonpath='{range .items[*]}{.metadata.name}{"\t"}{.spec.containers[0].image}{"\n"}{end}' | grep a11y-engine
+
+# Check axe-core version inside a running pod
+kubectl exec -n a11y-engine <pod-name> -- node -e "console.log(require('/home/app/a11y-engine-core/package.json').version)"
+
+# Check image tag matches expected
+kubectl get deployment a11y-engine-service -n a11y-engine -o jsonpath='{.spec.template.spec.containers[0].image}'
+```
+
+### `gitops-core` auto-overwrite warning
+
+FluxCD's `ImageUpdateAutomation` continuously overwrites the image tag in `fluxcd/<env>/a11y-engine-service/release.yaml` with the latest tag matching the `ImagePolicy`. If you manually edit `release.yaml` to pin a specific image, **FluxCD will overwrite your change** on the next reconciliation cycle (~1 minute).
+
+To temporarily pin an image:
+1. **Suspend the ImagePolicy**: `flux suspend imagepolicy a11y-engine-<env> -n a11y-engine`
+2. Edit `release.yaml` with your pinned tag
+3. Merge the change
+4. When done, **resume**: `flux resume imagepolicy a11y-engine-<env> -n a11y-engine`
+
+Never leave an ImagePolicy suspended indefinitely — it blocks all future auto-deployments for that environment.
+
 ### Image flow — code commit → pod
 
 1. Developer merges to `ip-protection` `main` → CI builds a Docker image.
