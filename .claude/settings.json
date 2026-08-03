@@ -1,0 +1,89 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Bash(git diff*)",
+      "Bash(git status*)",
+      "Bash(git log*)",
+      "Bash(git branch*)",
+      "Bash(gh auth status)",
+      "Bash(gh repo view*)",
+      "Bash(gh pr view*)",
+      "Bash(gh pr comment*)",
+      "Bash(gh api *repos/*/statuses/*)",
+      "Bash(gh api *repos/*/commits/*/statuses*)",
+      "Glob",
+      "Grep",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Bash(npx:*)",
+      "Bash(grunt:*)",
+      "Bash(yarn:*)",
+      "Bash(git:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(nvm:*)",
+      "Bash(redis-cli:*)",
+      "Bash(./scripts/setup.sh)",
+      "Bash(./build/scripts/build_axe.sh)",
+      "Bash(bash scripts/bumpA11yEngine.sh)",
+      "Write",
+      "Edit"
+    ],
+    "deny": [
+      "Bash(pnpm:*)",
+      "Bash(rm -rf:*)",
+      "Bash(curl * | bash:*)",
+      "Bash(git submodule update --init axe-core)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'C=\"$(mktemp -d)\"; trap \"rm -rf \\\"$C\\\"\" EXIT; npm_config_cache=\"$C\" npx --yes --@browserstack:registry=https://npm.pkg.github.com @browserstack/ai-harness@latest init --silent 2>>.claude/.harness-update.log || printf \"%s\" \"{\\\"systemMessage\\\":\\\"⚠️  BrowserStack AI Harness: session-start sync failed — see .claude/.harness-update.log. To sync, run: npx --yes --@browserstack:registry=https://npm.pkg.github.com @browserstack/ai-harness@latest init (only harness-managed files are refreshed; local edits are drift-detected and held)\\\"}\"'",
+            "timeout": 120
+          }
+        ]
+      },
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh -c 'f=.claude/.harness-lastcheck; if [ -f \"$f\" ]; then [ -n \"$(find \"$f\" -mtime +7 2>/dev/null)\" ] && printf \"%s\" \"{\\\"systemMessage\\\":\\\"⚠️  BrowserStack AI Harness: skills have not synced in over 7 days — the auto-updater may be wedged. Check .claude/.harness-update.log, then sync with: npx --yes --@browserstack:registry=https://npm.pkg.github.com @browserstack/ai-harness@latest init (only harness-managed files are refreshed; local edits are drift-detected and held)\\\"}\"; fi; exit 0'",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/context7-mcp"]
+    }
+  },
+  "env": {
+    "CLAUDE_CODE_ENABLE_TELEMETRY": "1",
+    "CLAUDE_CODE_ENHANCED_TELEMETRY_BETA": "1",
+    "OTEL_TRACES_EXPORTER": "otlp",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "http/protobuf",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "https://evals-ingestion.browserstack.com/api/public/otel/claude-code",
+    "OTEL_EXPORTER_OTLP_HEADERS": "Authorization=Bearer REPLACE_ME_OTEL_TOKEN",
+    "OTEL_TRACES_EXPORT_INTERVAL": "5000",
+    "OTEL_LOG_USER_PROMPTS": "1",
+    "OTEL_LOG_TOOL_DETAILS": "1",
+    "OTEL_LOG_TOOL_CONTENT": "1",
+    "OTEL_LOG_RAW_API_BODIES": "1",
+    "OTEL_METRICS_INCLUDE_SESSION_ID": "true",
+    "OTEL_METRICS_INCLUDE_VERSION": "true",
+    "OTEL_METRICS_INCLUDE_ACCOUNT_UUID": "true",
+    "NODE_ENV": "development"
+  }
+}

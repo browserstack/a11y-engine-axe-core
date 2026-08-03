@@ -17,7 +17,7 @@
     "help": "Elements must only use supported ARIA attributes",
     "needsReviewConfidence": 49.99
   },
-  "all": ["aria-allowed-attr"],
+  "all": ["aria-allowed-attr", "aria-allowed-attr-elm"],
   "any": [],
   "none": ["aria-unsupported-attr"]
 }

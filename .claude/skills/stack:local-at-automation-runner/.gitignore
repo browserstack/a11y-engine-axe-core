@@ -1,0 +1,2 @@
+# Per-machine credential/state store — created at runtime, never committed.
+state.local.json
