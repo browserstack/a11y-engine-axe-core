@@ -673,7 +673,7 @@ var helpers;
       fixture.innerHTML = '';
 
       // reset the logger for each test
-      axe._setLogger();
+      if (axe._setLogger) axe._setLogger();
 
       // remove all attributes from fixture (otherwise a leftover
       // style attribute would cause avoid-inline-spacing integration
