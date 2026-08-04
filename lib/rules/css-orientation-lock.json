@@ -1,7 +1,7 @@
 {
   "id": "css-orientation-lock",
   "impact": "serious",
-  "selector": "html",
+  "selector": "html:not(html *)",
   "tags": [
     "cat.structure",
     "wcag134",
@@ -16,6 +16,7 @@
   ],
   "actIds": ["b33eff"],
   "metadata": {
+    "defaultCategory": "orientation",
     "description": "Ensure content is not locked to any specific display orientation, and the content is operable in all display orientations",
     "help": "CSS Media queries must not lock display orientation",
     "violationConfidence": 90,
