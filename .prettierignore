@@ -1,2 +1,5 @@
 node_modules/
 doc/api
+tmp/
+axe.js
+axe.min.js
