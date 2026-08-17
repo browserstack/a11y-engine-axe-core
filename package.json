@@ -216,6 +216,7 @@
     "postcss": "8.5.25",
     "shell-quote": "1.10.0",
     "ip-address": ">=10.4.0",
-    "socket.io-parser": ">=4.2.7"
+    "socket.io-parser": ">=4.2.7",
+    "extract-zip": "github:alehlopeh/extract-zip#fix/symlink-target-traversal"
   }
 }
