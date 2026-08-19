@@ -37,7 +37,7 @@ module.exports = function (grunt) {
 
   // run tests only for affected files instead of all tests
   grunt.event.on('watch', function (action, filepath) {
-    grunt.config.set('watch.file', filepath);
+    grunt.option('changed-file', filepath);
   });
 
   process.env.NODE_NO_HTTP2 = 1; // to hide node warning - (node:18740) ExperimentalWarning: The http2 module is an experimental API.
@@ -46,7 +46,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
     clean: {
       core: ['dist', 'tmp/core', 'tmp/rules.js', 'axe.js', 'axe.*.js'],
-      tests: ['tmp/integration-tests.js']
+      tests: ['tmp/integration-tests']
     },
     babel: {
       options: {
@@ -109,6 +109,39 @@ module.exports = function (grunt) {
             cwd: 'lib/core',
             src: ['core.js'],
             dest: 'tmp/core'
+          },
+          // build so we can test it by itself
+          {
+            expand: true,
+            cwd: 'lib/gather-internals',
+            src: ['walk-tree.js'],
+            dest: 'tmp/',
+            options: {
+              globalName: '_gatherInternals'
+            }
+          },
+          {
+            expand: true,
+            src: ['lib/gather-internals/main.js'],
+            dest: './',
+            options: {
+              outfile: 'gather-internals.js',
+              // esbuild doesn't support returning from an iife so we'll have to do a bit of a hack to make it work
+              // @see https://github.com/evanw/esbuild/issues/2277
+              banner: {
+                js: '(() => {'
+              },
+              footer: {
+                js: `return elementInternalsMap;
+})();`
+              },
+              globalName: 'elementInternalsMap',
+              metafile: true
+            },
+            validateImports: {
+              max: 10,
+              maxSize: 4000
+            }
           }
         ]
       }
@@ -231,9 +264,7 @@ module.exports = function (grunt) {
       }
     },
     test: {
-      data: {
-        testFile: '<%= watch.file %>'
-      }
+      data: {}
     },
     watch: {
       axe: {
@@ -243,7 +274,7 @@ module.exports = function (grunt) {
       },
       tests: {
         options: { spawn: false },
-        files: ['test/**/*'],
+        files: ['test/**/*', '!test/integration/full/**/*'],
         tasks: ['test']
       }
     },
