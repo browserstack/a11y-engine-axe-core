@@ -213,14 +213,37 @@ describe('axe.utils.normalizeRunOptions', () => {
     });
   });
 
-  it('throws an error when option.rules has an unknown rule', () => {
-    assert.throws(() => {
+  it('logs an issue when option.rules has an unknown rule', () => {
+    let message = '';
+    axe._setLogger(m => {
+      message = m;
+    });
+    axe.utils.normalizeRunOptions({
+      rules: {
+        fakeRule: { enabled: false }
+      }
+    });
+    assert.include(message, 'Could not find rules');
+  });
+
+  it('does not throw when option.rules has an unknown rule', () => {
+    assert.doesNotThrow(() => {
       axe.utils.normalizeRunOptions({
         rules: {
           fakeRule: { enabled: false }
         }
       });
     });
+  });
+
+  it('keeps known rules in options.rules when another id is unknown', () => {
+    const options = axe.utils.normalizeRunOptions({
+      rules: {
+        'color-contrast': { enabled: false },
+        fakeRule: { enabled: false }
+      }
+    });
+    assert.deepEqual(options.rules['color-contrast'], { enabled: false });
   });
 
   it('logs an issue when a tag is unknown', () => {
