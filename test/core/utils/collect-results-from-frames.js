@@ -98,10 +98,11 @@ describe('axe.utils.collectResultsFromFrames', () => {
     fixture.appendChild(frame);
   });
 
-  it('should timeout the start request after 60s', done => {
+  it('should skip the frame when the start request times out after 60s', done => {
+    let timeoutSet = false;
     window.setTimeout = (fn, to) => {
       if (to === 60000) {
-        assert.ok('timeout set');
+        timeoutSet = true;
         fn();
       } else {
         // ping timeout
@@ -118,11 +119,13 @@ describe('axe.utils.collectResultsFromFrames', () => {
         {},
         'stuff',
         'morestuff',
-        noop,
-        err => {
-          assert.instanceOf(err, Error);
-          assert.equal(err.message.split(/: /)[0], 'Axe in frame timed out');
+        results => {
+          assert.isTrue(timeoutSet);
+          assert.deepEqual(results, []);
           done();
+        },
+        err => {
+          done(err);
         }
       );
     });
@@ -133,9 +136,10 @@ describe('axe.utils.collectResultsFromFrames', () => {
   });
 
   it('should override the start timeout with `options.frameWaitTime`, if provided', done => {
+    let timeoutSet = false;
     window.setTimeout = (fn, to) => {
       if (to === 90000) {
-        assert.ok('timeout set');
+        timeoutSet = true;
         fn();
       } else {
         // ping timeout
@@ -154,11 +158,13 @@ describe('axe.utils.collectResultsFromFrames', () => {
         params,
         'stuff',
         'morestuff',
-        noop,
-        err => {
-          assert.instanceOf(err, Error);
-          assert.equal(err.message.split(/: /)[0], 'Axe in frame timed out');
+        results => {
+          assert.isTrue(timeoutSet);
+          assert.deepEqual(results, []);
           done();
+        },
+        err => {
+          done(err);
         }
       );
     });
