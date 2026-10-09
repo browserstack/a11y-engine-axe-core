@@ -431,7 +431,7 @@ Additionally, there are a number or properties that allow configuration of diffe
 | `absolutePaths`    | `false` | Use absolute paths when creating element selectors                                                                                      |
 | `iframes`          | `true`  | Tell axe to run inside iframes                                                                                                          |
 | `elementRef`       | `false` | Return element references in addition to the target                                                                                     |
-| `frameWaitTime`    | `60000` | How long (in milliseconds) axe waits for a response from embedded frames before timing out                                              |
+| `frameWaitTime`    | `60000` | How long (in milliseconds) axe waits for a frame to respond before skipping it; with `debug` set, the run rejects instead               |
 | `preload`          | `true`  | Any additional assets (eg: cssom) to preload before running rules. [See here for configuration details](#preload-configuration-details) |
 | `performanceTimer` | `false` | Log rule performance metrics to the console                                                                                             |
 | `pingWaitTime`     | `500`   | Time before axe-core considers a frame unresponsive. [See frame messenger for details](frame-messenger.md)                              |
