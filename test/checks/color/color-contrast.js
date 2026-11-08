@@ -265,6 +265,22 @@ describe('color-contrast', () => {
     assert.deepEqual(checkContext._data.messageKey, null);
   });
 
+  it('should evaluate text inside a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(34, 34, 34);">
+        <div
+          style="background-color: rgb(51, 51, 51); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #fff;">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isTrue(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.equal(checkContext._data.bgColor, '#555555');
+  });
+
   it('should ignore position:fixed elements above the target', () => {
     const params = checkSetup(html`
       <div style="background-color: #e5f1e5;" id="background">

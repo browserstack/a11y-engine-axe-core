@@ -1008,6 +1008,28 @@ describe('color.getBackgroundColor', () => {
     assert.closeTo(actual.alpha, 1, 0);
   });
 
+  it('should apply mix-blend-mode: plus-lighter', () => {
+    fixture.innerHTML = html`
+      <div style="background-color: rgb(34, 34, 34)">
+        <div
+          id="target"
+          style="background-color: rgb(51, 51, 51); mix-blend-mode: plus-lighter;"
+        >
+          plus-lighter
+        </div>
+      </div>
+    `;
+
+    axe.testUtils.flatTreeSetup(fixture);
+    const target = fixture.querySelector('#target');
+    const actual = axe.commons.color.getBackgroundColor(target, []);
+
+    assert.closeTo(actual.red, 85, 0);
+    assert.closeTo(actual.green, 85, 0);
+    assert.closeTo(actual.blue, 85, 0);
+    assert.closeTo(actual.alpha, 1, 0);
+  });
+
   it('finds colors in shadow boundaries', () => {
     fixture.innerHTML = '<div id="container"></div>';
     const container = fixture.querySelector('#container');
