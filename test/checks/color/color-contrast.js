@@ -281,6 +281,27 @@ describe('color-contrast', () => {
     assert.equal(checkContext._data.bgColor, '#555555');
   });
 
+  it('should return undefined without a check error for a mix-blend-mode it cannot composite', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(204, 204, 204);">
+        <div
+          id="layer"
+          style="background-color: rgb(153, 153, 153); mix-blend-mode: multiply;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+    // Chrome computes plus-darker as normal; Safari returns it as-is
+    axe.utils.getNodeFromTree(fixture.querySelector('#layer'))._cache[
+      'computedStyle_mix-blend-mode'
+    ] = 'plus-darker';
+
+    assert.isUndefined(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.isUndefined(checkContext._data.bgColor);
+  });
+
   it('should ignore position:fixed elements above the target', () => {
     const params = checkSetup(html`
       <div style="background-color: #e5f1e5;" id="background">
