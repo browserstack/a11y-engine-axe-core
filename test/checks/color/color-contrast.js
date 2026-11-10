@@ -316,6 +316,25 @@ describe('color-contrast', () => {
     assert.equal(checkContext._data.bgColor, '#cccccc');
   });
 
+  it('should apply sibling opacity once in a plus-lighter foreground backdrop', () => {
+    const params = checkSetup(html`
+      <div style="background-color: #fff; position: relative;">
+        <div
+          style="position: absolute; inset: 0; background-color: #000; opacity: 0.8;"
+        ></div>
+        <div
+          style="position: relative; background-color: rgb(34, 34, 34); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+
+    contrastEvaluate.apply(checkContext, params);
+    assert.equal(checkContext._data.fgColor, '#333333');
+    assert.equal(checkContext._data.bgColor, '#555555');
+  });
+
   it('should return undefined for translucent text in a mix-blend-mode: plus-lighter layer', () => {
     const params = checkSetup(html`
       <div style="background-color: rgb(0, 0, 0);">
