@@ -297,6 +297,25 @@ describe('color-contrast', () => {
     assert.equal(checkContext._data.bgColor, '#bbbbbb');
   });
 
+  it('should composite dark text over a plus-lighter sibling layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(170, 170, 170); position: relative;">
+        <div
+          style="position: absolute; inset: 0; background-color: rgb(17, 17, 17); mix-blend-mode: plus-lighter;"
+        ></div>
+        <div
+          style="position: relative; background-color: rgb(17, 17, 17); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isFalse(contrastEvaluate.apply(checkContext, params));
+    assert.equal(checkContext._data.fgColor, '#bbbbbb');
+    assert.equal(checkContext._data.bgColor, '#cccccc');
+  });
+
   it('should return undefined for translucent text in a mix-blend-mode: plus-lighter layer', () => {
     const params = checkSetup(html`
       <div style="background-color: rgb(0, 0, 0);">
