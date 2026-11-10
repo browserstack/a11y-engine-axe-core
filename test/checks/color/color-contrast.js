@@ -297,6 +297,22 @@ describe('color-contrast', () => {
     assert.equal(checkContext._data.bgColor, '#bbbbbb');
   });
 
+  it('should return undefined for translucent text in a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(0, 0, 0);">
+        <div
+          style="background-color: rgb(255, 255, 255); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: rgba(0, 0, 0, 0.5);">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isUndefined(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.isUndefined(checkContext._data.fgColor);
+  });
+
   it('should return undefined without a check error for a mix-blend-mode it cannot composite', () => {
     const params = checkSetup(html`
       <div style="background-color: rgb(204, 204, 204);">
