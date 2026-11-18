@@ -265,6 +265,133 @@ describe('color-contrast', () => {
     assert.deepEqual(checkContext._data.messageKey, null);
   });
 
+  it('should evaluate text inside a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(34, 34, 34);">
+        <div
+          style="background-color: rgb(51, 51, 51); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #fff;">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isTrue(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.equal(checkContext._data.bgColor, '#555555');
+  });
+
+  it('should composite dark text through a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(170, 170, 170);">
+        <div
+          style="background-color: rgb(17, 17, 17); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isFalse(contrastEvaluate.apply(checkContext, params));
+    assert.equal(checkContext._data.fgColor, '#aaaaaa');
+    assert.equal(checkContext._data.bgColor, '#bbbbbb');
+  });
+
+  it('should composite dark text over a plus-lighter sibling layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(170, 170, 170); position: relative;">
+        <div
+          style="position: absolute; inset: 0; background-color: rgb(17, 17, 17); mix-blend-mode: plus-lighter;"
+        ></div>
+        <div
+          style="position: relative; background-color: rgb(17, 17, 17); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isFalse(contrastEvaluate.apply(checkContext, params));
+    assert.equal(checkContext._data.fgColor, '#bbbbbb');
+    assert.equal(checkContext._data.bgColor, '#cccccc');
+  });
+
+  it('should apply sibling opacity once in a plus-lighter foreground backdrop', () => {
+    const params = checkSetup(html`
+      <div style="background-color: #fff; position: relative;">
+        <div
+          style="position: absolute; inset: 0; background-color: #000; opacity: 0.8;"
+        ></div>
+        <div
+          style="position: relative; background-color: rgb(34, 34, 34); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+
+    contrastEvaluate.apply(checkContext, params);
+    assert.equal(checkContext._data.fgColor, '#333333');
+    assert.equal(checkContext._data.bgColor, '#555555');
+  });
+
+  it('should return undefined for translucent text in a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(0, 0, 0);">
+        <div
+          style="background-color: rgb(255, 255, 255); mix-blend-mode: plus-lighter;"
+        >
+          <p id="target" style="color: rgba(0, 0, 0, 0.5);">My text</p>
+        </div>
+      </div>
+    `);
+
+    assert.isUndefined(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.isUndefined(checkContext._data.fgColor);
+  });
+
+  it('should return undefined for text-shadow in a mix-blend-mode: plus-lighter layer', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(255, 255, 255);">
+        <div
+          style="background-color: rgb(0, 0, 0); mix-blend-mode: plus-lighter;"
+        >
+          <p
+            id="target"
+            style="color: #000; font-size: 32px; text-shadow: 0 0 1px #000;"
+          >
+            My text
+          </p>
+        </div>
+      </div>
+    `);
+
+    assert.isUndefined(contrastEvaluate.apply(checkContext, params));
+    assert.equal(checkContext._data.messageKey, 'complexTextShadows');
+  });
+
+  it('should return undefined without a check error for a mix-blend-mode it cannot composite', () => {
+    const params = checkSetup(html`
+      <div style="background-color: rgb(204, 204, 204);">
+        <div
+          id="layer"
+          style="background-color: rgb(153, 153, 153); mix-blend-mode: multiply;"
+        >
+          <p id="target" style="color: #000;">My text</p>
+        </div>
+      </div>
+    `);
+    // Chrome computes plus-darker as normal; Safari returns it as-is
+    axe.utils.getNodeFromTree(fixture.querySelector('#layer'))._cache[
+      'computedStyle_mix-blend-mode'
+    ] = 'plus-darker';
+
+    assert.isUndefined(contrastEvaluate.apply(checkContext, params));
+    assert.notEqual(checkContext._data.messageKey, 'Check error');
+    assert.isUndefined(checkContext._data.bgColor);
+  });
+
   it('should ignore position:fixed elements above the target', () => {
     const params = checkSetup(html`
       <div style="background-color: #e5f1e5;" id="background">

@@ -257,6 +257,47 @@ describe('color.stackingContext', () => {
       });
     });
 
+    it('does not apply opacity twice when called again', () => {
+      const context = {
+        opacity: 0.8,
+        bgColor: new Color(0, 0, 0, 1),
+        blendMode: 'normal',
+        descendants: []
+      };
+
+      stackingContextToColor(context);
+      assert.deepEqual(stackingContextToColor(context), {
+        color: new Color(0, 0, 0, 0.8),
+        blendMode: 'normal'
+      });
+    });
+
+    it('composites plus-lighter descendants over the context in paint order', () => {
+      const context = {
+        opacity: 1,
+        bgColor: new Color(170, 170, 170, 1),
+        blendMode: 'normal',
+        descendants: [
+          {
+            opacity: 1,
+            bgColor: new Color(170, 170, 170, 1),
+            blendMode: 'plus-lighter',
+            descendants: []
+          },
+          {
+            opacity: 1,
+            bgColor: new Color(0, 0, 0, 0.5),
+            blendMode: 'normal',
+            descendants: []
+          }
+        ]
+      };
+
+      const { color } = stackingContextToColor(context);
+      assert.equal(color.toHexString(), '#808080');
+      assert.equal(color.alpha, 1);
+    });
+
     it('applies mix-blend-mode from a nested context', () => {
       const context = {
         opacity: 1,

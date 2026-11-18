@@ -383,4 +383,75 @@ describe('color.flattenColors ', () => {
     assert.equal(flattenTwo.blue, 183);
     assert.equal(flattenTwo.alpha, 1);
   });
+
+  it('should flatten colors correctly using blend mode: plus-lighter', () => {
+    const flatten = axe.commons.color.flattenColors(
+      colourTwo,
+      colourOne,
+      'plus-lighter'
+    );
+    assert.equal(flatten.red, 245);
+    assert.equal(flatten.green, 54);
+    assert.equal(flatten.blue, 51);
+    assert.equal(flatten.alpha, 1);
+
+    const flattenTwo = axe.commons.color.flattenColors(
+      colourFour,
+      colourThree,
+      'plus-lighter'
+    );
+    assert.equal(flattenTwo.red, 255);
+    assert.equal(flattenTwo.green, 255);
+    assert.equal(flattenTwo.blue, 180);
+    assert.equal(flattenTwo.alpha, 1);
+  });
+
+  it('should add alphas for blend mode: plus-lighter', () => {
+    const flatten = axe.commons.color.flattenColors(
+      new axe.commons.color.Color(100, 100, 100, 0.5),
+      new axe.commons.color.Color(50, 50, 50, 0.25),
+      'plus-lighter'
+    );
+    assert.equal(flatten.red, 83);
+    assert.equal(flatten.green, 83);
+    assert.equal(flatten.blue, 83);
+    assert.equal(flatten.alpha, 0.75);
+  });
+
+  it('should return a transparent color for blend mode: plus-lighter when both are transparent', () => {
+    const flatten = axe.commons.color.flattenColors(
+      new axe.commons.color.Color(0, 0, 0, 0),
+      new axe.commons.color.Color(0, 0, 0, 0),
+      'plus-lighter'
+    );
+    assert.equal(flatten.alpha, 0);
+  });
+
+  it('should fall back to blend mode: normal for an unknown blend mode', () => {
+    const unknown = axe.commons.color.flattenColors(
+      colourTwo,
+      colourOne,
+      'not-a-blend-mode'
+    );
+    const normal = axe.commons.color.flattenColors(
+      colourTwo,
+      colourOne,
+      'normal'
+    );
+    assert.deepEqual(unknown, normal);
+  });
+
+  it('should not treat Object.prototype keys as blend modes', () => {
+    const inherited = axe.commons.color.flattenColors(
+      colourTwo,
+      colourOne,
+      'toString'
+    );
+    const normal = axe.commons.color.flattenColors(
+      colourTwo,
+      colourOne,
+      'normal'
+    );
+    assert.deepEqual(inherited, normal);
+  });
 });
