@@ -183,3 +183,10 @@
 <!-- When readonly attributes placed, should be ignored -->
 <input autocomplete="badterm" readonly id="inapplicable11" />
 <input autocomplete="badterm" aria-readonly="true" id="inapplicable12" />
+
+<!-- Types in no autofill group, without an authored autocomplete, are ignored -->
+<input type="range" aria-label="Hours" id="inapplicable13" />
+<input type="color" aria-label="Theme" id="inapplicable14" />
+<input type="week" aria-label="Week" id="inapplicable15" />
+<input type="time" aria-label="Start" id="inapplicable16" />
+<input type="datetime-local" aria-label="Departure" id="inapplicable17" />
