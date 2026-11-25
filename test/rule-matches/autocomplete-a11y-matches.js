@@ -35,4 +35,71 @@ describe('autocomplete-a11y-matches', () => {
     // The label text "Search" marks the field as search, so it is not matched.
     assert.isFalse(rule.matches(vNode.actualNode, vNode));
   });
+
+  describe('input types that cannot collect user information', () => {
+    it('returns false for a range slider without autocomplete', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="range" min="1" max="23" aria-label="Layover hours">'
+      );
+      assert.isFalse(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('returns false for a colour picker without autocomplete', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="color" aria-label="Theme colour">'
+      );
+      assert.isFalse(rule.matches(vNode.actualNode, vNode));
+    });
+
+    ['week', 'time', 'datetime-local'].forEach(type => {
+      it(`returns false for input[type=${type}] without autocomplete`, () => {
+        const vNode = queryFixture(
+          `<input id="target" type="${type}" aria-label="Departure">`
+        );
+        assert.isFalse(rule.matches(vNode.actualNode, vNode));
+      });
+    });
+
+    it('treats an upper-case type and a blank autocomplete as unset', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="RANGE" autocomplete="  " aria-label="Price">'
+      );
+      assert.isFalse(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('still returns true for a colour picker with autocomplete="off"', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="color" autocomplete="off" aria-label="Theme colour">'
+      );
+      assert.isTrue(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('still returns true for a range slider with an authored autocomplete', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="range" autocomplete="email" aria-label="Amount">'
+      );
+      assert.isTrue(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('still returns true for a text field without autocomplete', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="text" aria-label="Full name">'
+      );
+      assert.isTrue(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('still returns true for a date field without autocomplete', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="date" aria-label="Date of birth">'
+      );
+      assert.isTrue(rule.matches(vNode.actualNode, vNode));
+    });
+
+    it('still returns true for an unknown type, which renders as a text field', () => {
+      const vNode = queryFixture(
+        '<input id="target" type="slider" aria-label="Amount">'
+      );
+      assert.isTrue(rule.matches(vNode.actualNode, vNode));
+    });
+  });
 });
